@@ -1,0 +1,413 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title>Verpackungsplotter Preisberechner v1.0.0</title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2575.5">
+  <style type="text/css">
+    body {
+      font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      margin: 0;
+      background: #f7fafc;
+      color: #2d3748;
+    }
+    h2 {
+      margin-top: 18px;
+      margin-bottom: 12px;
+      text-align: center;
+      font-weight: 600;
+      color: #1a3b6e;
+      letter-spacing: 0.5px;
+      font-size: 1.35rem;
+    }
+    form {
+      margin: 0 auto;
+      max-width: 1100px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px 0 rgba(30,60,90,0.06);
+      padding: 16px 10px 8px 10px;
+    }
+    .form-section {
+      background: #f5f7fa;
+      border-radius: 8px;
+      padding: 10px 8px 4px 8px;
+      margin-bottom: 0;
+      box-shadow: 0 1px 2px 0 rgba(30,60,90,0.03);
+      border: 1px solid #bfc9d1;
+    }
+    label {
+      display: block;
+      margin-top: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #2e3d32;
+    }
+    input, select {
+      margin-top: 3px;
+      margin-bottom: 6px;
+      padding: 4px 7px;
+      border-radius: 5px;
+      border: 1px solid #bfc9d1;
+      font-size: 13px;
+      background: #fff;
+      width: 100%;
+      box-sizing: border-box;
+      transition: border 0.2s;
+    }
+    input:focus, select:focus {
+      border: 1.2px solid #388e3c;
+      outline: none;
+    }
+    button {
+      padding: 8px 18px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      background: linear-gradient(90deg, #1a3b6e 60%, #2c5282 100%);
+      border: none;
+      border-radius: 7px;
+      box-shadow: 0 1px 4px 0 rgba(0,0,0,0.07);
+      cursor: pointer;
+      margin: 18px auto 0 auto;
+      display: block;
+      letter-spacing: 0.3px;
+      transition: background 0.2s;
+    }
+    button:hover {
+      background: linear-gradient(90deg, #2c5282 60%, #1a3b6e 100%);
+    }
+    .result {
+      margin-top: 0;
+      padding: 12px 8px 10px 8px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 1px 6px 0 rgba(30,60,90,0.05);
+      border: 1px solid #bfc9d1;
+      font-size: 13px;
+      min-height: 120px;
+    }
+    .warn {
+      color: #b71c1c;
+      font-weight: bold;
+      font-size: 13px;
+    }
+    .hint {
+      color: #607d68;
+      font-size: 11px;
+      margin-top: 3px;
+      display: block;
+    }
+    .back-button {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      padding: 10px 20px;
+      background-color: #1a3b6e;
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+      font-weight: 500;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      transition: background-color 0.2s;
+      z-index: 1000;
+    }
+    .back-button:hover {
+      background-color: #2c5282;
+    }
+    .reset-button {
+      padding: 8px 18px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      background: #dc2626;
+      border: none;
+      border-radius: 7px;
+      box-shadow: 0 1px 4px 0 rgba(0,0,0,0.07);
+      cursor: pointer;
+      margin: 18px 0 0 10px;
+      display: inline-block;
+      letter-spacing: 0.3px;
+      transition: background 0.2s;
+    }
+    .reset-button:hover {
+      background: #b91c1c;
+    }
+    .pdf-button {
+      padding: 8px 18px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      background: #1a3b6e;
+      border: none;
+      border-radius: 7px;
+      box-shadow: 0 1px 4px 0 rgba(0,0,0,0.07);
+      cursor: pointer;
+      margin: 18px 0 0 10px;
+      display: inline-block;
+      letter-spacing: 0.3px;
+      transition: background 0.2s;
+    }
+    .pdf-button:hover {
+      background: #2c5282;
+    }
+    .version {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      font-size: 12px;
+      color: #718096;
+      background: rgba(255, 255, 255, 0.8);
+      padding: 4px 8px;
+      border-radius: 4px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+  <a href="index.html" style="
+    display: block;
+    margin-left: 18px;
+    margin-top: 18px;
+    margin-bottom: 8px;
+    padding: 7px 18px;
+    width: 220px;
+    background: linear-gradient(90deg, #1a3b6e 60%, #2c5282 100%);
+    color: #fff;
+    border-radius: 7px;
+    font-weight: 600;
+    font-size: 15px;
+    text-decoration: none;
+    box-shadow: 0 1px 4px 0 rgba(0,0,0,0.07);
+    letter-spacing: 0.3px;
+    transition: background 0.2s;
+  "
+  onmouseover="this.style.background='linear-gradient(90deg, #2c5282 60%, #1a3b6e 100%)'"
+  onmouseout="this.style.background='linear-gradient(90deg, #1a3b6e 60%, #2c5282 100%)'"
+  >← Zurück zur Startseite</a>
+  <h2>Verpackungsplotter Preisberechner</h2>
+  <form id="plotterForm" onsubmit="event.preventDefault(); berechnePlotter();">
+    <div style="display: flex; gap: 24px; flex-wrap: wrap;">
+      <fieldset class="form-section" style="flex: 1 1 250px; min-width: 220px;">
+        <legend>Auftragsdaten</legend>
+        <label>Artikelnummer: <input type="text" id="artikelnummer" placeholder="z.B. PLT-001"></label>
+        <label>Anzahl Verpackungen: <input type="number" id="anzahlTeile" min="1" value="1" required title="Wie viele Verpackungen werden benötigt?"></label>
+        <label>Schneidweg pro Verpackung (mm): <input type="number" id="schnittLaenge" min="0" required title="Gesamtlänge der Schnitte pro Verpackung in mm"></label>
+        <label>Rillweg pro Verpackung (mm): <input type="number" id="rillLaenge" min="0" required title="Gesamtlänge der Rillungen pro Verpackung in mm"></label>
+      </fieldset>
+      <fieldset class="form-section" style="flex: 1 1 250px; min-width: 220px;">
+        <legend>Materialdaten</legend>
+        <label>Wellpappbogen Länge (mm): <input type="number" id="bogenLaenge" required title="Länge des Wellpappbogens in mm"></label>
+        <label>Wellpappbogen Breite (mm): <input type="number" id="bogenBreite" required title="Breite des Wellpappbogens in mm"></label>
+        <label>Kosten pro Bogen (€): <input type="number" id="bogenKosten" min="0" step="0.01" required title="Kosten pro Wellpappbogen in Euro"></label>
+      </fieldset>
+      <fieldset class="form-section" style="flex: 1 1 250px; min-width: 220px;">
+        <legend>Produktionsparameter</legend>
+        <label>Schneidgeschwindigkeit (mm/s): <input type="number" id="schnittGeschwindigkeit" value="60" readonly title="Schneidgeschwindigkeit in mm/s"></label>
+        <label>Rillgeschwindigkeit (mm/s): <input type="number" id="rillGeschwindigkeit" value="250" readonly title="Rillgeschwindigkeit in mm/s"></label>
+        <label>Rüstzeit (min): <input type="number" id="ruestzeit" min="0" value="15" required title="Rüstzeit in Minuten"></label>
+        <label>Preiseinheit (Menge):
+          <select id="preiseinheit" required title="Preis für diese Stückzahl">
+            <option value="1">1 Stück</option>
+            <option value="100" selected>100 Stück</option>
+            <option value="1000">1000 Stück</option>
+          </select>
+        </label>
+      </fieldset>
+    </div>
+    <div style="display: flex; justify-content: center; gap: 15px; margin-top: 20px;">
+      <button type="submit" style="background: linear-gradient(90deg, #1a3b6e 60%, #2c5282 100%); min-width: 120px;">Berechnen</button>
+      <button type="button" class="pdf-button" onclick="exportToPDF()" style="min-width: 120px;">Als PDF exportieren</button>
+      <button type="button" class="reset-button" onclick="resetForm()" style="min-width: 120px;">Formular zurücksetzen</button>
+    </div>
+  </form>
+  <div style="display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; margin-top: 16px; margin-left: 40px;">
+    <div class="result" id="ergebnis" style="flex: 1 1 0; min-width: 200px; max-width: 38%; font-size:12px;"></div>
+  </div>
+  <div class="version">v1.0.0</div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script>
+    // Konstanten für die Berechnung
+    const ANLAGEKOSTEN = 15000; // €
+    const NUTZUNGSDAUER = 10; // Jahre
+    const PLOTTER_LEISTUNG = 5; // kW
+    const STROMKOSTEN_PRO_KWH = 0.35; // €
+    const PERSONALKOSTEN_PRO_STUNDE = 20; // €
+    const ARBEITSSTUNDEN_PRO_JAHR = 1600; // Stunden
+
+    // Funktion zum Zurücksetzen des Formulars
+    function resetForm() {
+      if (confirm('Möchten Sie wirklich alle Eingaben zurücksetzen?')) {
+        document.getElementById('plotterForm').reset();
+        document.getElementById('schnittGeschwindigkeit').value = '60';
+        document.getElementById('rillGeschwindigkeit').value = '250';
+        document.getElementById('ruestzeit').value = '15';
+        document.getElementById('ergebnis').innerHTML = '';
+      }
+    }
+
+    function berechnePlotter() {
+      // Eingaben holen
+      const anzahl = parseInt(document.getElementById('anzahlTeile').value);
+      const schnittLaenge = parseInt(document.getElementById('schnittLaenge').value);
+      const rillLaenge = parseInt(document.getElementById('rillLaenge').value);
+      const bogenLaenge = parseInt(document.getElementById('bogenLaenge').value);
+      const bogenBreite = parseInt(document.getElementById('bogenBreite').value);
+      const bogenKosten = parseFloat(document.getElementById('bogenKosten').value);
+      const schnittGeschwindigkeit = parseInt(document.getElementById('schnittGeschwindigkeit').value);
+      const rillGeschwindigkeit = parseInt(document.getElementById('rillGeschwindigkeit').value);
+      const ruestzeit = parseInt(document.getElementById('ruestzeit').value);
+
+      // Berechnungen
+      // 1. Maschinenkosten pro Jahr
+      const maschinenKostenProJahr = ANLAGEKOSTEN / NUTZUNGSDAUER;
+      const maschinenKostenProStunde = maschinenKostenProJahr / ARBEITSSTUNDEN_PRO_JAHR;
+
+      // 2. Zeitberechnung
+      const schnittzeit = (anzahl * schnittLaenge) / schnittGeschwindigkeit; // in Sekunden
+      const rillzeit = (anzahl * rillLaenge) / rillGeschwindigkeit; // in Sekunden
+      const gesamtzeit = (schnittzeit + rillzeit) / 60 + ruestzeit; // in Minuten
+      const gesamtzeitStunden = gesamtzeit / 60;
+
+      // 3. Stromkosten
+      const stromKosten = PLOTTER_LEISTUNG * STROMKOSTEN_PRO_KWH * gesamtzeitStunden;
+
+      // 4. Materialkosten
+      const bogenFlaeche = bogenLaenge * bogenBreite; // mm²
+      const verpackungFlaeche = schnittLaenge * rillLaenge; // mm² (vereinfachte Berechnung)
+      const verpackungenProBogen = Math.floor(bogenFlaeche / verpackungFlaeche);
+      const benoetigteBogen = Math.ceil(anzahl / verpackungenProBogen);
+      const materialKosten = benoetigteBogen * bogenKosten;
+
+      // 5. Personalkosten
+      const personalkosten = gesamtzeitStunden * PERSONALKOSTEN_PRO_STUNDE;
+
+      // 6. Gesamtkosten
+      const zeitKosten = gesamtzeitStunden * maschinenKostenProStunde;
+      const gesamtKosten = zeitKosten + stromKosten + materialKosten + personalkosten;
+
+      // 7. Preis pro Einheit berechnen
+      const preiseinheitMenge = parseInt(document.getElementById('preiseinheit').value);
+      const preisProEinheit = gesamtKosten / anzahl * preiseinheitMenge;
+      const einheitText = `für ${preiseinheitMenge} Stück`;
+
+      // Hilfsfunktion für Zeitformatierung
+      function formatZeit(min) {
+        if (!min || min === 0) return '0 min';
+        const h = Math.floor(min / 60);
+        const m = Math.round(min % 60);
+        return (h > 0 ? h + ' h ' : '') + m + ' min';
+      }
+
+      // Ausgabe
+      document.getElementById('ergebnis').innerHTML = `
+        <div style="font-size:1.3em; font-weight:800; color:#fff; background:linear-gradient(90deg,#1a3b6e 60%,#2c5282 100%); border-radius:9px; padding:10px 0 7px 0; text-align:center; margin-bottom:14px; letter-spacing:0.5px; box-shadow:0 1px 4px 0 rgba(26,59,110,0.08);">
+          <span style="font-size:0.7em; font-weight:600; color:#e3e8ee; margin-right:8px;">Preis</span>
+          <span style="font-size:1em; font-weight:900; color:#fff; background:#2c5282; border-radius:6px; padding:2px 10px; margin:0 7px; display:inline-block;">${preisProEinheit.toFixed(2)} €</span>
+          <span style="font-size:0.8em; font-weight:600; color:#e3e8ee;">${einheitText}</span>
+        </div>
+        <b>Gesamtkosten:</b> ${gesamtKosten.toFixed(2)} €<br>
+        <b>Kosten pro Stück:</b> ${(gesamtKosten / anzahl).toFixed(2)} €<br>
+        <b>Schneidzeit:</b> ${formatZeit(schnittzeit / 60)}<br>
+        <b>Rillzeit:</b> ${formatZeit(rillzeit / 60)}<br>
+        <b>Rüstzeit:</b> ${formatZeit(ruestzeit)}<br>
+        <b>Gesamtzeit:</b> ${formatZeit(gesamtzeit)}<br>
+        <b>Materialkosten:</b> ${materialKosten.toFixed(2)} €<br>
+        <b>Stromkosten:</b> ${stromKosten.toFixed(2)} €<br>
+        <b>Maschinenkosten:</b> ${zeitKosten.toFixed(2)} €<br>
+        <b>Personalkosten:</b> ${personalkosten.toFixed(2)} €<br>
+        <b>Benötigte Bogen:</b> ${benoetigteBogen}<br>
+        <b>Verpackungen pro Bogen:</b> ${verpackungenProBogen}<br>
+        <br>
+        <b>Kostenaufschlüsselung pro Stunde:</b><br>
+        - Maschinenkosten: ${maschinenKostenProStunde.toFixed(2)} €<br>
+        - Personalkosten: ${PERSONALKOSTEN_PRO_STUNDE.toFixed(2)} €<br>
+        - Stromkosten: ${(PLOTTER_LEISTUNG * STROMKOSTEN_PRO_KWH).toFixed(2)} €<br>
+        - Gesamtkosten: ${(maschinenKostenProStunde + PERSONALKOSTEN_PRO_STUNDE + PLOTTER_LEISTUNG * STROMKOSTEN_PRO_KWH).toFixed(2)} €
+      `;
+    }
+
+    // PDF Export Funktion
+    function exportToPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      
+      // Titel und Artikelnummer
+      doc.setFontSize(16);
+      doc.text('Verpackungsplotter Preisberechnung', 20, 15);
+      const artikelnummer = document.getElementById('artikelnummer').value;
+      if (artikelnummer) {
+        doc.setFontSize(14);
+        doc.setTextColor(26, 59, 110); // Blau (#1a3b6e)
+        doc.text(`Artikelnummer: ${artikelnummer}`, 20, 25);
+        doc.setTextColor(0, 0, 0); // Zurück zu Schwarz
+      }
+      
+      // Layout für eine Seite
+      let yPos = artikelnummer ? 35 : 30;
+      
+      // Linke Spalte: Eingabedaten
+      doc.setFontSize(11);
+      doc.text('Eingabedaten:', 20, yPos);
+      yPos += 7;
+      
+      // Auftragsdaten
+      doc.setFontSize(10);
+      doc.text(`Anzahl Verpackungen: ${document.getElementById('anzahlTeile').value}`, 25, yPos);
+      yPos += 5;
+      doc.text(`Schneidweg pro Verpackung: ${document.getElementById('schnittLaenge').value} mm`, 25, yPos);
+      yPos += 5;
+      doc.text(`Rillweg pro Verpackung: ${document.getElementById('rillLaenge').value} mm`, 25, yPos);
+      yPos += 5;
+      
+      // Materialdaten
+      doc.text(`Bogenmaße: ${document.getElementById('bogenLaenge').value}x${document.getElementById('bogenBreite').value} mm`, 25, yPos);
+      yPos += 5;
+      doc.text(`Kosten pro Bogen: ${document.getElementById('bogenKosten').value} €`, 25, yPos);
+      yPos += 5;
+      
+      // Produktionsparameter
+      doc.text(`Schneidgeschwindigkeit: ${document.getElementById('schnittGeschwindigkeit').value} mm/s`, 25, yPos);
+      yPos += 5;
+      doc.text(`Rillgeschwindigkeit: ${document.getElementById('rillGeschwindigkeit').value} mm/s`, 25, yPos);
+      yPos += 5;
+      doc.text(`Rüstzeit: ${document.getElementById('ruestzeit').value} min`, 25, yPos);
+      yPos += 10;
+
+      // Rechte Spalte: Ergebnisse
+      const ergebnisDiv = document.getElementById('ergebnis');
+      const ergebnisText = ergebnisDiv.innerText;
+      const ergebnisLines = ergebnisText.split('\n')
+        .filter(line => line.trim() !== '');
+
+      doc.setFontSize(11);
+      doc.text('Ergebnisse:', 100, 30);
+      let resultY = 37;
+      doc.setFontSize(10);
+
+      ergebnisLines.forEach(line => {
+        if (line.includes('Preis')) {
+          // Preis hervorheben
+          doc.setFontSize(14);
+          doc.setTextColor(26, 59, 110); // Blau (#1a3b6e)
+          doc.setFont(undefined, 'bold');
+          doc.text(line, 100, resultY);
+          resultY += 10;
+          doc.setFontSize(10);
+          doc.setTextColor(0, 0, 0); // Zurück zu Schwarz
+          doc.setFont(undefined, 'normal');
+        } else {
+          doc.text(line, 100, resultY);
+          resultY += 5;
+        }
+      });
+
+      // Speichern
+      const filename = artikelnummer ? `Plotter_Berechnung_${artikelnummer}.pdf` : 'Plotter_Berechnung.pdf';
+      doc.save(filename);
+    }
+  </script>
+</body>
+</html> 

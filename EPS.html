@@ -1,0 +1,705 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title>EPS Preisberechner v1.0.0</title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2575.5">
+  <style type="text/css">
+    body {
+      font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      margin: 0;
+      background: #f7fafc;
+      color: #2d3748;
+    }
+    h2 {
+      margin-top: 18px;
+      margin-bottom: 12px;
+      text-align: center;
+      font-weight: 600;
+      color: #1a3b6e;
+      letter-spacing: 0.5px;
+      font-size: 1.35rem;
+    }
+    form {
+      margin: 0 auto;
+      max-width: 1100px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px 0 rgba(30,60,90,0.06);
+      padding: 16px 10px 8px 10px;
+    }
+    .form-section {
+      background: #f5f7fa;
+      border-radius: 8px;
+      padding: 10px 8px 4px 8px;
+      margin-bottom: 0;
+      box-shadow: 0 1px 2px 0 rgba(30,60,90,0.03);
+      border: 1px solid #bfc9d1;
+    }
+    label {
+      display: block;
+      margin-top: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #2e3d32;
+    }
+    input, select {
+      margin-top: 3px;
+      margin-bottom: 6px;
+      padding: 4px 7px;
+      border-radius: 5px;
+      border: 1px solid #bfc9d1;
+      font-size: 13px;
+      background: #fff;
+      width: 100%;
+      box-sizing: border-box;
+      transition: border 0.2s;
+    }
+    input:focus, select:focus {
+      border: 1.2px solid #388e3c;
+      outline: none;
+    }
+    button {
+      padding: 8px 18px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      background: linear-gradient(90deg, #1a3b6e 60%, #2c5282 100%);
+      border: none;
+      border-radius: 7px;
+      box-shadow: 0 1px 4px 0 rgba(0,0,0,0.07);
+      cursor: pointer;
+      margin: 18px auto 0 auto;
+      display: block;
+      letter-spacing: 0.3px;
+      transition: background 0.2s;
+    }
+    button:hover {
+      background: linear-gradient(90deg, #2c5282 60%, #1a3b6e 100%);
+    }
+    .result {
+      margin-top: 0;
+      padding: 12px 8px 10px 8px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 1px 6px 0 rgba(30,60,90,0.05);
+      border: 1px solid #bfc9d1;
+      font-size: 13px;
+      min-height: 120px;
+    }
+    table {
+      border-collapse: collapse;
+      margin-top: 8px;
+      width: 100%;
+      background: #f5f7fa;
+      border-radius: 6px;
+      overflow: hidden;
+      font-size: 12px;
+    }
+    th, td {
+      border: 1px solid #bfc9d1;
+      padding: 4px 7px;
+      text-align: center;
+    }
+    th {
+      background: #e3e8ee;
+      font-weight: 600;
+      color: #388e3c;
+      letter-spacing: 0.3px;
+    }
+    .warn {
+      color: #b71c1c;
+      font-weight: bold;
+      font-size: 13px;
+    }
+    .hint {
+      color: #607d68;
+      font-size: 11px;
+      margin-top: 3px;
+      display: block;
+    }
+    @media (max-width: 1100px) {
+      .result, #blockCanvas { max-width: 100% !important; }
+      form > div[style*='display: flex'] { flex-direction: column; }
+    }
+    @media (max-width: 900px) {
+      #blockCanvas { width: 100% !important; height: 220px !important; }
+    }
+    @media (max-width: 700px) {
+      form { padding: 6px 1vw 4px 1vw; }
+      .form-section { padding: 5px 2px 2px 2px; }
+      #blockCanvas { height: 120px !important; }
+    }
+    .back-button {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      padding: 10px 20px;
+      background-color: #1a3b6e;
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+      font-weight: 500;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      transition: background-color 0.2s;
+      z-index: 1000;
+    }
+    .back-button:hover {
+      background-color: #2c5282;
+    }
+    .reset-button {
+      padding: 8px 18px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      background: #dc2626;
+      border: none;
+      border-radius: 7px;
+      box-shadow: 0 1px 4px 0 rgba(0,0,0,0.07);
+      cursor: pointer;
+      margin: 18px 0 0 10px;
+      display: inline-block;
+      letter-spacing: 0.3px;
+      transition: background 0.2s;
+    }
+    .reset-button:hover {
+      background: #b91c1c;
+    }
+    .pdf-button {
+      padding: 8px 18px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      background: #1a3b6e;
+      border: none;
+      border-radius: 7px;
+      box-shadow: 0 1px 4px 0 rgba(0,0,0,0.07);
+      cursor: pointer;
+      margin: 18px 0 0 10px;
+      display: inline-block;
+      letter-spacing: 0.3px;
+      transition: background 0.2s;
+    }
+    .pdf-button:hover {
+      background: #2c5282;
+    }
+    .version {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      font-size: 12px;
+      color: #718096;
+      background: rgba(255, 255, 255, 0.8);
+      padding: 4px 8px;
+      border-radius: 4px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+  <a href="index.html" style="
+    display: block;
+    margin-left: 18px;
+    margin-top: 18px;
+    margin-bottom: 8px;
+    padding: 7px 18px;
+    width: 220px;
+    background: linear-gradient(90deg, #1a3b6e 60%, #2c5282 100%);
+    color: #fff;
+    border-radius: 7px;
+    font-weight: 600;
+    font-size: 15px;
+    text-decoration: none;
+    box-shadow: 0 1px 4px 0 rgba(0,0,0,0.07);
+    letter-spacing: 0.3px;
+    transition: background 0.2s;
+  "
+  onmouseover="this.style.background='linear-gradient(90deg, #2c5282 60%, #1a3b6e 100%)'"
+  onmouseout="this.style.background='linear-gradient(90deg, #1a3b6e 60%, #2c5282 100%)'"
+  >← Zurück zur Startseite</a>
+  <h2>EPS Schneideanlagen Preisberechner</h2>
+  <form id="epsForm" onsubmit="event.preventDefault(); berechneEPS();">
+    <div style="display: flex; gap: 24px; flex-wrap: wrap;">
+      <fieldset class="form-section" style="flex: 1 1 250px; min-width: 220px;">
+        <legend>Rohblockdaten</legend>
+        <label>Artikelnummer: <input type="text" id="artikelnummer" placeholder="z.B. EPS-001"></label>
+        <label>Länge (mm): <input type="number" id="blockLaenge" required title="Länge des Rohblocks in mm" value="2030"></label>
+        <label>Breite (mm): <input type="number" id="blockBreite" required title="Breite des Rohblocks in mm" value="1020"></label>
+        <label>Höhe (mm): <input type="number" id="blockHoehe" required title="Höhe des Rohblocks in mm" value="1230"></label>
+        <label>Rohdichte (kg/m³):
+          <select id="dichte" required title="Rohdichte des Blocks">
+            <option value="15">15</option>
+            <option value="18">18</option>
+            <option value="27">27</option>
+          </select>
+        </label>
+      </fieldset>
+      <fieldset class="form-section" style="flex: 1 1 250px; min-width: 220px;">
+        <legend>Bauteildaten</legend>
+        <label>Länge (mm): <input type="number" id="teilLaenge" required title="Länge des Bauteils in mm"></label>
+        <label>Breite (mm): <input type="number" id="teilBreite" required title="Breite des Bauteils in mm"></label>
+        <label>Höhe (mm): <input type="number" id="teilHoehe" required title="Höhe des Bauteils in mm"></label>
+        <label>Anzahl: <input type="number" id="anzahlTeile" min="1" value="1" required title="Wie viele Bauteile werden benötigt?"></label>
+      </fieldset>
+      <fieldset class="form-section" style="flex: 1 1 250px; min-width: 220px;">
+        <legend>Produktionsparameter</legend>
+        <label>Schneidegeschwindigkeit (mm/min): <input type="number" id="geschwindigkeit" required title="Schneidegeschwindigkeit in mm/min"></label>
+        <label>Anzahl Drähte (Längs/Quer): <input type="number" id="anzahlDraehte" min="1" value="1" required title="Wie viele Drähte sind eingespannt?"></label>
+        <label>Abbrand pro Schnitt (mm): <input type="number" id="abbrand" min="0" value="2" required title="Abbrand durch Schneidedraht in mm"></label>
+        <label>Preiseinheit (Menge):
+          <select id="preiseinheit" required title="Preis für diese Stückzahl">
+            <option value="1">1 Stück</option>
+            <option value="100" selected>100 Stück</option>
+            <option value="1000">1000 Stück</option>
+          </select>
+        </label>
+        <label>Verpackung:
+          <select id="verpackungstyp" onchange="toggleVerpackungFrei()">
+            <option value="" selected disabled>Bitte auswählen</option>
+            <option value="frei">Frei wählbar</option>
+            <option value="palette">Palette</option>
+            <option value="v1806">V1806</option>
+          </select>
+        </label>
+        <div id="verpackungFreiFields" style="display:none;">
+          <label>Länge (mm): <input type="number" id="verpackungLaenge" min="1" value="1200"></label>
+          <label>Breite (mm): <input type="number" id="verpackungBreite" min="1" value="800"></label>
+          <label>Höhe (mm): <input type="number" id="verpackungHoehe" min="1" value="2000"></label>
+        </div>
+        <span class="hint">Der Abstand zwischen den Bauteilen entspricht dem eingestellten Abbrand.</span>
+      </fieldset>
+    </div>
+    <div style="display: flex; justify-content: center; gap: 15px; margin-top: 20px;">
+      <button type="submit" style="background: linear-gradient(90deg, #1a3b6e 60%, #2c5282 100%); min-width: 120px;">Berechnen</button>
+      <button type="button" class="pdf-button" onclick="exportToPDF()" style="min-width: 120px;">Als PDF exportieren</button>
+      <button type="button" class="reset-button" onclick="resetForm()" style="min-width: 120px;">Formular zurücksetzen</button>
+    </div>
+  </form>
+  <div style="display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; margin-top: 16px; margin-left: 40px;">
+    <div class="result" id="ergebnis" style="flex: 1 1 0; min-width: 200px; max-width: 38%; font-size:12px;"></div>
+    <canvas id="blockCanvas" width="420" height="250" style="border:1px solid #bbb; background:#fff; flex: 1 1 0; max-width: 38%; min-width: 200px;"></canvas>
+  </div>
+  <div class="version">v1.0.0</div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script>
+    // Funktion zum Zurücksetzen des Formulars
+    function resetForm() {
+      if (confirm('Möchten Sie wirklich alle Eingaben zurücksetzen?')) {
+        // Formular zurücksetzen
+        document.getElementById('epsForm').reset();
+        // Gespeicherte Werte löschen
+        localStorage.removeItem('epsFormValues');
+        localStorage.removeItem('epsResults');
+        localStorage.removeItem('epsDrawing');
+        // Ergebnis und Zeichnung leeren
+        document.getElementById('ergebnis').innerHTML = '';
+        const canvas = document.getElementById('blockCanvas');
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        // Standardwerte setzen
+        document.getElementById('blockLaenge').value = '2030';
+        document.getElementById('blockBreite').value = '1020';
+        document.getElementById('blockHoehe').value = '1230';
+        setzeGeschwindigkeitNachDichte();
+      }
+    }
+
+    // Speichern der Formularwerte
+    function saveFormValues() {
+      const formData = {};
+      const formElements = document.getElementById('epsForm').elements;
+      for (let element of formElements) {
+        if (element.id) {
+          formData[element.id] = element.value;
+        }
+      }
+      localStorage.setItem('epsFormValues', JSON.stringify(formData));
+    }
+
+    // Speichern der Ergebnisse
+    function saveResults() {
+      const results = {
+        html: document.getElementById('ergebnis').innerHTML,
+        canvas: document.getElementById('blockCanvas').toDataURL()
+      };
+      localStorage.setItem('epsResults', JSON.stringify(results));
+    }
+
+    // Laden der gespeicherten Werte
+    function loadSavedValues() {
+      // Formularwerte laden
+      const savedValues = JSON.parse(localStorage.getItem('epsFormValues') || '{}');
+      Object.keys(savedValues).forEach(key => {
+        const element = document.getElementById(key);
+        if (element) {
+          element.value = savedValues[key];
+        }
+      });
+
+      // Ergebnisse laden
+      const savedResults = JSON.parse(localStorage.getItem('epsResults') || '{}');
+      if (savedResults.html) {
+        document.getElementById('ergebnis').innerHTML = savedResults.html;
+      }
+      if (savedResults.canvas) {
+        const img = new Image();
+        img.onload = function() {
+          const canvas = document.getElementById('blockCanvas');
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0);
+        };
+        img.src = savedResults.canvas;
+      }
+    }
+
+    // Event Listener für Formularänderungen
+    document.getElementById('epsForm').addEventListener('input', saveFormValues);
+
+    // Beim Laden der Seite
+    window.addEventListener('DOMContentLoaded', () => {
+      setzeGeschwindigkeitNachDichte();
+      loadSavedValues();
+    });
+
+    // Modifiziere die bestehende berechneEPS Funktion
+    const originalBerechneEPS = berechneEPS;
+    berechneEPS = function() {
+      originalBerechneEPS();
+      saveFormValues();
+      saveResults();
+    };
+
+    function berechneEPS() {
+      const abbrand = parseFloat(document.getElementById('abbrand').value) || 2; // mm Abbrand pro Schnitt (anpassbar)
+      const gesAbstand = abbrand; // Nur Abbrand als Abstand zwischen Bauteilen
+      // Eingaben holen
+      const blockL = parseInt(document.getElementById('blockLaenge').value);
+      const blockB = parseInt(document.getElementById('blockBreite').value);
+      const blockH = parseInt(document.getElementById('blockHoehe').value);
+      const teilL = parseInt(document.getElementById('teilLaenge').value);
+      const teilB = parseInt(document.getElementById('teilBreite').value);
+      const teilH = parseInt(document.getElementById('teilHoehe').value);
+      const anzahl = parseInt(document.getElementById('anzahlTeile').value);
+      const geschw = parseInt(document.getElementById('geschwindigkeit').value);
+      const dichte = parseFloat(document.getElementById('dichte').value);
+      // Warnung, falls Bauteil größer als Block
+      if (teilL > blockL || teilB > blockB || teilH > blockH) {
+        document.getElementById('ergebnis').innerHTML = '<span class="warn">Das Bauteil ist in mindestens einer Dimension größer als der Rohblock!</span>';
+        zeichneBlock(null, null, null, null, null, null, null, null, null, null);
+        return;
+      }
+      // Alle 6 Orientierungen prüfen
+      const orientierungen = [
+        { name: 'Länge-Breite-Höhe', l: teilL, b: teilB, h: teilH },
+        { name: 'Länge-Höhe-Breite', l: teilL, b: teilH, h: teilB },
+        { name: 'Breite-Länge-Höhe', l: teilB, b: teilL, h: teilH },
+        { name: 'Breite-Höhe-Länge', l: teilB, b: teilH, h: teilL },
+        { name: 'Höhe-Länge-Breite', l: teilH, b: teilL, h: teilB },
+        { name: 'Höhe-Breite-Länge', l: teilH, b: teilB, h: teilL },
+      ];
+      // Für jede Orientierung: Wie viele Bauteile passen rein?
+      let orientErgebnisse = orientierungen.map(o => {
+        // Anzahl Bauteile pro Richtung (inkl. Sicherheitsabstand + Abbrand, außer am Rand)
+        const nL = Math.floor((blockL + gesAbstand) / (o.l + gesAbstand));
+        const nB = Math.floor((blockB + gesAbstand) / (o.b + gesAbstand));
+        const nH = Math.floor((blockH + gesAbstand) / (o.h + gesAbstand));
+        const maxTeile = nL * nB * nH;
+        const teilVol = (o.l/1000) * (o.b/1000) * (o.h/1000); // m³
+        const blockVol = (blockL/1000) * (blockB/1000) * (blockH/1000); // m³
+        const gesamtTeile = Math.min(maxTeile, anzahl);
+        const gesamtVol = teilVol * gesamtTeile;
+        const abfallVol = blockVol - teilVol * maxTeile;
+        return {
+          name: o.name,
+          nL, nB, nH,
+          maxTeile,
+          teilVol,
+          blockVol,
+          gesamtTeile,
+          gesamtVol,
+          abfallVol,
+          l: o.l, b: o.b, h: o.h
+        };
+      });
+      // Nach Abfall sortieren (aufsteigend)
+      orientErgebnisse.sort((a, b) => a.abfallVol - b.abfallVol);
+      // Top 3 Orientierungen
+      const top3 = orientErgebnisse.slice(0, 3);
+      // Beste Orientierung für weitere Berechnung
+      const beste = top3[0];
+      // Wie viele Blöcke werden benötigt?
+      const benoetigteBloecke = Math.ceil(anzahl / beste.maxTeile);
+      const letzteBlockTeile = anzahl % beste.maxTeile === 0 ? beste.maxTeile : anzahl % beste.maxTeile;
+      // Gewicht
+      const blockGew = beste.blockVol * dichte;
+      const gesamtGew = beste.teilVol * anzahl * dichte;
+      // Preis je m³ nach Dichte
+      let preisProM3 = 0;
+      if (dichte === 15) preisProM3 = 49.70;
+      else if (dichte === 18) preisProM3 = 60.68;
+      else if (dichte === 27) preisProM3 = 72.42;
+      // Materialkosten
+      const kostenProBauteil = beste.teilVol * preisProM3;
+      const kostenGesamt = kostenProBauteil * anzahl;
+      // Exakte Schnittzeitberechnung (alle Schnitte in L, B, H)
+      // Anzahl Schnitte pro Richtung (immer n-1 Schnitte)
+      const schnitteL = beste.nL > 0 ? beste.nL - 1 : 0;
+      const schnitteB = beste.nB > 0 ? beste.nB - 1 : 0;
+      const schnitteH = beste.nH > 0 ? beste.nH - 1 : 0;
+      // Anzahl Drähte berücksichtigen (mind. 1)
+      const anzahlDraehte = Math.max(1, parseInt(document.getElementById('anzahlDraehte').value));
+      // Schnittweg pro Richtung (mm)
+      const effektiveSchnitteL = Math.ceil(schnitteL / anzahlDraehte);
+      const effektiveSchnitteB = Math.ceil(schnitteB / anzahlDraehte);
+      const schnittwegL = effektiveSchnitteL * blockB; // Längsschnitte gehen über die Breite
+      const schnittwegB = effektiveSchnitteB * blockL; // Querschnitte gehen über die Länge
+      const schnittwegH = schnitteH * blockL; // Höhenschnitte: alle Bauteile werden auf einmal geschnitten (über die volle Blocklänge)
+      // Schnittzeit pro Richtung (min)
+      const schnittzeitL = schnittwegL / geschw;
+      const schnittzeitB = schnittwegB / geschw;
+      const schnittzeitH = schnittwegH / geschw;
+      // Gesamtschnittzeit pro Block (min)
+      const schnittzeitBlock = (schnittzeitL + schnittzeitB + schnittzeitH);
+      // Schnittzeit pro Bauteil (min)
+      const schnittzeitBauteil = beste.maxTeile > 0 ? (schnittzeitBlock / beste.maxTeile) : 0;
+      console.log('Debug - Schnittzeit pro Block:', schnittzeitBlock);
+      console.log('Debug - Max Teile pro Block:', beste.maxTeile);
+      console.log('Debug - Schnittzeit pro Bauteil:', schnittzeitBauteil);
+      // Maschinenkosten (35,34 €/h) jetzt korrekt auf Basis der Schnittzeit
+      const maschinenStunden = schnittzeitBlock / 60; // Stunden pro Block (exakt)
+      const maschinenKostenProBlock = maschinenStunden * 35.34;
+      const maschinenKostenProBauteil = beste.maxTeile > 0 ? maschinenKostenProBlock / beste.maxTeile : 0;
+      const maschinenKostenGesamt = maschinenKostenProBauteil * anzahl;
+      // Hilfsfunktion für Zeitformatierung (nur Stunden und Minuten)
+      function formatZeitBlock(min) {
+        if (!min || min === 0) return '0 min';
+        const h = Math.floor(min / 60);
+        const m = Math.round(min % 60);
+        return (h > 0 ? h + ' h ' : '') + m + ' min';
+      }
+
+      // Hilfsfunktion für Zeitformatierung (mit Sekunden für kurze Zeiten)
+      function formatZeitBauteil(min) {
+        if (!min || min === 0) return '0 min';
+        const h = Math.floor(min / 60);
+        const m = Math.floor(min % 60);
+        const s = Math.round((min % 1) * 60);
+        if (min < 1) {
+          return s + ' sec';
+        }
+        return (h > 0 ? h + ' h ' : '') + m + ' min' + (s > 0 ? ' ' + s + ' sec' : '');
+      }
+
+      // Verpackungsmaße bestimmen (jetzt innerhalb von berechneEPS und vor der Ausgabe)
+      let vL = 1200, vB = 800, vH = 2000;
+      const verpackungstyp = document.getElementById('verpackungstyp').value;
+      if (verpackungstyp === 'palette') { vL = 1200; vB = 800; vH = 2000; }
+      else if (verpackungstyp === 'v1806') { vL = 1200; vB = 760; vH = 700; }
+      else if (verpackungstyp === 'frei') {
+        vL = parseInt(document.getElementById('verpackungLaenge').value) || 1;
+        vB = parseInt(document.getElementById('verpackungBreite').value) || 1;
+        vH = parseInt(document.getElementById('verpackungHoehe').value) || 1;
+      }
+      // Wie viele Bauteile passen in eine Verpackung? (optimale Stapelung)
+      const nL_v = Math.floor(vL / beste.l);
+      const nB_v = Math.floor(vB / beste.b);
+      const nH_v = Math.floor(vH / beste.h);
+      const maxProVerpackung = Math.max(1, nL_v * nB_v * nH_v);
+      const benoetigteVerpackungen = Math.ceil(anzahl / maxProVerpackung);
+
+      // Verpackungskosten berechnen
+      let verpackungskosten = 0;
+      if (verpackungstyp === 'v1806') {
+        verpackungskosten = benoetigteVerpackungen * 3.60; // 3,60€ pro V1806 Verpackung
+      }
+
+      // Ergebnis-Tabelle
+      let tabelle = `<table><tr><th>Orientierung</th><th>Stück/L</th><th>Stück/B</th><th>Stück/H</th><th>Max. Stück/Block</th><th>Abfall (m³)</th></tr>`;
+      top3.forEach(o => {
+        tabelle += `<tr><td>${o.name}</td><td>${o.nL}</td><td>${o.nB}</td><td>${o.nH}</td><td>${o.maxTeile}</td><td>${o.abfallVol.toFixed(3)}</td></tr>`;
+      });
+      tabelle += `</table>`;
+      // Preis pro Preiseinheit berechnen (1, 100, 1000 Stück)
+      let preisProEinheit = 0;
+      let einheitText = '';
+      const gesamtPreis = kostenGesamt + maschinenKostenGesamt + verpackungskosten;
+      const preiseinheitMenge = parseInt(document.getElementById('preiseinheit').value);
+      preisProEinheit = gesamtPreis / anzahl * preiseinheitMenge;
+      einheitText = `für ${preiseinheitMenge} Stück`;
+      // Ausgabe
+      document.getElementById('ergebnis').innerHTML = `
+        <div style="font-size:1.3em; font-weight:800; color:#fff; background:linear-gradient(90deg,#1a3b6e 60%,#2c5282 100%); border-radius:9px; padding:10px 0 7px 0; text-align:center; margin-bottom:14px; letter-spacing:0.5px; box-shadow:0 1px 4px 0 rgba(26,59,110,0.08);">
+          <span style="font-size:0.7em; font-weight:600; color:#e3e8ee; margin-right:8px;">Preis</span>
+          <span style="font-size:1em; font-weight:900; color:#fff; background:#2c5282; border-radius:6px; padding:2px 10px; margin:0 7px; display:inline-block;">${preisProEinheit.toFixed(2)} €</span>
+          <span style="font-size:0.8em; font-weight:600; color:#e3e8ee;">${einheitText}</span>
+        </div>
+        <b>Optimale Ausrichtung:</b> ${beste.name}<br>
+        <b>Max. Bauteile pro Block:</b> ${beste.maxTeile}<br>
+        <b>Benötigte Blöcke:</b> ${benoetigteBloecke}<br>
+        <b>Bauteile im letzten Block:</b> ${letzteBlockTeile}<br>
+        <b>Verpackung:</b> ${verpackungstyp === 'palette' ? 'Palette' : verpackungstyp === 'v1806' ? 'V1806' : `Frei (${vL}x${vB}x${vH} mm)`}<br>
+        <b>Max. Bauteile pro Verpackung:</b> ${maxProVerpackung}<br>
+        <b>Benötigte Verpackungen:</b> ${benoetigteVerpackungen}<br>
+        <b>Gesamtgewicht Bauteile:</b> ${gesamtGew.toFixed(2)} kg<br>
+        <b>Materialkosten pro Bauteil:</b> ${kostenProBauteil.toFixed(2)} €<br>
+        <b>Materialkosten gesamt:</b> ${kostenGesamt.toFixed(2)} €<br>
+        <b>Maschinenkosten pro Bauteil:</b> ${maschinenKostenProBauteil.toFixed(2)} €<br>
+        <b>Maschinenkosten gesamt:</b> ${maschinenKostenGesamt.toFixed(2)} €<br>
+        ${verpackungskosten > 0 ? `<b>Verpackungskosten gesamt:</b> ${verpackungskosten.toFixed(2)} €<br>` : ''}
+        <b>Exakte Schnittzeit pro Block:</b> ${formatZeitBlock(schnittzeitBlock)}<br>
+        <b>Exakte Schnittzeit pro Bauteil:</b> ${formatZeitBauteil(schnittzeitBauteil)}<br>
+        <br>
+        <b>Top 3 Orientierungen (nach wenigstem Abfall):</b><br>
+        ${tabelle}
+      `;
+      // Zeichnung aktualisieren (Draufsicht: Block-Länge x Block-Breite, Bauteile als Rechtecke)
+      zeichneBlock(blockL, blockB, beste.l, beste.b, beste.nL, beste.nB, gesAbstand, beste.maxTeile, anzahl, beste.name);
+      // Verpackung Dropdown Umschalten
+      function toggleVerpackungFrei() {
+        const typ = document.getElementById('verpackungstyp').value;
+        document.getElementById('verpackungFreiFields').style.display = (typ === 'frei') ? 'block' : 'none';
+      }
+    }
+    // Zeichnet die Anordnung der Bauteile im Block (Draufsicht)
+    function zeichneBlock(blockL, blockB, teilL, teilB, nL, nB, abstand, maxTeile, anzahl, orientName) {
+      const canvas = document.getElementById('blockCanvas');
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      // Wenn keine Daten, nur leeres Feld
+      if (!blockL || !blockB || !teilL || !teilB || !nL || !nB) {
+        ctx.font = '16px Helvetica';
+        ctx.fillStyle = '#bbb';
+        ctx.fillText('Keine Zeichnung möglich', 120, 180);
+        return;
+      }
+      // Ränder
+      const margin = 30;
+      // Maßstab berechnen
+      const scaleL = (canvas.width - 2*margin) / blockL;
+      const scaleB = (canvas.height - 2*margin) / blockB;
+      const scale = Math.min(scaleL, scaleB);
+      // Block zeichnen
+      ctx.strokeStyle = '#333';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(margin, margin, blockL*scale, blockB*scale);
+      // Bauteile zeichnen
+      let gezeichnet = 0;
+      for (let i = 0; i < nL; i++) {
+        for (let j = 0; j < nB; j++) {
+          if (gezeichnet >= Math.min(maxTeile, anzahl)) break;
+          const x = margin + i * (teilL + abstand) * scale;
+          const y = margin + j * (teilB + abstand) * scale;
+          ctx.fillStyle = '#7ec6f7';
+          ctx.strokeStyle = '#1976d2';
+          ctx.lineWidth = 1;
+          ctx.fillRect(x, y, teilL*scale, teilB*scale);
+          ctx.strokeRect(x, y, teilL*scale, teilB*scale);
+          gezeichnet++;
+        }
+      }
+      // Legende
+      ctx.font = '13px Helvetica';
+      ctx.fillStyle = '#222';
+      ctx.fillText('Block: ' + blockL + ' x ' + blockB + ' mm', margin, 18);
+    }
+    // Setzt die Standard-Schneidegeschwindigkeit je nach Dichte
+    function setzeGeschwindigkeitNachDichte() {
+      const dichte = document.getElementById('dichte').value;
+      const geschwInput = document.getElementById('geschwindigkeit');
+      if (dichte == '15') geschwInput.value = 650;
+      else if (dichte == '18') geschwInput.value = 600;
+      else if (dichte == '27') geschwInput.value = 450;
+    }
+    document.getElementById('dichte').addEventListener('change', setzeGeschwindigkeitNachDichte);
+
+    // PDF Export Funktion
+    function exportToPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      
+      // Titel und Artikelnummer
+      doc.setFontSize(16);
+      doc.text('EPS Schneideanlagen Preisberechnung', 20, 15);
+      const artikelnummer = document.getElementById('artikelnummer').value;
+      if (artikelnummer) {
+        doc.setFontSize(14);
+        doc.setTextColor(26, 59, 110); // Blau (#1a3b6e)
+        doc.text(`Artikelnummer: ${artikelnummer}`, 20, 25);
+        doc.setTextColor(0, 0, 0); // Zurück zu Schwarz
+      }
+      
+      // Layout für eine Seite
+      let yPos = artikelnummer ? 35 : 30;
+      
+      // Linke Spalte: Eingabedaten
+      doc.setFontSize(11);
+      doc.text('Eingabedaten:', 20, yPos);
+      yPos += 7;
+      
+      // Blockdaten
+      doc.setFontSize(10);
+      doc.text(`Block: ${document.getElementById('blockLaenge').value}x${document.getElementById('blockBreite').value}x${document.getElementById('blockHoehe').value} mm`, 25, yPos);
+      yPos += 5;
+      doc.text(`Rohdichte: ${document.getElementById('dichte').value} kg/m³`, 25, yPos);
+      yPos += 5;
+      
+      // Bauteildaten
+      doc.text(`Bauteil: ${document.getElementById('teilLaenge').value}x${document.getElementById('teilBreite').value}x${document.getElementById('teilHoehe').value} mm`, 25, yPos);
+      yPos += 5;
+      doc.text(`Anzahl: ${document.getElementById('anzahlTeile').value} Stück`, 25, yPos);
+      yPos += 5;
+      
+      // Produktionsparameter
+      doc.text(`Geschwindigkeit: ${document.getElementById('geschwindigkeit').value} mm/min`, 25, yPos);
+      yPos += 5;
+      doc.text(`Drähte: ${document.getElementById('anzahlDraehte').value}`, 25, yPos);
+      yPos += 5;
+      doc.text(`Abbrand: ${document.getElementById('abbrand').value} mm`, 25, yPos);
+      yPos += 10;
+
+      // Rechte Spalte: Ergebnisse
+      const ergebnisDiv = document.getElementById('ergebnis');
+      const ergebnisText = ergebnisDiv.innerText;
+      const ergebnisLines = ergebnisText.split('\n')
+        .filter(line => line.trim() !== '')
+        .filter(line => !line.includes('Top 3 Orientierungen'))
+        .filter(line => !line.includes('Geschätzte Schnittzeit')); // Entferne die geschätzte Schnittzeit
+
+      doc.setFontSize(11);
+      doc.text('Ergebnisse:', 80, 30);
+      let resultY = 37;
+      doc.setFontSize(10);
+
+      ergebnisLines.forEach(line => {
+        if (line.includes('Preis')) {
+          // Preis hervorheben
+          doc.setFontSize(14);
+          doc.setTextColor(26, 59, 110); // Blau (#1a3b6e)
+          doc.setFont(undefined, 'bold');
+          doc.text(line, 80, resultY);
+          resultY += 10;
+          doc.setFontSize(10);
+          doc.setTextColor(0, 0, 0); // Zurück zu Schwarz
+          doc.setFont(undefined, 'normal');
+        } else {
+          doc.text(line, 80, resultY);
+          resultY += 5;
+        }
+      });
+
+      // Zeichnung am unteren Rand
+      const canvas = document.getElementById('blockCanvas');
+      if (canvas) {
+        const imgData = canvas.toDataURL('image/png');
+        doc.addImage(imgData, 'PNG', 20, 140, 170, 80);
+      }
+
+      // Speichern
+      const filename = artikelnummer ? `EPS_Berechnung_${artikelnummer}.pdf` : 'EPS_Berechnung.pdf';
+      doc.save(filename);
+    }
+  </script>
+</body>
+</html>

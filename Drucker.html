@@ -1,0 +1,298 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title>Digitaler Verpackungsdruck Preisberechner v1.0.0</title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2575.5">
+  <style type="text/css">
+    body {
+      font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      margin: 0;
+      background: #f7fafc;
+      color: #2d3748;
+    }
+    h2 {
+      margin-top: 18px;
+      margin-bottom: 12px;
+      text-align: center;
+      font-weight: 600;
+      color: #1a3b6e;
+      letter-spacing: 0.5px;
+      font-size: 1.35rem;
+    }
+    form {
+      margin: 0 auto;
+      max-width: 1100px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px 0 rgba(30,60,90,0.06);
+      padding: 16px 10px 8px 10px;
+    }
+    .form-section {
+      background: #f5f7fa;
+      border-radius: 8px;
+      padding: 10px 8px 4px 8px;
+      margin-bottom: 0;
+      box-shadow: 0 1px 2px 0 rgba(30,60,90,0.03);
+      border: 1px solid #bfc9d1;
+    }
+    label {
+      display: block;
+      margin-top: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #2e3d32;
+    }
+    input, select {
+      margin-top: 3px;
+      margin-bottom: 6px;
+      padding: 4px 7px;
+      border-radius: 5px;
+      border: 1px solid #bfc9d1;
+      font-size: 13px;
+      background: #fff;
+      width: 100%;
+      box-sizing: border-box;
+      transition: border 0.2s;
+    }
+    input:focus, select:focus {
+      border: 1.2px solid #388e3c;
+      outline: none;
+    }
+    button {
+      padding: 8px 18px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      background: linear-gradient(90deg, #1a3b6e 60%, #2c5282 100%);
+      border: none;
+      border-radius: 7px;
+      box-shadow: 0 1px 4px 0 rgba(0,0,0,0.07);
+      cursor: pointer;
+      margin: 18px auto 0 auto;
+      display: block;
+      letter-spacing: 0.3px;
+      transition: background 0.2s;
+    }
+    button:hover {
+      background: linear-gradient(90deg, #2c5282 60%, #1a3b6e 100%);
+    }
+    .result {
+      margin-top: 0;
+      padding: 12px 8px 10px 8px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 1px 6px 0 rgba(30,60,90,0.05);
+      border: 1px solid #bfc9d1;
+      font-size: 13px;
+      min-height: 120px;
+    }
+    .warn {
+      color: #b71c1c;
+      font-weight: bold;
+      font-size: 13px;
+    }
+    .hint {
+      color: #607d68;
+      font-size: 11px;
+      margin-top: 3px;
+      display: block;
+    }
+    .back-button {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      padding: 10px 20px;
+      background-color: #1a3b6e;
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+      font-weight: 500;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      transition: background-color 0.2s;
+      z-index: 1000;
+    }
+    .back-button:hover {
+      background-color: #2c5282;
+    }
+    .reset-button {
+      padding: 8px 18px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      background: #dc2626;
+      border: none;
+      border-radius: 7px;
+      box-shadow: 0 1px 4px 0 rgba(0,0,0,0.07);
+      cursor: pointer;
+      margin: 18px 0 0 10px;
+      display: inline-block;
+      letter-spacing: 0.3px;
+      transition: background 0.2s;
+    }
+    .reset-button:hover {
+      background: #b91c1c;
+    }
+    .pdf-button {
+      padding: 8px 18px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      background: #1a3b6e;
+      border: none;
+      border-radius: 7px;
+      box-shadow: 0 1px 4px 0 rgba(0,0,0,0.07);
+      cursor: pointer;
+      margin: 18px 0 0 10px;
+      display: inline-block;
+      letter-spacing: 0.3px;
+      transition: background 0.2s;
+    }
+    .pdf-button:hover {
+      background: #2c5282;
+    }
+    .version {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      font-size: 12px;
+      color: #718096;
+      background: rgba(255, 255, 255, 0.8);
+      padding: 4px 8px;
+      border-radius: 4px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+  <a href="index.html" style="
+    display: block;
+    margin-left: 18px;
+    margin-top: 18px;
+    margin-bottom: 8px;
+    padding: 7px 18px;
+    width: 220px;
+    background: linear-gradient(90deg, #1a3b6e 60%, #2c5282 100%);
+    color: #fff;
+    border-radius: 7px;
+    font-weight: 600;
+    font-size: 15px;
+    text-decoration: none;
+    box-shadow: 0 1px 4px 0 rgba(0,0,0,0.07);
+    letter-spacing: 0.3px;
+    transition: background 0.2s;
+  "
+  onmouseover="this.style.background='linear-gradient(90deg, #2c5282 60%, #1a3b6e 100%)'"
+  onmouseout="this.style.background='linear-gradient(90deg, #1a3b6e 60%, #2c5282 100%)'"
+  >← Zurück zur Startseite</a>
+  <h2>Digitaler Verpackungsdrucker Preisberechner</h2>
+  <form id="druckerForm" onsubmit="event.preventDefault(); berechneDrucker();">
+    <div style="display: flex; gap: 24px; flex-wrap: wrap;">
+      <fieldset class="form-section" style="flex: 1 1 250px; min-width: 220px;">
+        <legend>Auftragsdaten</legend>
+        <label>Artikelnummer: <input type="text" id="artikelnummer" placeholder="z.B. DRK-001"></label>
+        <label>Verpackungslänge (mm): <input type="number" id="verpackungLaenge" required title="Länge der Verpackung in mm"></label>
+        <label>Anzahl: <input type="number" id="anzahlTeile" min="1" value="1" required title="Wie viele Verpackungen werden benötigt?"></label>
+        <label>Farbkosten pro Stück (€): <input type="number" id="farbkosten" min="0" step="0.01" required title="Farbkosten pro Verpackung in Euro"></label>
+      </fieldset>
+      <fieldset class="form-section" style="flex: 1 1 250px; min-width: 220px;">
+        <legend>Produktionsparameter</legend>
+        <label>Druckgeschwindigkeit (m/min): <input type="number" id="druckGeschwindigkeit" value="30" readonly title="Druckgeschwindigkeit in m/min"></label>
+        <label>Rüstzeit (min): <input type="number" id="ruestzeit" min="0" value="15" required title="Rüstzeit in Minuten"></label>
+        <label>Preiseinheit (Menge):
+          <select id="preiseinheit" required title="Preis für diese Stückzahl">
+            <option value="1">1 Stück</option>
+            <option value="100" selected>100 Stück</option>
+            <option value="1000">1000 Stück</option>
+          </select>
+        </label>
+      </fieldset>
+    </div>
+    <div style="display: flex; justify-content: center; gap: 15px; margin-top: 20px;">
+      <button type="submit" style="background: linear-gradient(90deg, #1a3b6e 60%, #2c5282 100%); min-width: 120px;">Berechnen</button>
+      <button type="button" class="pdf-button" onclick="exportToPDF()" style="min-width: 120px;">Als PDF exportieren</button>
+      <button type="button" class="reset-button" onclick="resetForm()" style="min-width: 120px;">Formular zurücksetzen</button>
+    </div>
+  </form>
+  <div style="display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; margin-top: 16px; margin-left: 40px;">
+    <div class="result" id="ergebnis" style="flex: 1 1 0; min-width: 200px; max-width: 38%; font-size:12px;"></div>
+  </div>
+  <div class="version">v1.0.0</div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script>
+    // Konstanten für die Berechnung
+    const ANLAGEKOSTEN = 20000; // €
+    const NUTZUNGSDAUER = 10; // Jahre
+    const INSTANDHALTUNG_PRO_JAHR = 1000; // €
+    const DRUCKER_LEISTUNG = 2.5; // kW
+    const STROMKOSTEN_PRO_KWH = 0.35; // €
+    const PERSONALKOSTEN_PRO_STUNDE = 20; // €
+    const ARBEITSSTUNDEN_PRO_JAHR = 1600; // Stunden
+
+    // Funktion zum Zurücksetzen des Formulars
+    function resetForm() {
+      if (confirm('Möchten Sie wirklich alle Eingaben zurücksetzen?')) {
+        document.getElementById('druckerForm').reset();
+        document.getElementById('druckGeschwindigkeit').value = '30';
+        document.getElementById('ruestzeit').value = '15';
+        document.getElementById('ergebnis').innerHTML = '';
+      }
+    }
+
+    function berechneDrucker() {
+      // Eingaben holen
+      const verpackungLaenge = parseInt(document.getElementById('verpackungLaenge').value) / 1000; // in m
+      const anzahl = parseInt(document.getElementById('anzahlTeile').value);
+      const farbkostenProStueck = parseFloat(document.getElementById('farbkosten').value);
+      const druckGeschwindigkeit = parseInt(document.getElementById('druckGeschwindigkeit').value);
+      const ruestzeit = parseInt(document.getElementById('ruestzeit').value);
+
+      // Berechnungen
+      // 1. Maschinenkosten pro Jahr
+      const maschinenKostenProJahr = ANLAGEKOSTEN / NUTZUNGSDAUER + INSTANDHALTUNG_PRO_JAHR;
+      const maschinenKostenProStunde = maschinenKostenProJahr / ARBEITSSTUNDEN_PRO_JAHR;
+
+      // 2. Energiekosten berechnen
+      const druckzeit = (anzahl * verpackungLaenge) / druckGeschwindigkeit; // in Minuten
+      const gesamtzeit = druckzeit + ruestzeit; // in Minuten
+      const gesamtzeitStunden = gesamtzeit / 60;
+      
+      // Stromkosten für die Druckzeit
+      const stromKosten = DRUCKER_LEISTUNG * STROMKOSTEN_PRO_KWH * gesamtzeitStunden;
+
+      // 3. Personalkosten pro Stunde
+      const personalkostenProStunde = PERSONALKOSTEN_PRO_STUNDE;
+
+      // 4. Gesamtkosten pro Stunde (ohne Stromkosten)
+      const gesamtKostenProStunde = maschinenKostenProStunde + personalkostenProStunde;
+
+      // 5. Kosten berechnen
+      const zeitKosten = gesamtzeitStunden * gesamtKostenProStunde;
+      const farbkostenGesamt = farbkostenProStueck * anzahl;
+      const gesamtKosten = zeitKosten + farbkostenGesamt + stromKosten;
+
+      // 6. Preis pro Einheit berechnen
+      const preiseinheitMenge = parseInt(document.getElementById('preiseinheit').value);
+      const preisProEinheit = gesamtKosten / anzahl * preiseinheitMenge;
+      const einheitText = `für ${preiseinheitMenge} Stück`;
+
+      // Hilfsfunktion für Zeitformatierung
+      function formatZeit(min) {
+        if (!min || min === 0) return '0 min';
+        const h = Math.floor(min / 60);
+        const m = Math.round(min % 60);
+        return (h > 0 ? h + ' h ' : '') + m + ' min';
+      }
+      // Ausgabe
+      document.getElementById('ergebnis').innerHTML = `
+        <div>
+          <b>Ergebnis:</b><br>
+          Hier wird das berechnete Ergebnis angezeigt.
+        </div>
+      `;
+    }
+  </script>
+</body>
+</html>

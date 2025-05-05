@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Startseite v1.0.0</title>
+    <link rel="icon" type="image/png" sizes="192x192" href="icon.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icon.png">
+    <link rel="manifest" href="manifest.json">
+    <style>
+        :root {
+            --primary-color: #1a3b6e;
+            --secondary-color: #2c5282;
+            --accent-color: #e53e3e;
+            --text-color: #2d3748;
+            --light-bg: #f7fafc;
+            --white: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--light-bg);
+        }
+
+        .header {
+            background-color: var(--primary-color);
+            color: var(--white);
+            padding: 1rem 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--white);
+            text-decoration: none;
+        }
+
+        .main-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .login-container {
+            background-color: var(--white);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .welcome-section {
+            background-color: var(--white);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            display: none;
+        }
+
+        .nav-links {
+            display: none;
+            background-color: var(--white);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .nav-links h2 {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .nav-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .nav-card {
+            background-color: var(--light-bg);
+            border-radius: 6px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .nav-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+        }
+
+        .nav-card a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            display: block;
+        }
+
+        .nav-card p {
+            color: var(--text-color);
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            padding: 0.75rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(26,59,110,0.1);
+        }
+
+        button {
+            padding: 0.75rem 1.5rem;
+            background-color: var(--primary-color);
+            color: var(--white);
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .logout-btn {
+            background-color: var(--accent-color);
+        }
+
+        .logout-btn:hover {
+            background-color: #c53030;
+        }
+
+        .error-message {
+            color: var(--accent-color);
+            background-color: #fff5f5;
+            padding: 0.75rem;
+            border-radius: 4px;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .welcome-message {
+            background-color: #ebf8ff;
+            color: var(--primary-color);
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+
+            .main-container {
+                padding: 0 1rem;
+            }
+
+            .nav-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .version {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            font-size: 12px;
+            color: #718096;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 4px 8px;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <a href="#" class="logo">Hausenstein</a>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div id="loginForm" class="login-container">
+            <h2>Benutzeranmeldung</h2>
+            <form id="userLoginForm">
+                <input type="text" id="username" placeholder="Benutzername" required>
+                <input type="password" id="password" placeholder="Passwort" required>
+                <button type="submit">Anmelden</button>
+            </form>
+            <div id="errorMessage" class="error-message">
+                Falscher Benutzername oder Passwort!
+            </div>
+        </div>
+
+        <div id="welcomeMessage" class="welcome-section">
+            <div class="welcome-message">
+                Willkommen, <span id="userDisplayName"></span>!
+            </div>
+        </div>
+
+        <div class="nav-links" id="navLinks">
+            <h2>Unsere Services</h2>
+            <div class="nav-grid">
+                <div class="nav-card">
+                    <a href="Kalkulation.html">Kalkulation</a>
+                    <p>Berechnen Sie Ihre Kosten mit unserem professionellen Kalkulationstool</p>
+                </div>
+                <div class="nav-card">
+                    <a href="EPS.html">EPS-Berechnung</a>
+                    <p>Optimieren Sie Ihre EPS-Produktion mit unserem spezialisierten Tool</p>
+                </div>
+                <div class="nav-card">
+                    <a href="Drucker.html">Digitaler Verpackungsdruck</a>
+                    <p>Kalkulieren Sie die Kosten für digitalen Verpackungsdruck</p>
+                </div>
+                <div class="nav-card">
+                    <a href="Plotter.html">Verpackungsplotter</a>
+                    <p>Berechnen Sie die Kosten für das Schneiden und Rillen von Verpackungen</p>
+                </div>
+            </div>
+        </div>
+
+        <button id="logoutBtn" class="logout-btn" style="display: none;">Abmelden</button>
+    </main>
+
+    <div class="version">v1.0.0</div>
+
+    <script>
+        // Beispiel-Benutzer (in der Praxis sollten diese sicher gespeichert werden)
+        const users = {
+            'admin': '1234',
+            'petra': '1234',
+            'jürgen': '1234',
+            'nizia': '1234',
+            'fatih': '1234',
+            'silas': '1234',
+            'julian': '1234'
+        };
+
+        // Funktion zum Anzeigen des angemeldeten Zustands
+        function showLoggedInState(username) {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('navLinks').style.display = 'block';
+            document.getElementById('welcomeMessage').style.display = 'block';
+            document.getElementById('logoutBtn').style.display = 'block';
+            document.getElementById('userDisplayName').textContent = username;
+            document.getElementById('errorMessage').style.display = 'none';
+        }
+
+        // Funktion zum Anzeigen des abgemeldeten Zustands
+        function showLoggedOutState() {
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('navLinks').style.display = 'none';
+            document.getElementById('welcomeMessage').style.display = 'none';
+            document.getElementById('logoutBtn').style.display = 'none';
+            document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('userLoginForm').reset();
+        }
+
+        // Beim Laden der Seite prüfen, ob ein Benutzer angemeldet ist
+        window.addEventListener('load', function() {
+            const loggedInUser = localStorage.getItem('loggedInUser');
+            if (loggedInUser) {
+                showLoggedInState(loggedInUser);
+            } else {
+                showLoggedOutState();
+            }
+        });
+
+        document.getElementById('userLoginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (users[username] && users[username] === password) {
+                // Erfolgreiche Anmeldung
+                localStorage.setItem('loggedInUser', username);
+                showLoggedInState(username);
+            } else {
+                // Fehlgeschlagene Anmeldung
+                document.getElementById('errorMessage').style.display = 'block';
+            }
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            // Benutzer abmelden
+            localStorage.removeItem('loggedInUser');
+            showLoggedOutState();
+        });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Kalkulation</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            background: #f7fafc;
+            color: #2d3748;
+        }
+        h2 {
+            margin-top: 18px;
+            margin-bottom: 12px;
+            text-align: center;
+            font-weight: 600;
+            color: #1a3b6e;
+            letter-spacing: 0.5px;
+            font-size: 1.35rem;
+        }
+        form {
+            margin: 0 auto;
+            max-width: 1100px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px 0 rgba(30,60,90,0.06);
+            padding: 16px 10px 8px 10px;
+        }
+        .form-row {
+            display: flex;
+            gap: 24px;
+            flex-wrap: nowrap;
+            max-width: 100%;
+        }
+        .form-section {
+            flex: 1 1 0;
+            min-width: 220px;
+            margin-bottom: 0;
+            background: #f5f7fa;
+            border-radius: 8px;
+            padding: 10px 8px 4px 8px;
+            margin-bottom: 0;
+            box-shadow: 0 1px 2px 0 rgba(30,60,90,0.03);
+            border: 1px solid #bfc9d1;
+        }
+        .form-section:nth-child(1) { background: #f5f7fa; border: 1px solid #bfc9d1; }
+        .form-section:nth-child(2) { background: #f5f7fa; border: 1px solid #bfc9d1; }
+        .form-section:nth-child(3) { background: #f5f7fa; border: 1px solid #bfc9d1; }
+        .form-section:nth-child(4) { background: #f5f7fa; border: 1px solid #bfc9d1; }
+        .form-section legend {
+            font-weight: 600;
+            color: #1a3b6e;
+            padding: 0 5px;
+            font-size: 14px;
+            letter-spacing: 0.3px;
+        }
+        label {
+            display: block;
+            margin-top: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #2e3d32;
+        }
+        input, select {
+            margin-top: 3px;
+            margin-bottom: 6px;
+            padding: 4px 7px;
+            border-radius: 5px;
+            border: 1px solid #bfc9d1;
+            font-size: 13px;
+            background: #fff;
+            width: 100%;
+            box-sizing: border-box;
+            transition: border 0.2s;
+        }
+        input:focus, select:focus {
+            border: 1.2px solid #388e3c;
+            outline: none;
+        }
+        button {
+            padding: 8px 18px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            background: linear-gradient(90deg, #1a3b6e 60%, #2c5282 100%);
+            border: none;
+            border-radius: 7px;
+            box-shadow: 0 1px 4px 0 rgba(0,0,0,0.07);
+            cursor: pointer;
+            margin: 18px auto 0 auto;
+            display: block;
+            letter-spacing: 0.3px;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background: linear-gradient(90deg, #2c5282 60%, #1a3b6e 100%);
+        }
+        .button-row {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .reset-button {
+            background: #dc2626;
+        }
+        .reset-button:hover {
+            background: #b91c1c;
+        }
+        .pdf-button {
+            background: #1a3b6e;
+        }
+        .pdf-button:hover {
+            background: #2c5282;
+        }
+        table {
+            border-collapse: collapse;
+            margin-top: 8px;
+            width: 100%;
+            background: #f5f7fa;
+            border-radius: 6px;
+            overflow: hidden;
+            font-size: 12px;
+        }
+        th, td {
+            border: 1px solid #bfc9d1;
+            padding: 4px 7px;
+            text-align: center;
+        }
+        th {
+            background: #e3e8ee;
+            font-weight: 600;
+            color: #388e3c;
+            letter-spacing: 0.3px;
+        }
+        .result-section {
+            margin-top: 15px;
+            padding: 12px 8px 10px 8px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 1px 6px 0 rgba(30,60,90,0.05);
+            border: 1px solid #bfc9d1;
+            font-size: 13px;
+        }
+        .vk-endpreis {
+            font-weight: bold;
+            color: #1a3b6e;
+            background: #e3e8ee;
+            padding: 4px 6px;
+            border-radius: 5px;
+        }
+        .version {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            font-size: 12px;
+            color: #718096;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 4px 8px;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        @media (max-width: 1100px) {
+            .form-row { flex-direction: column; max-width: 100%; }
+            .form-section { min-width: 0; }
+            form { max-width: 100%; margin-left: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div style="display: flex; align-items: flex-start;">
+        <div style="width: 220px; min-width: 120px; margin-right: 18px;">
+            <a href="index.html" style="
+                display: block;
+                margin-left: 18px;
+                margin-top: 18px;
+                margin-bottom: 8px;
+                padding: 7px 18px;
+                width: 220px;
+                background: linear-gradient(90deg, #1a3b6e 60%, #2c5282 100%);
+                color: #fff;
+                border-radius: 7px;
+                font-weight: 600;
+                font-size: 15px;
+                text-decoration: none;
+                box-shadow: 0 1px 4px 0 rgba(0,0,0,0.07);
+                letter-spacing: 0.3px;
+                transition: background 0.2s;
+            "
+            onmouseover="this.style.background='linear-gradient(90deg, #2c5282 60%, #1a3b6e 100%)'"
+            onmouseout="this.style.background='linear-gradient(90deg, #1a3b6e 60%, #2c5282 100%)'"
+            >← Zurück zur Startseite</a>
+            <button type="button" class="pdf-button" id="pdf-export-btn" style="display: block; margin-left: 18px; margin-top: 8px; width: 220px; text-align: left;">Als PDF exportieren</button>
+            <button type="button" class="reset-button" id="reset-form-btn" style="display: block; margin-left: 18px; margin-top: 8px; width: 220px; text-align: left;">Formular zurücksetzen</button>
+        </div>
+        <div style="display: inline-block; margin-top: 10mm; position: relative; left: 0%; margin: 0 auto;">
+            <h1 style="
+                text-align: center;
+                color: #1a3b6e;
+                font-size: 24px;
+                font-weight: 600;
+                margin-bottom: 20px;
+                letter-spacing: 0.5px;
+            ">Kalkulation</h1>
+            <div id="root"></div>
+        </div>
+    </div>
+    <script type="text/babel">
+        // Hilfsfunktion für deutsche Zahlenformatierung
+        function formatDE(num) {
+            return Number(num).toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        // Stückgutpreise nach PLZ-Range und Palettenanzahl (1-6 Paletten)
+        const stueckgutPreistabelle = [
+            { von: 1000, bis: 1999, preise: [75.60, 133.62, 163.67, 191.68, 250.07, 310.10] },
+            { von: 2000, bis: 2600, preise: [75.60, 133.62, 163.67, 191.68, 250.07, 310.10] },
+            { von: 2610, bis: 4099, preise: [72.84, 128.30, 157.35, 184.36, 240.10, 295.27] },
+            { von: 4100, bis: 7999, preise: [72.84, 128.30, 157.35, 184.36, 240.10, 295.27] },
+            { von: 8000, bis: 9699, preise: [75.60, 133.62, 163.67, 191.68, 250.07, 310.10] },
+            { von: 9700, bis: 9999, preise: [75.60, 133.62, 163.67, 191.68, 250.07, 310.10] },
+            { von: 10000, bis: 14999, preise: [75.60, 133.62, 163.67, 191.68, 250.07, 310.10] },
+            { von: 15000, bis: 17999, preise: [78.26, 138.66, 169.78, 199.10, 262.65, 327.05] },
+            { von: 18000, bis: 28999, preise: [75.60, 133.62, 163.67, 191.68, 250.07, 310.10] },
+            { von: 29000, bis: 30999, preise: [73.09, 128.30, 157.35, 184.36, 240.10, 295.27] },
+            { von: 31000, bis: 32999, preise: [73.09, 128.30, 157.35, 184.36, 240.10, 295.27] },
+            { von: 33000, bis: 34999, preise: [68.87, 121.01, 148.09, 173.46, 223.65, 279.48] },
+            { von: 35000, bis: 36999, preise: [66.07, 115.73, 141.30, 165.66, 217.70, 265.99] },
+            { von: 37000, bis: 38999, preise: [72.84, 128.30, 157.35, 184.36, 240.10, 295.27] },
+            { von: 39000, bis: 40999, preise: [68.87, 121.01, 148.09, 173.46, 223.65, 279.48] },
+            { von: 41000, bis: 48999, preise: [68.87, 121.01, 148.09, 173.46, 223.65, 279.48] },
+            { von: 49000, bis: 50999, preise: [72.84, 128.30, 157.35, 184.36, 240.10, 295.27] },
+            { von: 51000, bis: 53999, preise: [68.87, 121.01, 148.09, 173.46, 223.65, 279.48] },
+            { von: 54000, bis: 56999, preise: [52.12, 87.69, 106.69, 125.37, 175.46, 203.16] },
+            { von: 57000, bis: 59999, preise: [66.07, 115.73, 141.30, 165.66, 217.70, 265.99] },
+            { von: 60000, bis: 69999, preise: [52.12, 87.69, 106.69, 125.37, 175.46, 203.16] },
+            { von: 70000, bis: 79999, preise: [52.12, 87.69, 106.69, 125.37, 175.46, 203.16] },
+            { von: 80000, bis: 89999, preise: [66.07, 115.73, 141.30, 165.66, 217.70, 265.99] },
+            { von: 90000, bis: 99999, preise: [68.87, 121.01, 148.09, 173.46, 223.65, 279.48] }
+        ];
+
+        // Neue Stückgut-Preisfunktion
+        function getStueckgutPreis(plz, paletten) {
+            const plzNum = parseInt((plz || '').toString().replace(/\D/g, ''));
+            let pal = Math.max(1, Math.min(6, parseInt(paletten) || 1));
+            const eintrag = stueckgutPreistabelle.find(e => plzNum >= e.von && plzNum <= e.bis);
+            if (eintrag) {
+                const basis = eintrag.preise[pal-1];
+                const dieselzuschlag = basis * 0.13;
+                return {
+                    basis: basis,
+                    maut: 0, // Maut ggf. nach Wunsch ergänzen
+                    palettentausch: pal * 3.80,
+                    dieselzuschlag: dieselzuschlag,
+                    versicherung: 2.90,
+                    paletten: pal
+                };
+            }
+            // Fallback
+            return {
+                basis: 100,
+                maut: 0,
+                palettentausch: pal * 3.80,
+                dieselzuschlag: 100 * 0.13,
+                versicherung: 2.90,
+                paletten: pal
+            };
+        }
+
+        function App() {
+            // States
+            const [interneNummer, setInterneNummer] = React.useState("");
+            const [kundenname, setKundenname] = React.useState("");
+            const [ek, setEk] = React.useState("");
+            const [preiseinheit, setPreiseinheit] = React.useState("1000");
+            const [menge, setMenge] = React.useState("");
+            const [stueckProPalette, setStueckProPalette] = React.useState("");
+            const [aufschlag, setAufschlag] = React.useState("");
+            const [vkWunsch, setVkWunsch] = React.useState("");
+            const [versandart, setVersandart] = React.useState("lkw");
+            const [strecke, setStrecke] = React.useState("");
+            const [spedition, setSpedition] = React.useState("");
+            const [plz, setPlz] = React.useState("");
+            const [lieferantenSkonto, setLieferantenSkonto] = React.useState("2");
+            const [skonto, setSkonto] = React.useState("2");
+            const [artikelListe, setArtikelListe] = React.useState([]);
+            const [gesamtMenge, setGesamtMenge] = React.useState(0);
+            const [sendungsVersandkosten, setSendungsVersandkosten] = React.useState(0);
+            const [vergleiche, setVergleiche] = React.useState([]);
+            const [versandAktiv, setVersandAktiv] = React.useState(false);
+            const [lagerPaletten, setLagerPaletten] = React.useState("");
+            const [lagerDauer, setLagerDauer] = React.useState("");
+            const [lagerGebuehr] = React.useState(5.5);
+
+            // Versand aktivieren, sobald mindestens ein Artikel in der Sendung ist
+            React.useEffect(() => {
+                setVersandAktiv(artikelListe.length > 0);
+            }, [artikelListe]);
+
+            // Frachtkostenberechnung in Echtzeit
+            const berechneFrachtkosten = React.useCallback(() => {
+                const mengeNum = parseFloat(menge) || 0;
+                const stueckProPaletteNum = parseFloat(stueckProPalette) || 0;
+                let anzahlPaletten = 0;
+                
+                if (mengeNum > 0 && stueckProPaletteNum > 0) {
+                    anzahlPaletten = Math.ceil(mengeNum / stueckProPaletteNum);
+                }
+
+                let versandkosten = 0;
+                let basisKosten = 0;
+                let mautKosten = 0;
+                let palettentausch = 0;
+                let dieselzuschlag = 0;
+                let versicherung = 0;
+                let palettenUsed = anzahlPaletten;
+                let stueckgutHinweis = "";
+
+                if (versandart === "lkw") {
+                    versandkosten = (parseFloat(strecke) || 0) * 2 * 1.2;
+                } else if (versandart === "bus") {
+                    versandkosten = (parseFloat(strecke) || 0) * 2 * 1.2;
+                } else if (versandart === "spedition") {
+                    versandkosten = parseFloat(spedition) || 0;
+                } else if (versandart === "stueckgut") {
+                    if (anzahlPaletten > 6) {
+                        stueckgutHinweis = "Maximal 6 Paletten pro Sendung bei Stückgut! Es werden nur 6 Paletten berechnet.";
+                        palettenUsed = 6;
+                    }
+                    const stueckgutPreis = getStueckgutPreis(plz, palettenUsed);
+                    basisKosten = stueckgutPreis.basis;
+                    mautKosten = stueckgutPreis.maut;
+                    palettentausch = stueckgutPreis.palettentausch;
+                    dieselzuschlag = stueckgutPreis.dieselzuschlag;
+                    versicherung = stueckgutPreis.versicherung;
+                    versandkosten = basisKosten + mautKosten + palettentausch + dieselzuschlag + versicherung;
+                }
+
+                return {
+                    gesamt: versandkosten,
+                    basis: basisKosten,
+                    maut: mautKosten,
+                    palettentausch: palettentausch,
+                    dieselzuschlag: dieselzuschlag,
+                    versicherung: versicherung,
+                    paletten: palettenUsed,
+                    stueckgutHinweis: stueckgutHinweis
+                };
+            }, [versandart, strecke, spedition, plz, menge, stueckProPalette]);
+
+            const frachtkosten = berechneFrachtkosten();
+
+            // Einzelartikel-Kalkulation in Echtzeit
+            const berechneErgebnis = React.useCallback(() => {
+                const ekNum = parseFloat(ek) || 0;
+                const einheit = parseFloat(preiseinheit) || 1;
+                const aufschlagNum = parseFloat(aufschlag) || 0;
+                const vkNum = parseFloat(vkWunsch) || 0;
+                const mengeNum = parseFloat(menge) || 0;
+                const stueckProPaletteNum = parseFloat(stueckProPalette) || 0;
+
+                let anzahlPaletten = 0;
+                if (mengeNum > 0 && stueckProPaletteNum > 0) {
+                    anzahlPaletten = Math.ceil(mengeNum / stueckProPaletteNum);
+                }
+
+                // Versandkosten für Einzelartikel
+                let versandkosten = frachtkosten.gesamt;
+
+                // VK/Endpreis je Preiseinheit
+                let vkJePreiseinheit = 0;
+                let vkInklVersandJePreiseinheit = 0;
+                if (vkWunsch) {
+                    vkInklVersandJePreiseinheit = vkNum;
+                    let versandProPreiseinheit = mengeNum > 0 ? versandkosten * (einheit / mengeNum) : 0;
+                    vkJePreiseinheit = vkInklVersandJePreiseinheit - versandProPreiseinheit;
+                } else if (aufschlag) {
+                    vkJePreiseinheit = ekNum * (1 + aufschlagNum / 100);
+                    vkInklVersandJePreiseinheit = vkJePreiseinheit + (mengeNum > 0 ? versandkosten * (einheit / mengeNum) : 0);
+                }
+
+                // Aufschlag in %
+                let aufschlagProzent = ekNum > 0 ? ((vkInklVersandJePreiseinheit - ekNum) / ekNum) * 100 : 0;
+
+                // Gesamter EK und VK
+                const gesamtEK = ekNum * (mengeNum / einheit);
+                const gesamtVK = vkJePreiseinheit * (mengeNum / einheit);
+
+                // Deckungsbeitrag je Preiseinheit und gesamt
+                const dbJePreiseinheit = vkJePreiseinheit - ekNum;
+                const anzahlPreiseinheiten = mengeNum / einheit;
+                const dbGesamt = dbJePreiseinheit * anzahlPreiseinheiten;
+
+                return {
+                    ekJePreiseinheit: ekNum,
+                    versandkosten,
+                    vkJePreiseinheit,
+                    vkInklVersandJePreiseinheit,
+                    dbJePreiseinheit,
+                    dbGesamt,
+                    anzahlPaletten,
+                    mengeNum,
+                    einheit,
+                    aufschlagProzent,
+                    gesamtEK,
+                    gesamtVK
+                };
+            }, [ek, preiseinheit, aufschlag, vkWunsch, menge, stueckProPalette, frachtkosten.gesamt]);
+
+            const aktuellesErgebnis = berechneErgebnis();
+
+            // Lagerkosten-Berechnung
+            const berechneLagerkosten = React.useCallback(() => {
+                const paletten = aktuellesErgebnis.anzahlPaletten || 0;
+                const monate = parseInt(lagerDauer) || 0;
+                const gebuehr = 5.5;
+                if (paletten === 0 || monate === 0 || gebuehr === 0) return { gesamt: 0, proEinheit: 0 };
+                let summe = 0;
+                for (let m = 0; m < monate; m++) {
+                    summe += (paletten - m > 0 ? paletten - m : 0) * gebuehr;
+                }
+                // Auf VK gesamt verteilen (auf alle Preiseinheiten)
+                const vkGesamt = aktuellesErgebnis.gesamtVK || 0;
+                const menge = aktuellesErgebnis.mengeNum || 0;
+                const einheit = aktuellesErgebnis.einheit || 1;
+                const proEinheit = menge > 0 ? summe / (menge / einheit) : 0;
+                return { gesamt: summe, proEinheit };
+            }, [lagerDauer, aktuellesErgebnis]);
+            const lagerkosten = berechneLagerkosten();
+
+            function resetForm() {
+                setInterneNummer("");
+                setKundenname("");
+                setEk("");
+                setPreiseinheit("1000");
+                setMenge("");
+                setStueckProPalette("");
+                setAufschlag("");
+                setVkWunsch("");
+                setVersandart("lkw");
+                setStrecke("");
+                setSpedition("");
+                setPlz("");
+                setLieferantenSkonto("2");
+                setSkonto("2");
+                setArtikelListe([]);
+                setGesamtMenge(0);
+                setSendungsVersandkosten(0);
+                setVergleiche([]);
+                setVersandAktiv(false);
+                setLagerPaletten("");
+                setLagerDauer("");
+            }
+
+            // Artikel zur Sendung hinzufügen
+            function artikelZurSendungHinzufuegen() {
+                if (aktuellesErgebnis) {
+                    const artikel = {
+                        ...aktuellesErgebnis,
+                        interneNummer,
+                        kundenname,
+                        menge: parseFloat(menge) || 0,
+                        einheit: parseFloat(preiseinheit) || 1
+                    };
+                    setArtikelListe(prev => [...prev, artikel]);
+                    setGesamtMenge(prev => prev + (parseFloat(menge) || 0));
+                    setInterneNummer("");
+                    setKundenname("");
+                    setEk("");
+                    setMenge("");
+                    setStueckProPalette("");
+                    setAufschlag("");
+                    setVkWunsch("");
+                    setErgebnis(null);
+                    if (!versandAktiv) setVersandAktiv(true);
+                }
+            }
+
+            // Versandkosten für die gesamte Sendung berechnen (aus aktuellem Formular)
+            function berechneSendungsVersandkosten() {
+                let versandkosten = 0;
+                if (versandart === "lkw") versandkosten = (parseFloat(strecke) || 0) * 2 * 1.2;
+                else if (versandart === "bus") versandkosten = (parseFloat(strecke) || 0) * 2 * 1.2;
+                else if (versandart === "spedition") versandkosten = parseFloat(spedition) || 0;
+                else if (versandart === "stueckgut") {
+                    // Gesamtpalettenzahl aller Artikel berechnen (max. 6)
+                    let gesamtPaletten = artikelListe.reduce((sum, a) => sum + (a.anzahlPaletten || 0), 0);
+                    if (gesamtPaletten > 6) gesamtPaletten = 6;
+                    const stueckgutPreis = getStueckgutPreis(plz, gesamtPaletten);
+                    versandkosten = stueckgutPreis.basis + stueckgutPreis.dieselzuschlag + stueckgutPreis.palettentausch + stueckgutPreis.versicherung;
+                }
+                setSendungsVersandkosten(versandkosten);
+            }
+
+            // Versandkosten-Anteil pro Artikel berechnen
+            const artikelMitFracht = artikelListe.map(artikel => {
+                const anteil = gesamtMenge > 0 ? (artikel.mengeNum / gesamtMenge) : 0;
+                const anteiligeFracht = sendungsVersandkosten * anteil;
+                const vkEndpreisMitFracht = parseFloat(artikel.vkInklVersandJePreiseinheit) +
+                    (artikel.einheit > 0 && artikel.mengeNum > 0
+                        ? anteiligeFracht / (artikel.mengeNum / artikel.einheit)
+                        : 0);
+                return {
+                    ...artikel,
+                    anteiligeFracht,
+                    vkEndpreisMitFracht
+                };
+            });
+
+            // Vergleichstabelle: Ergebnisse übertragen
+            function ergebnisInVergleichUebernehmen() {
+                if (aktuellesErgebnis) {
+                    setVergleiche(prev => [...prev, {
+                        ...aktuellesErgebnis,
+                        interneNummer,
+                        kundenname
+                    }]);
+                }
+            }
+
+            // PDF-Export-Funktion für Artikelliste
+            function exportierePDF() {
+                const element = document.getElementById("artikel-tabelle");
+                if (!element) return;
+                // Auch das table-Element und den Tabellen-Container anpassen
+                const table = element.querySelector('table');
+                const tableContainer = element.querySelector('div');
+                // Alte Werte speichern
+                const oldWidth = element.style.width;
+                const oldOverflow = element.style.overflowX;
+                const oldTableWidth = table ? table.style.width : '';
+                const oldTableContainerWidth = tableContainer ? tableContainer.style.width : '';
+                const oldTableContainerOverflow = tableContainer ? tableContainer.style.overflowX : '';
+                const oldTableContainerMarginLeft = tableContainer ? tableContainer.style.marginLeft : '';
+                const oldTableContainerMaxWidth = tableContainer ? tableContainer.style.maxWidth : '';
+                // Speichere alte Werte der ersten Spalte
+                let ths = [];
+                let tds = [];
+                let oldThWidths = [];
+                let oldTdWidths = [];
+                if (table) {
+                  ths = Array.from(table.querySelectorAll('th:first-child'));
+                  tds = Array.from(table.querySelectorAll('td:first-child'));
+                  oldThWidths = ths.map(th => ({ width: th.style.width, minWidth: th.style.minWidth }));
+                  oldTdWidths = tds.map(td => ({ width: td.style.width, minWidth: td.style.minWidth }));
+                  ths.forEach(th => { th.style.width = '110px'; th.style.minWidth = '110px'; });
+                  tds.forEach(td => { td.style.width = '110px'; td.style.minWidth = '110px'; });
+                }
+                // Auf volle Breite setzen
+                element.style.width = 'auto';
+                element.style.overflowX = 'visible';
+                if (table) table.style.width = 'auto';
+                if (tableContainer) {
+                  tableContainer.style.width = '100%';
+                  tableContainer.style.overflowX = 'visible';
+                  tableContainer.style.marginLeft = '0';
+                  tableContainer.style.maxWidth = 'none';
+                }
+                window.html2canvas(element, { scale: 2 }).then(canvas => {
+                    // Nach Screenshot zurücksetzen
+                    element.style.width = oldWidth;
+                    element.style.overflowX = oldOverflow;
+                    if (table) table.style.width = oldTableWidth;
+                    if (tableContainer) {
+                      tableContainer.style.width = oldTableContainerWidth;
+                      tableContainer.style.overflowX = oldTableContainerOverflow;
+                      tableContainer.style.marginLeft = oldTableContainerMarginLeft;
+                      tableContainer.style.maxWidth = oldTableContainerMaxWidth;
+                    }
+                    // Setze Spaltenbreiten zurück
+                    if (table) {
+                      ths.forEach((th, i) => { th.style.width = oldThWidths[i].width; th.style.minWidth = oldThWidths[i].minWidth; });
+                      tds.forEach((td, i) => { td.style.width = oldTdWidths[i].width; td.style.minWidth = oldTdWidths[i].minWidth; });
+                    }
+                    const imgData = canvas.toDataURL('image/png');
+                    const pdf = new window.jspdf.jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
+                    const pageWidth = pdf.internal.pageSize.getWidth();
+                    const pageHeight = pdf.internal.pageSize.getHeight();
+                    // Tabelle in Originalgröße (keine zusätzliche Verkleinerung)
+                    const scaleFactor = 1;
+                    const imgWidth = (pageWidth - 20) * scaleFactor;
+                    const imgHeight = canvas.height * (imgWidth / canvas.width);
+                    let y = 20;
+                    let finalImgWidth = imgWidth;
+                    let finalImgHeight = imgHeight;
+                    if (imgHeight > pageHeight - 40) {
+                        finalImgHeight = (pageHeight - 40) * scaleFactor;
+                        finalImgWidth = canvas.width * (finalImgHeight / canvas.height);
+                        y = (pageHeight - finalImgHeight) / 2;
+                    }
+                    pdf.addImage(imgData, 'PNG', (pageWidth - finalImgWidth) / 2, y, finalImgWidth, finalImgHeight);
+                    pdf.save('artikel-in-der-sendung.pdf');
+                });
+            }
+
+            // Event-Handler für die globalen Buttons oben
+            React.useEffect(() => {
+                const pdfBtn = document.getElementById('pdf-export-btn');
+                const resetBtn = document.getElementById('reset-form-btn');
+                if (pdfBtn) pdfBtn.onclick = exportierePDF;
+                if (resetBtn) resetBtn.onclick = resetForm;
+            });
+
+            return (
+                <form onSubmit={berechneErgebnis}>
+                    <div className="form-row">
+                        <fieldset className="form-section">
+                            <legend>Kundendaten</legend>
+                            <label>Interne Angebotsnummer:
+                                <input type="text" value={interneNummer} onChange={e => setInterneNummer(e.target.value)} placeholder="z.B. AN-001" />
+                            </label>
+                            <label>Kundenname:
+                                <input type="text" value={kundenname} onChange={e => setKundenname(e.target.value)} placeholder="Kundenname" />
+                            </label>
+                            <div className="result-section" style={{ marginTop: "15px" }}>
+                                <div style={{ marginBottom: "15px" }}>
+                                    <strong>VK je Preiseinheit:</strong> €{formatDE(aktuellesErgebnis.vkJePreiseinheit + lagerkosten.proEinheit)}<br />
+                                    <span style={{
+                                        display: 'inline-block',
+                                        background: '#e3e8ee',
+                                        color: '#1a3b6e',
+                                        fontWeight: 'bold',
+                                        fontSize: '1.15em',
+                                        padding: '3px 10px',
+                                        borderRadius: '6px',
+                                        margin: '6px 0 6px 0'
+                                    }}>
+                                        VK: €{formatDE(aktuellesErgebnis.vkInklVersandJePreiseinheit + lagerkosten.proEinheit)}
+                                    </span><br />
+                                    <strong>Deckungsbeitrag je Preiseinheit:</strong> €{formatDE(aktuellesErgebnis.dbJePreiseinheit - lagerkosten.proEinheit)}<br />
+                                    <strong>Deckungsbeitrag gesamt:</strong> €{formatDE(aktuellesErgebnis.dbGesamt - lagerkosten.gesamt)}<br />
+                                    <strong>Anzahl Paletten:</strong> {aktuellesErgebnis.anzahlPaletten}<br />
+                                    <strong>Frachtkosten:</strong> €{formatDE(sendungsVersandkosten > 0 ? sendungsVersandkosten : aktuellesErgebnis.versandkosten)}
+                                    {versandart === "stueckgut" && (
+                                        <> (berechnet mit {sendungsVersandkosten > 0 ? (artikelListe.reduce((sum, a) => sum + (a.anzahlPaletten || 0), 0) > 6 ? 6 : artikelListe.reduce((sum, a) => sum + (a.anzahlPaletten || 0), 0)) : frachtkosten.paletten} Palette{(sendungsVersandkosten > 0 ? (artikelListe.reduce((sum, a) => sum + (a.anzahlPaletten || 0), 0) > 6 ? 6 : artikelListe.reduce((sum, a) => sum + (a.anzahlPaletten || 0), 0)) : frachtkosten.paletten) !== 1 ? 'n' : ''})</>
+                                    )}
+                                    <br />
+                                    <span style={{ color: '#1a3b6e' }}>
+                                        Lagerkosten gesamt: <strong>€{formatDE(lagerkosten.gesamt)}</strong> | je Preiseinheit: <strong>€{formatDE(lagerkosten.proEinheit)}</strong>
+                                    </span>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={artikelZurSendungHinzufuegen}
+                                    style={{
+                                        width: "100%",
+                                        fontWeight: "bold",
+                                        background: "linear-gradient(90deg, #1a3b6e 60%, #2c5282 100%)",
+                                        color: "#fff",
+                                        border: "none",
+                                        borderRadius: "7px",
+                                        padding: "8px 18px",
+                                        cursor: "pointer"
+                                    }}
+                                >
+                                    Artikel zur Sendung hinzufügen
+                                </button>
+                            </div>
+                        </fieldset>
+                        <fieldset className="form-section">
+                            <legend>Kalkulation</legend>
+                            <label>EK je Preiseinheit:
+                                <input type="number" value={ek} onChange={e => setEk(e.target.value)} step="0.01" />
+                            </label>
+                            <label>Preiseinheit:
+                                <input type="number" value={preiseinheit} onChange={e => setPreiseinheit(e.target.value)} />
+                            </label>
+                            <label>Menge:
+                                <input type="number" value={menge} onChange={e => setMenge(e.target.value)} />
+                            </label>
+                            <label>Stück pro Palette:
+                                <input type="number" value={stueckProPalette} onChange={e => setStueckProPalette(e.target.value)} />
+                            </label>
+                            <label>Aufschlag in %:
+                                <input type="number" value={aufschlag} onChange={e => setAufschlag(e.target.value)} step="0.01" />
+                            </label>
+                            <label>VK Wunschpreis:
+                                <input type="number" value={vkWunsch} onChange={e => setVkWunsch(e.target.value)} step="0.01" />
+                            </label>
+                        </fieldset>
+                        <fieldset className="form-section"
+                            style={versandAktiv ? {} : { position: 'relative', opacity: 0.6 }}
+                        >
+                            <legend>Versand</legend>
+                            <label>Versandart:
+                                <select value={versandart} onChange={e => setVersandart(e.target.value)} disabled={!versandAktiv}>
+                                    <option value="lkw">LKW</option>
+                                    <option value="bus">Bus</option>
+                                    <option value="spedition">Spedition</option>
+                                    <option value="stueckgut">Stückgut</option>
+                                </select>
+                            </label>
+                            {versandart === "lkw" && (
+                                <label>Strecke (km):
+                                    <input type="number" value={strecke} onChange={e => setStrecke(e.target.value)} disabled={!versandAktiv} />
+                                </label>
+                            )}
+                            {versandart === "bus" && (
+                                <label>Strecke (km):
+                                    <input type="number" value={strecke} onChange={e => setStrecke(e.target.value)} disabled={!versandAktiv} />
+                                </label>
+                            )}
+                            {versandart === "spedition" && (
+                                <label>Speditionskosten:
+                                    <input type="number" value={spedition} onChange={e => setSpedition(e.target.value)} step="0.01" disabled={!versandAktiv} />
+                                </label>
+                            )}
+                            {versandart === "stueckgut" && (
+                                <label>PLZ:
+                                    <input type="text" value={plz} onChange={e => setPlz(e.target.value)} disabled={!versandAktiv} />
+                                </label>
+                            )}
+                            <div style={{
+                                marginTop: "15px",
+                                padding: "10px",
+                                background: "#fff",
+                                border: "1px solid #bfc9d1",
+                                borderRadius: "5px",
+                                fontSize: "13px"
+                            }}>
+                                <div style={{ 
+                                    color: "#1a3b6e", 
+                                    fontWeight: "600",
+                                    marginBottom: "5px",
+                                    borderBottom: "1px solid #e3e8ee",
+                                    paddingBottom: "5px"
+                                }}>
+                                    Frachtkosten
+                                </div>
+                                {versandart === "stueckgut" && frachtkosten.stueckgutHinweis && (
+                                    <div style={{ color: "#b91c1c", fontWeight: "bold", marginBottom: "8px" }}>
+                                        {frachtkosten.stueckgutHinweis}
+                                    </div>
+                                )}
+                                <div style={{ textAlign: "right" }}>
+                                    <strong>Gesamt:</strong> €{formatDE(frachtkosten.gesamt)}
+                                </div>
+                                {versandart === "stueckgut" && frachtkosten.basis > 0 && (
+                                    <>
+                                        <div style={{ textAlign: "right", fontSize: "12px", color: "#666" }}>
+                                            Basis: €{formatDE(frachtkosten.basis)}
+                                        </div>
+                                        <div style={{ textAlign: "right", fontSize: "12px", color: "#666" }}>
+                                            Dieselzuschlag (13%): €{formatDE(frachtkosten.dieselzuschlag)}
+                                        </div>
+                                        <div style={{ textAlign: "right", fontSize: "12px", color: "#666" }}>
+                                            Palettentausch: €{formatDE(frachtkosten.palettentausch)}
+                                        </div>
+                                        <div style={{ textAlign: "right", fontSize: "12px", color: "#666" }}>
+                                            Versicherung: €{formatDE(frachtkosten.versicherung)}
+                                        </div>
+                                    </>
+                                )}
+                                {frachtkosten.paletten > 0 && (
+                                    <div style={{ textAlign: "right", fontSize: "12px", color: "#666", marginTop: "5px" }}>
+                                        Paletten: {frachtkosten.paletten}
+                                    </div>
+                                )}
+                                {artikelListe.length > 0 && (
+                                    <button
+                                        type="button"
+                                        onClick={berechneSendungsVersandkosten}
+                                        style={{
+                                            width: "100%",
+                                            marginTop: "10px",
+                                            fontWeight: "bold",
+                                            background: "linear-gradient(90deg, #1a3b6e 60%, #2c5282 100%)",
+                                            color: "#fff",
+                                            border: "none",
+                                            borderRadius: "7px",
+                                            padding: "8px 18px",
+                                            cursor: "pointer",
+                                            fontSize: "13px"
+                                        }}
+                                    >
+                                        Fracht berechnen
+                                    </button>
+                                )}
+                            </div>
+                            {!versandAktiv && (
+                                <div style={{
+                                    position: 'absolute',
+                                    top: 0, left: 0, right: 0, bottom: 0,
+                                    background: 'rgba(240,240,240,0.5)',
+                                    zIndex: 2,
+                                    pointerEvents: 'none',
+                                    borderRadius: '8px'
+                                }} />
+                            )}
+                        </fieldset>
+                        <fieldset className="form-section" style={{ minWidth: '140px', flex: '0.6 1 0' }}>
+                            <legend>Lagerung</legend>
+                            <label>Anzahl Paletten:
+                                <input type="number" value={aktuellesErgebnis.anzahlPaletten || 0} readOnly />
+                            </label>
+                            <label>Lagerdauer (Monate):
+                                <input type="number" value={lagerDauer} onChange={e => setLagerDauer(e.target.value)} />
+                            </label>
+                            <label>Lagergebühr je Palette/Monat (€):
+                                <input type="number" value={5.5} readOnly step="0.01" />
+                            </label>
+                            <div style={{ marginTop: 10, fontSize: 13, color: '#1a3b6e' }}>
+                                Gesamte Lagerkosten: <strong>€{formatDE(lagerkosten.gesamt)}</strong><br />
+                                Lagerkosten je Preiseinheit: <strong>€{formatDE(lagerkosten.proEinheit)}</strong>
+                            </div>
+                        </fieldset>
+                    </div>
+
+                    {/* Artikelliste und Frachtverteilung */}
+                    {artikelListe.length > 0 && (
+                        <div style={{ marginTop: "30px" }} id="artikel-tabelle">
+                            <div style={{ marginBottom: "10px", color: "#1a3b6e", fontWeight: "bold" }}>
+                                Artikel in der Sendung: {artikelListe.length}
+                            </div>
+                            <div style={{
+                                overflowX: "auto",
+                                background: "#f5f7fa",
+                                border: "1px solid #bfc9d1",
+                                borderRadius: "8px",
+                                boxShadow: "0 1px 2px 0 rgba(30,60,90,0.03)",
+                                padding: "8px",
+                                maxWidth: "1100px",
+                                margin: "0 auto"
+                            }}>
+                                <table style={{
+                                    borderCollapse: "collapse",
+                                    width: "100%",
+                                    fontSize: "0.90em",
+                                    background: "#fff",
+                                    borderRadius: "8px",
+                                    overflow: "hidden"
+                                }}>
+                                    <thead>
+                                        <tr style={{ background: "#e3e8ee", color: "#388e3c" }}>
+                                            <th style={{ borderRight: "1px solid #bfc9d1", padding: "6px" }}>Angebotsnummer</th>
+                                            <th style={{ borderRight: "1px solid #bfc9d1", padding: "6px" }}>Kundenname</th>
+                                            <th style={{ borderRight: "1px solid #bfc9d1", padding: "6px" }}>Menge</th>
+                                            <th style={{ borderRight: "1px solid #bfc9d1", padding: "6px" }}>EK je PE</th>
+                                            <th style={{ borderRight: "1px solid #bfc9d1", padding: "6px" }}>VK je PE</th>
+                                            <th style={{ borderRight: "1px solid #bfc9d1", padding: "6px" }}>VK (Endpreis)</th>
+                                            <th style={{ borderRight: "1px solid #bfc9d1", padding: "6px" }}>Aufschlag %</th>
+                                            <th style={{ borderRight: "1px solid #bfc9d1", padding: "6px" }}>anteilige Fracht</th>
+                                            <th style={{ padding: "6px" }}>VK (Endpreis inkl. Fracht)</th>
+                                            <th style={{ borderLeft: "1px solid #bfc9d1", padding: "6px" }}>DB gesamt</th>
+                                            <th style={{ borderLeft: "1px solid #bfc9d1", padding: "6px" }}>Paletten</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {(sendungsVersandkosten > 0 ? artikelMitFracht : artikelListe).map((a, i) => (
+                                            <tr key={i} style={{
+                                                background: i % 2 === 0 ? "#f7fafc" : "#fff",
+                                                borderBottom: "1px solid #bfc9d1"
+                                            }}>
+                                                <td style={{ borderRight: "1px solid #e3eefd", padding: "5px 6px" }}>{a.interneNummer}</td>
+                                                <td style={{ borderRight: "1px solid #e3eefd", padding: "5px 6px" }}>{a.kundenname}</td>
+                                                <td style={{ borderRight: "1px solid #e3eefd", padding: "5px 6px", textAlign: "right" }}>{a.mengeNum}</td>
+                                                <td style={{ borderRight: "1px solid #e3eefd", padding: "5px 6px", textAlign: "right" }}>€{formatDE(a.ekJePreiseinheit)}</td>
+                                                <td style={{ borderRight: "1px solid #e3eefd", padding: "5px 6px", textAlign: "right" }}>€{formatDE(a.vkJePreiseinheit)}</td>
+                                                <td style={{ borderRight: "1px solid #e3eefd", padding: "5px 6px", textAlign: "right" }}>€{formatDE(a.vkInklVersandJePreiseinheit)}</td>
+                                                <td style={{ borderRight: "1px solid #e3eefd", padding: "5px 6px", textAlign: "right" }}>
+                                                    {a.aufschlagProzent !== undefined
+                                                        ? a.aufschlagProzent.toFixed(2) + " %"
+                                                        : "-"}
+                                                </td>
+                                                <td style={{ borderRight: "1px solid #e3eefd", padding: "5px 6px", textAlign: "right" }}>
+                                                    {sendungsVersandkosten > 0 ? "€" + formatDE(a.anteiligeFracht) : "-"}
+                                                </td>
+                                                <td style={{
+                                                    fontWeight: "bold",
+                                                    color: "#1a3b6e",
+                                                    background: "#e3e8ee",
+                                                    padding: "5px 6px",
+                                                    textAlign: "right"
+                                                }}>
+                                                    {sendungsVersandkosten > 0
+                                                        ? "€" + formatDE(a.vkEndpreisMitFracht)
+                                                        : "-"}
+                                                </td>
+                                                <td style={{ borderLeft: "1px solid #e3eefd", padding: "5px 6px", textAlign: "right" }}>€{formatDE(a.dbGesamt)}</td>
+                                                <td style={{ borderLeft: "1px solid #e3eefd", padding: "5px 6px", textAlign: "right" }}>{a.anzahlPaletten}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    )}
+                </form>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById("root"));
+        root.render(<App />);
+    </script>
+    <div class="version">Version 1.0.1</div>
+</body>
+</html> 
