@@ -133,10 +133,13 @@
             padding: 4px 7px;
             text-align: center;
         }
+        td {
+            color: #2d3748;
+        }
         th {
             background: #e3e8ee;
             font-weight: 600;
-            color: #388e3c;
+            color: #1a3b6e;
             letter-spacing: 0.3px;
         }
         .result-section {
@@ -947,7 +950,7 @@
                                             <th style={{ borderRight: "1px solid #bfc9d1", padding: "6px" }}>EK je PE</th>
                                             <th style={{ borderRight: "1px solid #bfc9d1", padding: "6px" }}>VK je PE</th>
                                             <th style={{ borderRight: "1px solid #bfc9d1", padding: "6px" }}>Einkaufssumme</th>
-                                            <th style={{ borderRight: "1px solid #bfc9d1", padding: "6px" }}>Gesamtsumme</th>
+                                            <th style={{ borderRight: "1px solid #bfc9d1", padding: "6px", background: "#e3e8ee", color: "#1a3b6e", fontWeight: "bold", fontSize: "1.05em", boxShadow: "0 0 0 2px #388e3c33 inset" }}>VK je PE inkl. Fracht</th>
                                             <th style={{ borderRight: "1px solid #bfc9d1", padding: "6px" }}>Aufschlag %</th>
                                             <th style={{ borderRight: "1px solid #bfc9d1", padding: "6px" }}>anteilige Fracht</th>
                                             <th style={{ padding: "6px" }}>DB gesamt</th>
@@ -966,13 +969,7 @@
                                                 <td style={{ borderRight: "1px solid #e3eefd", padding: "5px 6px", textAlign: "right" }}>€{formatDE(a.ekJePreiseinheit)}</td>
                                                 <td style={{ borderRight: "1px solid #e3eefd", padding: "5px 6px", textAlign: "right" }}>€{formatDE(a.vkJePreiseinheit)}</td>
                                                 <td style={{ borderRight: "1px solid #e3eefd", padding: "5px 6px", textAlign: "right" }}>€{formatDE((a.ekJePreiseinheit || 0) * (a.mengeNum / (a.einheit || 1)))}</td>
-                                                <td style={{ borderRight: "1px solid #e3eefd", padding: "5px 6px", textAlign: "right" }}>
-                                                    €{formatDE(
-                                                        (a.anteiligeFracht && a.anteiligeFracht > 0)
-                                                            ? (a.vkEndpreisMitFracht || 0) * (a.mengeNum / (a.einheit || 1))
-                                                            : (a.vkJePreiseinheit || 0) * (a.mengeNum / (a.einheit || 1))
-                                                    )}
-                                                </td>
+                                                <td style={{ borderRight: "1px solid #e3eefd", padding: "5px 6px", textAlign: "right", background: "#e3e8ee", color: "#1a3b6e", fontWeight: "bold", fontSize: "1.08em", boxShadow: "0 0 0 2px #388e3c22 inset" }}>€{formatDE((a.vkEndpreisMitFracht !== undefined ? a.vkEndpreisMitFracht : a.vkJePreiseinheit))}</td>
                                                 <td style={{ borderRight: "1px solid #e3eefd", padding: "5px 6px", textAlign: "right" }}>
                                                     {a.aufschlagProzent !== undefined
                                                         ? a.aufschlagProzent.toFixed(2) + " %"
@@ -998,6 +995,6 @@
         const root = ReactDOM.createRoot(document.getElementById("root"));
         root.render(<App />);
     </script>
-    <div class="version">Version 1.0.1</div>
+    <div class="version">Version 1.0.3</div>
 </body>
 </html> 
