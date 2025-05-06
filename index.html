@@ -670,11 +670,13 @@
 
             // Event-Handler für die globalen Buttons oben
             React.useEffect(() => {
+                // PDF-Export Button
                 const pdfBtn = document.getElementById('pdf-export-btn');
-                const resetBtn = document.getElementById('reset-form-btn');
                 if (pdfBtn) pdfBtn.onclick = exportierePDF;
+                // Reset-Button
+                const resetBtn = document.getElementById('reset-form-btn');
                 if (resetBtn) resetBtn.onclick = resetForm;
-            });
+            }, []);
 
             return (
                 <form onSubmit={berechneErgebnis}>
