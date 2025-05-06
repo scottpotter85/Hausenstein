@@ -26,24 +26,24 @@
         }
         form {
             margin: 0 auto;
-            max-width: 1100px;
+            max-width: 1400px;
             background: #fff;
             border-radius: 12px;
             box-shadow: 0 2px 10px 0 rgba(30,60,90,0.06);
-            padding: 16px 10px 8px 10px;
+            padding: 32px 24px 16px 24px;
         }
         .form-row {
             display: flex;
-            gap: 24px;
+            gap: 36px;
             flex-wrap: nowrap;
             max-width: 100%;
         }
         .form-section {
             flex: 1 1 0;
-            min-width: 220px;
+            min-width: 260px;
             margin-bottom: 0;
-            border-radius: 8px;
-            padding: 10px 8px 4px 8px;
+            border-radius: 10px;
+            padding: 18px 16px 8px 16px;
             margin-bottom: 0;
             box-shadow: 0 1px 2px 0 rgba(30,60,90,0.03);
             border: 1px solid #bfc9d1;
@@ -121,16 +121,16 @@
         }
         table {
             border-collapse: collapse;
-            margin-top: 8px;
+            margin-top: 16px;
             width: 100%;
             background: #f5f7fa;
-            border-radius: 6px;
+            border-radius: 8px;
             overflow: hidden;
-            font-size: 12px;
+            font-size: 1.12em;
         }
         th, td {
             border: 1px solid #bfc9d1;
-            padding: 4px 7px;
+            padding: 10px 14px;
             text-align: center;
         }
         td {
@@ -189,33 +189,74 @@
             .form-section { min-width: 0; }
             form { max-width: 100%; margin-left: 0; }
         }
+        input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+        .input-aufschlag-prozent::-webkit-inner-spin-button, .input-aufschlag-prozent::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .input-aufschlag-prozent {
+            -moz-appearance: textfield;
+        }
+        .button-row-oben {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: flex-start;
+            width: 240px;
+            margin-left: 18px;
+            margin-top: 18px;
+        }
+        .button-row-oben a,
+        .button-row-oben button {
+            display: block;
+            width: 100%;
+            min-width: 180px;
+            max-width: 100%;
+            box-sizing: border-box;
+            margin: 0;
+            text-align: left;
+            font-size: 15px;
+            font-weight: 600;
+            padding: 10px 18px;
+            border-radius: 7px;
+            background: linear-gradient(90deg, #1a3b6e 60%, #2c5282 100%);
+            color: #fff;
+            border: none;
+            box-shadow: 0 1px 4px 0 rgba(0,0,0,0.07);
+            letter-spacing: 0.3px;
+            transition: background 0.2s;
+            cursor: pointer;
+        }
+        .button-row-oben a:hover,
+        .button-row-oben button:hover {
+            background: linear-gradient(90deg, #2c5282 60%, #1a3b6e 100%);
+        }
+        .button-row-oben .reset-button {
+            background: #dc2626;
+        }
+        .button-row-oben .reset-button:hover {
+            background: #b91c1c;
+        }
+        .button-row-oben .pdf-button {
+            background: #1a3b6e;
+        }
+        .button-row-oben .pdf-button:hover {
+            background: #2c5282;
+        }
     </style>
 </head>
 <body>
     <div style="display: flex; align-items: flex-start;">
-        <div style="width: 220px; min-width: 120px; margin-right: 18px;">
-            <a href="index.html" style="
-                display: block;
-                margin-left: 18px;
-                margin-top: 18px;
-                margin-bottom: 8px;
-                padding: 7px 18px;
-                width: 220px;
-                background: linear-gradient(90deg, #1a3b6e 60%, #2c5282 100%);
-                color: #fff;
-                border-radius: 7px;
-                font-weight: 600;
-                font-size: 15px;
-                text-decoration: none;
-                box-shadow: 0 1px 4px 0 rgba(0,0,0,0.07);
-                letter-spacing: 0.3px;
-                transition: background 0.2s;
-            "
-            onmouseover="this.style.background='linear-gradient(90deg, #2c5282 60%, #1a3b6e 100%)'"
-            onmouseout="this.style.background='linear-gradient(90deg, #1a3b6e 60%, #2c5282 100%)'"
-            >← Zurück zur Startseite</a>
-            <button type="button" class="pdf-button" id="pdf-export-btn" style="display: block; margin-left: 18px; margin-top: 8px; width: 220px; text-align: left;">Als PDF exportieren</button>
-            <button type="button" class="reset-button" id="reset-form-btn" style="display: block; margin-left: 18px; margin-top: 8px; width: 220px; text-align: left;">Formular zurücksetzen</button>
+        <div class="button-row-oben">
+            <a href="index.html">← Zurück zur Startseite</a>
+            <button type="button" class="pdf-button" id="pdf-export-btn">Als PDF exportieren</button>
+            <button type="button" class="reset-button" id="reset-form-btn">Formular zurücksetzen</button>
         </div>
         <div style="display: inline-block; margin-top: 10mm; position: relative; left: 0%; margin: 0 auto;">
             <h1 style="
@@ -327,6 +368,7 @@
             const [lagerPaletten, setLagerPaletten] = React.useState("");
             const [lagerDauer, setLagerDauer] = React.useState("");
             const [lagerGebuehr] = React.useState(5.5);
+            const [dummyState, setDummyState] = React.useState(0);
 
             // Versand aktivieren, sobald mindestens ein Artikel in der Sendung ist
             React.useEffect(() => {
@@ -559,6 +601,7 @@
 
             // Versandkosten-Anteil pro Artikel berechnen
             let summeAnteiligeFracht = 0;
+            const gesamtPaletten = artikelListe.reduce((sum, a) => sum + (a.anzahlPaletten || 0), 0) || 1;
             const artikelMitFracht = artikelListe.map((artikel, idx) => {
                 let anteiligeFracht = 0;
                 // Für Stückgut: immer frachtkosten.gesamt als Basis nehmen
@@ -566,7 +609,7 @@
                 if (artikelListe.length === 1) {
                     anteiligeFracht = gesamtFracht;
                 } else {
-                    const anteil = gesamtMenge > 0 ? (artikel.mengeNum / gesamtMenge) : 0;
+                    const anteil = gesamtPaletten > 0 ? ((artikel.anzahlPaletten || 0) / gesamtPaletten) : 0;
                     if (idx < artikelListe.length - 1) {
                         anteiligeFracht = Math.round((gesamtFracht * anteil) * 100) / 100;
                         summeAnteiligeFracht += anteiligeFracht;
@@ -574,14 +617,20 @@
                         anteiligeFracht = Math.round((gesamtFracht - summeAnteiligeFracht) * 100) / 100;
                     }
                 }
-                const vkEndpreisMitFracht = parseFloat(artikel.vkInklVersandJePreiseinheit) +
-                    (artikel.einheit > 0 && artikel.mengeNum > 0
-                        ? anteiligeFracht / (artikel.mengeNum / artikel.einheit)
-                        : 0);
+                const ek = artikel.ekJePreiseinheit || 0;
+                const aufschlag = artikel.aufschlagProzent || 0;
+                const neueVkJePE = ek * (1 + aufschlag / 100);
+                const mengeNum = artikel.mengeNum || 1;
+                const einheit = artikel.einheit || 1;
+                const vkEndpreisMitFracht = neueVkJePE + (anteiligeFracht / (mengeNum / einheit));
+                const dbJePE = neueVkJePE - ek;
+                const dbGesamt = dbJePE * (mengeNum / einheit);
                 return {
                     ...artikel,
                     anteiligeFracht,
-                    vkEndpreisMitFracht
+                    vkEndpreisMitFracht,
+                    dbJePreiseinheit: dbJePE,
+                    dbGesamt
                 };
             });
 
@@ -731,6 +780,7 @@
                                         padding: "8px 18px",
                                         cursor: "pointer"
                                     }}
+                                    tabIndex={5}
                                 >
                                     Artikel zur Sendung hinzufügen
                                 </button>
@@ -739,19 +789,23 @@
                         <fieldset className="form-section">
                             <legend>Kalkulation</legend>
                             <label>EK je Preiseinheit:
-                                <input type="number" value={ek} onChange={e => setEk(e.target.value)} step="0.01" />
+                                <input type="number" value={ek} onChange={e => setEk(e.target.value)} step="0.01" tabIndex={1} />
                             </label>
                             <label>Preiseinheit:
-                                <input type="number" value={preiseinheit} onChange={e => setPreiseinheit(e.target.value)} />
+                                <select value={preiseinheit} onChange={e => setPreiseinheit(e.target.value)} tabIndex={-1}>
+                                    <option value="1">1</option>
+                                    <option value="100">100</option>
+                                    <option value="1000">1.000</option>
+                                </select>
                             </label>
                             <label>Menge:
-                                <input type="number" value={menge} onChange={e => setMenge(e.target.value)} />
+                                <input type="number" value={menge} onChange={e => setMenge(e.target.value)} tabIndex={2} />
                             </label>
                             <label>Stück pro Palette:
-                                <input type="number" value={stueckProPalette} onChange={e => setStueckProPalette(e.target.value)} />
+                                <input type="number" value={stueckProPalette} onChange={e => setStueckProPalette(e.target.value)} tabIndex={3} />
                             </label>
                             <label>Aufschlag in %:
-                                <input type="number" value={aufschlag} onChange={e => setAufschlag(e.target.value)} step="0.01" />
+                                <input type="number" value={aufschlag} onChange={e => setAufschlag(e.target.value)} step="0.01" tabIndex={4} />
                             </label>
                             <label>VK Wunschpreis:
                                 <input type="number" value={vkWunsch} onChange={e => setVkWunsch(e.target.value)} step="0.01" />
@@ -930,7 +984,7 @@
                                 borderRadius: "8px",
                                 boxShadow: "0 1px 2px 0 rgba(30,60,90,0.03)",
                                 padding: "8px",
-                                maxWidth: "1100px",
+                                maxWidth: "1400px",
                                 margin: "0 auto"
                             }}>
                                 <table style={{
@@ -942,14 +996,14 @@
                                     overflow: "hidden"
                                 }}>
                                     <thead>
-                                        <tr style={{ background: "#e3e8ee", color: "#388e3c" }}>
+                                        <tr style={{ background: "#e3e8ee", color: "#1a3b6e" }}>
                                             <th style={{ borderRight: "1px solid #bfc9d1", padding: "6px" }}>Angebotsnummer</th>
                                             <th style={{ borderRight: "1px solid #bfc9d1", padding: "6px" }}>Kundenname</th>
                                             <th style={{ borderRight: "1px solid #bfc9d1", padding: "6px" }}>Menge</th>
                                             <th style={{ borderRight: "1px solid #bfc9d1", padding: "6px" }}>Paletten</th>
                                             <th style={{ borderRight: "1px solid #bfc9d1", padding: "6px" }}>EK je PE</th>
-                                            <th style={{ borderRight: "1px solid #bfc9d1", padding: "6px" }}>VK je PE</th>
                                             <th style={{ borderRight: "1px solid #bfc9d1", padding: "6px" }}>Einkaufssumme</th>
+                                            <th style={{ borderRight: "1px solid #bfc9d1", padding: "6px" }}>Verkaufssumme (inkl. Fracht)</th>
                                             <th style={{ borderRight: "1px solid #bfc9d1", padding: "6px", background: "#e3e8ee", color: "#1a3b6e", fontWeight: "bold", fontSize: "1.05em", boxShadow: "0 0 0 2px #388e3c33 inset" }}>VK je PE inkl. Fracht</th>
                                             <th style={{ borderRight: "1px solid #bfc9d1", padding: "6px" }}>Aufschlag %</th>
                                             <th style={{ borderRight: "1px solid #bfc9d1", padding: "6px" }}>anteilige Fracht</th>
@@ -967,20 +1021,57 @@
                                                 <td style={{ borderRight: "1px solid #e3eefd", padding: "5px 6px", textAlign: "right" }}>{a.mengeNum}</td>
                                                 <td style={{ borderRight: "1px solid #e3eefd", padding: "5px 6px", textAlign: "right" }}>{a.anzahlPaletten}</td>
                                                 <td style={{ borderRight: "1px solid #e3eefd", padding: "5px 6px", textAlign: "right" }}>€{formatDE(a.ekJePreiseinheit)}</td>
-                                                <td style={{ borderRight: "1px solid #e3eefd", padding: "5px 6px", textAlign: "right" }}>€{formatDE(a.vkJePreiseinheit)}</td>
                                                 <td style={{ borderRight: "1px solid #e3eefd", padding: "5px 6px", textAlign: "right" }}>€{formatDE((a.ekJePreiseinheit || 0) * (a.mengeNum / (a.einheit || 1)))}</td>
-                                                <td style={{ borderRight: "1px solid #e3eefd", padding: "5px 6px", textAlign: "right", background: "#e3e8ee", color: "#1a3b6e", fontWeight: "bold", fontSize: "1.08em", boxShadow: "0 0 0 2px #388e3c22 inset" }}>€{formatDE((a.vkEndpreisMitFracht !== undefined ? a.vkEndpreisMitFracht : a.vkJePreiseinheit))}</td>
+                                                <td style={{ borderRight: "1px solid #e3eefd", padding: "5px 6px", textAlign: "right" }}>€{formatDE((() => {
+                                                    const ek = a.ekJePreiseinheit || 0;
+                                                    const aufschlag = a.aufschlagProzent || 0;
+                                                    const anteiligeFracht = a.anteiligeFracht || 0;
+                                                    const mengeNum = a.mengeNum || 0;
+                                                    const einheit = a.einheit || 1;
+                                                    const neueVkJePE = ek * (1 + aufschlag / 100);
+                                                    const vkJePEInklFracht = neueVkJePE + (anteiligeFracht / (mengeNum / einheit));
+                                                    return vkJePEInklFracht * (mengeNum / einheit);
+                                                })())}</td>
+                                                <td style={{ borderRight: "1px solid #e3eefd", padding: "5px 6px", textAlign: "right", background: "#e3e8ee", color: "#1a3b6e", fontWeight: "bold", fontSize: "1.08em", boxShadow: "0 0 0 2px #388e3c22 inset" }}>€{formatDE((() => {
+                                                    const ek = a.ekJePreiseinheit || 0;
+                                                    const aufschlag = a.aufschlagProzent || 0;
+                                                    const anteiligeFracht = a.anteiligeFracht || 0;
+                                                    const mengeNum = a.mengeNum || 1;
+                                                    const einheit = a.einheit || 1;
+                                                    const neueVkJePE = ek * (1 + aufschlag / 100);
+                                                    return neueVkJePE + (anteiligeFracht / (mengeNum / einheit));
+                                                })())}</td>
                                                 <td style={{ borderRight: "1px solid #e3eefd", padding: "5px 6px", textAlign: "right" }}>
-                                                    {a.aufschlagProzent !== undefined
-                                                        ? a.aufschlagProzent.toFixed(2) + " %"
-                                                        : "-"}
+                                                    <input type="number" className="input-aufschlag-prozent" value={a.aufschlagProzent !== undefined ? a.aufschlagProzent : ''} min="0" max="100" step="0.01"
+                                                        style={{ width: '60px', fontSize: '1em', textAlign: 'right', border: '1px solid #bfc9d1', borderRadius: '4px', color: '#1a3b6e', background: '#f7fafc' }}
+                                                        onFocus={e => e.target.select()}
+                                                        onMouseUp={e => { e.preventDefault(); e.target.select(); }}
+                                                        onChange={e => {
+                                                            const newValue = parseFloat(e.target.value) || 0;
+                                                            setArtikelListe(prev => prev.map((art, idx2) => {
+                                                                if (i === idx2) {
+                                                                    return {
+                                                                        ...art,
+                                                                        aufschlagProzent: newValue
+                                                                    };
+                                                                }
+                                                                return art;
+                                                            }));
+                                                            // Trigger ein Re-Render der gesamten Tabelle, indem ein Dummy-State geändert wird
+                                                            setDummyState(s => s + 1);
+                                                        }}
+                                                    />
                                                 </td>
-                                                <td style={{ borderRight: "1px solid #e3eefd", padding: "5px 6px", textAlign: "right" }}>
-                                                    {a.anteiligeFracht > 0 ? "€" + formatDE(a.anteiligeFracht) : "-"}
-                                                </td>
-                                                <td style={{ fontWeight: "bold", color: "#1a3b6e", background: "#e3e8ee", padding: "5px 6px", textAlign: "right" }}>
-                                                    €{formatDE(a.dbGesamt)}
-                                                </td>
+                                                <td style={{ borderRight: "1px solid #e3eefd", padding: "5px 6px", textAlign: "right" }}>{a.anteiligeFracht > 0 ? "€" + formatDE(a.anteiligeFracht) : "-"}</td>
+                                                <td style={{ fontWeight: "bold", color: "#1a3b6e", background: "#e3e8ee", padding: "5px 6px", textAlign: "right" }}>€{formatDE((() => {
+                                                    const ek = a.ekJePreiseinheit || 0;
+                                                    const aufschlag = a.aufschlagProzent || 0;
+                                                    const mengeNum = a.mengeNum || 0;
+                                                    const einheit = a.einheit || 1;
+                                                    const neueVkJePE = ek * (1 + aufschlag / 100);
+                                                    const dbJePE = neueVkJePE - ek;
+                                                    return dbJePE * (mengeNum / einheit);
+                                                })())}</td>
                                             </tr>
                                         ))}
                                     </tbody>
@@ -995,6 +1086,6 @@
         const root = ReactDOM.createRoot(document.getElementById("root"));
         root.render(<App />);
     </script>
-    <div class="version">Version 1.0.3</div>
+    <div class="version">Version 1.0.4</div>
 </body>
 </html> 
