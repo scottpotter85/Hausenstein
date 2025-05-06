@@ -42,17 +42,17 @@
             flex: 1 1 0;
             min-width: 220px;
             margin-bottom: 0;
-            background: #f5f7fa;
             border-radius: 8px;
             padding: 10px 8px 4px 8px;
             margin-bottom: 0;
             box-shadow: 0 1px 2px 0 rgba(30,60,90,0.03);
             border: 1px solid #bfc9d1;
+            background: #fff;
         }
-        .form-section:nth-child(1) { background: #f5f7fa; border: 1px solid #bfc9d1; }
-        .form-section:nth-child(2) { background: #f5f7fa; border: 1px solid #bfc9d1; }
-        .form-section:nth-child(3) { background: #f5f7fa; border: 1px solid #bfc9d1; }
-        .form-section:nth-child(4) { background: #f5f7fa; border: 1px solid #bfc9d1; }
+        .form-section:nth-child(1) { border: 1px solid #bfc9d1; }
+        .form-section:nth-child(2) { border: 1px solid #bfc9d1; }
+        .form-section:nth-child(3) { border: 1px solid #bfc9d1; }
+        .form-section:nth-child(4) { border: 1px solid #bfc9d1; }
         .form-section legend {
             font-weight: 600;
             color: #1a3b6e;
@@ -166,6 +166,21 @@
             border-radius: 4px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
+        .debug-box {
+            margin-top: 8px;
+            padding: 7px 10px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: bold;
+            background: #fff3cd;
+            color: #856404;
+            border: 2px solid #ffe066;
+        }
+        .debug-kundendaten { background: #e3fcec; color: #276749; border-color: #38a169; }
+        .debug-kalkulation { background: #e3e8ee; color: #2b6cb0; border-color: #3182ce; }
+        .debug-versand { background: #fff5e6; color: #b7791f; border-color: #ed8936; }
+        .debug-lagerung { background: #fce8f3; color: #97266d; border-color: #d53f8c; }
+        .debug-ergebnis { background: #f7fafc; color: #1a365d; border-color: #2b6cb0; }
         @media (max-width: 1100px) {
             .form-row { flex-direction: column; max-width: 100%; }
             .form-section { min-width: 0; }
@@ -252,23 +267,35 @@
             const eintrag = stueckgutPreistabelle.find(e => plzNum >= e.von && plzNum <= e.bis);
             if (eintrag) {
                 const basis = eintrag.preise[pal-1];
-                const dieselzuschlag = basis * 0.13;
+                const preiserhoehung = basis * 0.0559;
+                const basisMitPreiserhoehung = basis + preiserhoehung;
+                const dieselzuschlag = basisMitPreiserhoehung * 0.1526;
+                const palettentausch = pal * 3.80;
+                const versicherung = 2.90;
                 return {
                     basis: basis,
-                    maut: 0, // Maut ggf. nach Wunsch ergänzen
-                    palettentausch: pal * 3.80,
+                    maut: 0,
+                    palettentausch: palettentausch,
                     dieselzuschlag: dieselzuschlag,
-                    versicherung: 2.90,
+                    versicherung: versicherung,
+                    preiserhoehung: preiserhoehung,
                     paletten: pal
                 };
             }
             // Fallback
+            const basis = 100;
+            const preiserhoehung = basis * 0.0559;
+            const basisMitPreiserhoehung = basis + preiserhoehung;
+            const dieselzuschlag = basisMitPreiserhoehung * 0.1526;
+            const palettentausch = pal * 3.80;
+            const versicherung = 2.90;
             return {
-                basis: 100,
+                basis: basis,
                 maut: 0,
-                palettentausch: pal * 3.80,
-                dieselzuschlag: 100 * 0.13,
-                versicherung: 2.90,
+                palettentausch: palettentausch,
+                dieselzuschlag: dieselzuschlag,
+                versicherung: versicherung,
+                preiserhoehung: preiserhoehung,
                 paletten: pal
             };
         }
@@ -307,9 +334,11 @@
             const berechneFrachtkosten = React.useCallback(() => {
                 const mengeNum = parseFloat(menge) || 0;
                 const stueckProPaletteNum = parseFloat(stueckProPalette) || 0;
-                let anzahlPaletten = 0;
-                
-                if (mengeNum > 0 && stueckProPaletteNum > 0) {
+                // Für alle Versandarten: immer die gesamte Palettenanzahl aus der Sendung nehmen
+                let anzahlPaletten = 1;
+                if (artikelListe.length > 0) {
+                    anzahlPaletten = artikelListe.reduce((sum, a) => sum + (a.anzahlPaletten || 0), 0);
+                } else if (mengeNum > 0 && stueckProPaletteNum > 0) {
                     anzahlPaletten = Math.ceil(mengeNum / stueckProPaletteNum);
                 }
 
@@ -319,27 +348,37 @@
                 let palettentausch = 0;
                 let dieselzuschlag = 0;
                 let versicherung = 0;
-                let palettenUsed = anzahlPaletten;
+                let preiserhoehung = 0;
                 let stueckgutHinweis = "";
 
                 if (versandart === "lkw") {
                     versandkosten = (parseFloat(strecke) || 0) * 2 * 1.2;
+                    if (anzahlPaletten > 15) {
+                        stueckgutHinweis = "Achtung: LKW kann maximal 15 Paletten transportieren!";
+                    }
+                } else if (versandart === "lkwZug") {
+                    versandkosten = (parseFloat(strecke) || 0) * 2 * 1.6;
+                    if (anzahlPaletten > 33) {
+                        stueckgutHinweis = "Achtung: LKW Zug kann maximal 33 Paletten transportieren!";
+                    }
                 } else if (versandart === "bus") {
-                    versandkosten = (parseFloat(strecke) || 0) * 2 * 1.2;
+                    versandkosten = (parseFloat(strecke) || 0) * 2 * 0.8;
                 } else if (versandart === "spedition") {
                     versandkosten = parseFloat(spedition) || 0;
                 } else if (versandart === "stueckgut") {
                     if (anzahlPaletten > 6) {
                         stueckgutHinweis = "Maximal 6 Paletten pro Sendung bei Stückgut! Es werden nur 6 Paletten berechnet.";
-                        palettenUsed = 6;
+                        anzahlPaletten = 6;
                     }
-                    const stueckgutPreis = getStueckgutPreis(plz, palettenUsed);
+                    const stueckgutPreis = getStueckgutPreis(plz, anzahlPaletten);
                     basisKosten = stueckgutPreis.basis;
-                    mautKosten = stueckgutPreis.maut;
+                    preiserhoehung = stueckgutPreis.preiserhoehung;
                     palettentausch = stueckgutPreis.palettentausch;
                     dieselzuschlag = stueckgutPreis.dieselzuschlag;
                     versicherung = stueckgutPreis.versicherung;
-                    versandkosten = basisKosten + mautKosten + palettentausch + dieselzuschlag + versicherung;
+                    const basisMitPreiserhoehung = basisKosten + preiserhoehung;
+                    mautKosten = +(basisKosten * 0.0794).toFixed(2); // 7,94% des Basispreises
+                    versandkosten = basisMitPreiserhoehung + palettentausch + dieselzuschlag + versicherung + mautKosten;
                 }
 
                 return {
@@ -349,10 +388,11 @@
                     palettentausch: palettentausch,
                     dieselzuschlag: dieselzuschlag,
                     versicherung: versicherung,
-                    paletten: palettenUsed,
+                    preiserhoehung: preiserhoehung,
+                    paletten: anzahlPaletten,
                     stueckgutHinweis: stueckgutHinweis
                 };
-            }, [versandart, strecke, spedition, plz, menge, stueckProPalette]);
+            }, [versandart, strecke, spedition, plz, menge, stueckProPalette, artikelListe]);
 
             const frachtkosten = berechneFrachtkosten();
 
@@ -485,23 +525,52 @@
             // Versandkosten für die gesamte Sendung berechnen (aus aktuellem Formular)
             function berechneSendungsVersandkosten() {
                 let versandkosten = 0;
-                if (versandart === "lkw") versandkosten = (parseFloat(strecke) || 0) * 2 * 1.2;
-                else if (versandart === "bus") versandkosten = (parseFloat(strecke) || 0) * 2 * 1.2;
-                else if (versandart === "spedition") versandkosten = parseFloat(spedition) || 0;
-                else if (versandart === "stueckgut") {
+                if (versandart === "lkw") {
+                    versandkosten = (parseFloat(strecke) || 0) * 2 * 1.2;
+                    // Prüfe auf maximale Palettenanzahl
+                    let gesamtPaletten = artikelListe.reduce((sum, a) => sum + (a.anzahlPaletten || 0), 0);
+                    if (gesamtPaletten > 15) {
+                        alert("Achtung: LKW kann maximal 15 Paletten transportieren!");
+                    }
+                } else if (versandart === "lkwZug") {
+                    versandkosten = (parseFloat(strecke) || 0) * 2 * 1.6;
+                    // Prüfe auf maximale Palettenanzahl
+                    let gesamtPaletten = artikelListe.reduce((sum, a) => sum + (a.anzahlPaletten || 0), 0);
+                    if (gesamtPaletten > 33) {
+                        alert("Achtung: LKW Zug kann maximal 33 Paletten transportieren!");
+                    }
+                } else if (versandart === "bus") {
+                    versandkosten = (parseFloat(strecke) || 0) * 2 * 0.8;
+                } else if (versandart === "spedition") {
+                    versandkosten = parseFloat(spedition) || 0;
+                } else if (versandart === "stueckgut") {
                     // Gesamtpalettenzahl aller Artikel berechnen (max. 6)
                     let gesamtPaletten = artikelListe.reduce((sum, a) => sum + (a.anzahlPaletten || 0), 0);
                     if (gesamtPaletten > 6) gesamtPaletten = 6;
                     const stueckgutPreis = getStueckgutPreis(plz, gesamtPaletten);
-                    versandkosten = stueckgutPreis.basis + stueckgutPreis.dieselzuschlag + stueckgutPreis.palettentausch + stueckgutPreis.versicherung;
+                    const basisMitPreiserhoehung = stueckgutPreis.basis + stueckgutPreis.preiserhoehung;
+                    versandkosten = basisMitPreiserhoehung + stueckgutPreis.dieselzuschlag + stueckgutPreis.palettentausch + stueckgutPreis.versicherung;
                 }
                 setSendungsVersandkosten(versandkosten);
             }
 
             // Versandkosten-Anteil pro Artikel berechnen
-            const artikelMitFracht = artikelListe.map(artikel => {
-                const anteil = gesamtMenge > 0 ? (artikel.mengeNum / gesamtMenge) : 0;
-                const anteiligeFracht = sendungsVersandkosten * anteil;
+            let summeAnteiligeFracht = 0;
+            const artikelMitFracht = artikelListe.map((artikel, idx) => {
+                let anteiligeFracht = 0;
+                // Für Stückgut: immer frachtkosten.gesamt als Basis nehmen
+                const gesamtFracht = versandart === "stueckgut" ? frachtkosten.gesamt : sendungsVersandkosten;
+                if (artikelListe.length === 1) {
+                    anteiligeFracht = gesamtFracht;
+                } else {
+                    const anteil = gesamtMenge > 0 ? (artikel.mengeNum / gesamtMenge) : 0;
+                    if (idx < artikelListe.length - 1) {
+                        anteiligeFracht = Math.round((gesamtFracht * anteil) * 100) / 100;
+                        summeAnteiligeFracht += anteiligeFracht;
+                    } else {
+                        anteiligeFracht = Math.round((gesamtFracht - summeAnteiligeFracht) * 100) / 100;
+                    }
+                }
                 const vkEndpreisMitFracht = parseFloat(artikel.vkInklVersandJePreiseinheit) +
                     (artikel.einheit > 0 && artikel.mengeNum > 0
                         ? anteiligeFracht / (artikel.mengeNum / artikel.einheit)
@@ -601,11 +670,13 @@
 
             // Event-Handler für die globalen Buttons oben
             React.useEffect(() => {
+                // PDF-Export Button
                 const pdfBtn = document.getElementById('pdf-export-btn');
-                const resetBtn = document.getElementById('reset-form-btn');
                 if (pdfBtn) pdfBtn.onclick = exportierePDF;
+                // Reset-Button
+                const resetBtn = document.getElementById('reset-form-btn');
                 if (resetBtn) resetBtn.onclick = resetForm;
-            });
+            }, []);
 
             return (
                 <form onSubmit={berechneErgebnis}>
@@ -620,7 +691,7 @@
                             </label>
                             <div className="result-section" style={{ marginTop: "15px" }}>
                                 <div style={{ marginBottom: "15px" }}>
-                                    <strong>VK je Preiseinheit:</strong> €{formatDE(aktuellesErgebnis.vkJePreiseinheit + lagerkosten.proEinheit)}<br />
+                                    <strong>VK je PE:</strong> €{formatDE(aktuellesErgebnis.vkJePreiseinheit + lagerkosten.proEinheit)}<br />
                                     <span style={{
                                         display: 'inline-block',
                                         background: '#e3e8ee',
@@ -633,16 +704,15 @@
                                     }}>
                                         VK: €{formatDE(aktuellesErgebnis.vkInklVersandJePreiseinheit + lagerkosten.proEinheit)}
                                     </span><br />
-                                    <strong>Deckungsbeitrag je Preiseinheit:</strong> €{formatDE(aktuellesErgebnis.dbJePreiseinheit - lagerkosten.proEinheit)}<br />
-                                    <strong>Deckungsbeitrag gesamt:</strong> €{formatDE(aktuellesErgebnis.dbGesamt - lagerkosten.gesamt)}<br />
-                                    <strong>Anzahl Paletten:</strong> {aktuellesErgebnis.anzahlPaletten}<br />
-                                    <strong>Frachtkosten:</strong> €{formatDE(sendungsVersandkosten > 0 ? sendungsVersandkosten : aktuellesErgebnis.versandkosten)}
-                                    {versandart === "stueckgut" && (
-                                        <> (berechnet mit {sendungsVersandkosten > 0 ? (artikelListe.reduce((sum, a) => sum + (a.anzahlPaletten || 0), 0) > 6 ? 6 : artikelListe.reduce((sum, a) => sum + (a.anzahlPaletten || 0), 0)) : frachtkosten.paletten} Palette{(sendungsVersandkosten > 0 ? (artikelListe.reduce((sum, a) => sum + (a.anzahlPaletten || 0), 0) > 6 ? 6 : artikelListe.reduce((sum, a) => sum + (a.anzahlPaletten || 0), 0)) : frachtkosten.paletten) !== 1 ? 'n' : ''})</>
-                                    )}
-                                    <br />
+                                    <strong>DB gesamt:</strong> €{formatDE(aktuellesErgebnis.dbGesamt - lagerkosten.gesamt)}<br />
+                                    <strong>Paletten:</strong> {aktuellesErgebnis.anzahlPaletten}<br />
+                                    <strong>Frachtkosten (Sendung):</strong> €{
+                                        versandart === "stueckgut" && artikelMitFracht.length > 0
+                                            ? formatDE(artikelMitFracht.reduce((sum, a) => sum + (a.anteiligeFracht || 0), 0))
+                                            : formatDE(sendungsVersandkosten)
+                                    }<br />
                                     <span style={{ color: '#1a3b6e' }}>
-                                        Lagerkosten gesamt: <strong>€{formatDE(lagerkosten.gesamt)}</strong> | je Preiseinheit: <strong>€{formatDE(lagerkosten.proEinheit)}</strong>
+                                        Lager gesamt: <strong>€{formatDE(lagerkosten.gesamt)}</strong> | je PE: <strong>€{formatDE(lagerkosten.proEinheit)}</strong>
                                     </span>
                                 </div>
                                 <button
@@ -690,18 +760,14 @@
                             <legend>Versand</legend>
                             <label>Versandart:
                                 <select value={versandart} onChange={e => setVersandart(e.target.value)} disabled={!versandAktiv}>
-                                    <option value="lkw">LKW</option>
+                                    <option value="lkw">LKW (max. 15 Paletten)</option>
+                                    <option value="lkwZug">LKW Zug (33 Paletten)</option>
                                     <option value="bus">Bus</option>
                                     <option value="spedition">Spedition</option>
                                     <option value="stueckgut">Stückgut</option>
                                 </select>
                             </label>
-                            {versandart === "lkw" && (
-                                <label>Strecke (km):
-                                    <input type="number" value={strecke} onChange={e => setStrecke(e.target.value)} disabled={!versandAktiv} />
-                                </label>
-                            )}
-                            {versandart === "bus" && (
+                            {(versandart === "lkw" || versandart === "lkwZug" || versandart === "bus") && (
                                 <label>Strecke (km):
                                     <input type="number" value={strecke} onChange={e => setStrecke(e.target.value)} disabled={!versandAktiv} />
                                 </label>
@@ -747,13 +813,49 @@
                                             Basis: €{formatDE(frachtkosten.basis)}
                                         </div>
                                         <div style={{ textAlign: "right", fontSize: "12px", color: "#666" }}>
-                                            Dieselzuschlag (13%): €{formatDE(frachtkosten.dieselzuschlag)}
+                                            Dieselzuschlag (15,26%): €{formatDE(frachtkosten.dieselzuschlag)}
                                         </div>
                                         <div style={{ textAlign: "right", fontSize: "12px", color: "#666" }}>
                                             Palettentausch: €{formatDE(frachtkosten.palettentausch)}
                                         </div>
                                         <div style={{ textAlign: "right", fontSize: "12px", color: "#666" }}>
                                             Versicherung: €{formatDE(frachtkosten.versicherung)}
+                                        </div>
+                                        <div style={{ textAlign: "right", fontSize: "12px", color: "#666" }}>
+                                            Preiserhöhung (5,59%): €{formatDE(frachtkosten.preiserhoehung)}
+                                        </div>
+                                        <div style={{ textAlign: "right", fontSize: "12px", color: "#666" }}>
+                                            gesetzl. Maut (7,94%): €{formatDE(frachtkosten.maut)}
+                                        </div>
+                                    </>
+                                )}
+                                {versandart === "lkw" && (
+                                    <>
+                                        <div style={{ textAlign: "right", fontSize: "12px", color: "#666" }}>
+                                            Preis pro km: €1,20
+                                        </div>
+                                        <div style={{ textAlign: "right", fontSize: "12px", color: "#666" }}>
+                                            Hin- und Rückfahrt: {parseFloat(strecke) || 0} km × 2
+                                        </div>
+                                    </>
+                                )}
+                                {versandart === "lkwZug" && (
+                                    <>
+                                        <div style={{ textAlign: "right", fontSize: "12px", color: "#666" }}>
+                                            Preis pro km: €1,60
+                                        </div>
+                                        <div style={{ textAlign: "right", fontSize: "12px", color: "#666" }}>
+                                            Hin- und Rückfahrt: {parseFloat(strecke) || 0} km × 2
+                                        </div>
+                                    </>
+                                )}
+                                {versandart === "bus" && (
+                                    <>
+                                        <div style={{ textAlign: "right", fontSize: "12px", color: "#666" }}>
+                                            Preis pro km: €0,80
+                                        </div>
+                                        <div style={{ textAlign: "right", fontSize: "12px", color: "#666" }}>
+                                            Hin- und Rückfahrt: {parseFloat(strecke) || 0} km × 2
                                         </div>
                                     </>
                                 )}
@@ -841,14 +943,14 @@
                                             <th style={{ borderRight: "1px solid #bfc9d1", padding: "6px" }}>Angebotsnummer</th>
                                             <th style={{ borderRight: "1px solid #bfc9d1", padding: "6px" }}>Kundenname</th>
                                             <th style={{ borderRight: "1px solid #bfc9d1", padding: "6px" }}>Menge</th>
+                                            <th style={{ borderRight: "1px solid #bfc9d1", padding: "6px" }}>Paletten</th>
                                             <th style={{ borderRight: "1px solid #bfc9d1", padding: "6px" }}>EK je PE</th>
                                             <th style={{ borderRight: "1px solid #bfc9d1", padding: "6px" }}>VK je PE</th>
-                                            <th style={{ borderRight: "1px solid #bfc9d1", padding: "6px" }}>VK (Endpreis)</th>
+                                            <th style={{ borderRight: "1px solid #bfc9d1", padding: "6px" }}>Einkaufssumme</th>
+                                            <th style={{ borderRight: "1px solid #bfc9d1", padding: "6px" }}>Gesamtsumme</th>
                                             <th style={{ borderRight: "1px solid #bfc9d1", padding: "6px" }}>Aufschlag %</th>
                                             <th style={{ borderRight: "1px solid #bfc9d1", padding: "6px" }}>anteilige Fracht</th>
-                                            <th style={{ padding: "6px" }}>VK (Endpreis inkl. Fracht)</th>
-                                            <th style={{ borderLeft: "1px solid #bfc9d1", padding: "6px" }}>DB gesamt</th>
-                                            <th style={{ borderLeft: "1px solid #bfc9d1", padding: "6px" }}>Paletten</th>
+                                            <th style={{ padding: "6px" }}>DB gesamt</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -860,30 +962,28 @@
                                                 <td style={{ borderRight: "1px solid #e3eefd", padding: "5px 6px" }}>{a.interneNummer}</td>
                                                 <td style={{ borderRight: "1px solid #e3eefd", padding: "5px 6px" }}>{a.kundenname}</td>
                                                 <td style={{ borderRight: "1px solid #e3eefd", padding: "5px 6px", textAlign: "right" }}>{a.mengeNum}</td>
+                                                <td style={{ borderRight: "1px solid #e3eefd", padding: "5px 6px", textAlign: "right" }}>{a.anzahlPaletten}</td>
                                                 <td style={{ borderRight: "1px solid #e3eefd", padding: "5px 6px", textAlign: "right" }}>€{formatDE(a.ekJePreiseinheit)}</td>
                                                 <td style={{ borderRight: "1px solid #e3eefd", padding: "5px 6px", textAlign: "right" }}>€{formatDE(a.vkJePreiseinheit)}</td>
-                                                <td style={{ borderRight: "1px solid #e3eefd", padding: "5px 6px", textAlign: "right" }}>€{formatDE(a.vkInklVersandJePreiseinheit)}</td>
+                                                <td style={{ borderRight: "1px solid #e3eefd", padding: "5px 6px", textAlign: "right" }}>€{formatDE((a.ekJePreiseinheit || 0) * (a.mengeNum / (a.einheit || 1)))}</td>
+                                                <td style={{ borderRight: "1px solid #e3eefd", padding: "5px 6px", textAlign: "right" }}>
+                                                    €{formatDE(
+                                                        (a.anteiligeFracht && a.anteiligeFracht > 0)
+                                                            ? (a.vkEndpreisMitFracht || 0) * (a.mengeNum / (a.einheit || 1))
+                                                            : (a.vkJePreiseinheit || 0) * (a.mengeNum / (a.einheit || 1))
+                                                    )}
+                                                </td>
                                                 <td style={{ borderRight: "1px solid #e3eefd", padding: "5px 6px", textAlign: "right" }}>
                                                     {a.aufschlagProzent !== undefined
                                                         ? a.aufschlagProzent.toFixed(2) + " %"
                                                         : "-"}
                                                 </td>
                                                 <td style={{ borderRight: "1px solid #e3eefd", padding: "5px 6px", textAlign: "right" }}>
-                                                    {sendungsVersandkosten > 0 ? "€" + formatDE(a.anteiligeFracht) : "-"}
+                                                    {a.anteiligeFracht > 0 ? "€" + formatDE(a.anteiligeFracht) : "-"}
                                                 </td>
-                                                <td style={{
-                                                    fontWeight: "bold",
-                                                    color: "#1a3b6e",
-                                                    background: "#e3e8ee",
-                                                    padding: "5px 6px",
-                                                    textAlign: "right"
-                                                }}>
-                                                    {sendungsVersandkosten > 0
-                                                        ? "€" + formatDE(a.vkEndpreisMitFracht)
-                                                        : "-"}
+                                                <td style={{ fontWeight: "bold", color: "#1a3b6e", background: "#e3e8ee", padding: "5px 6px", textAlign: "right" }}>
+                                                    €{formatDE(a.dbGesamt)}
                                                 </td>
-                                                <td style={{ borderLeft: "1px solid #e3eefd", padding: "5px 6px", textAlign: "right" }}>€{formatDE(a.dbGesamt)}</td>
-                                                <td style={{ borderLeft: "1px solid #e3eefd", padding: "5px 6px", textAlign: "right" }}>{a.anzahlPaletten}</td>
                                             </tr>
                                         ))}
                                     </tbody>
