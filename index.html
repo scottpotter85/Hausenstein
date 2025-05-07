@@ -33,7 +33,7 @@
         .header {
             background-color: var(--primary-color);
             color: var(--white);
-            padding: 1rem 0;
+            padding: 10px 0;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
@@ -42,8 +42,9 @@
             margin: 0 auto;
             padding: 0 2rem;
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
+            position: relative;
         }
 
         .logo {
@@ -51,6 +52,16 @@
             font-weight: bold;
             color: var(--white);
             text-decoration: none;
+            position: absolute;
+            left: 2rem;
+        }
+
+        .seiten-titel {
+            color: #fff;
+            font-size: 1.3em;
+            font-weight: 600;
+            text-align: center;
+            flex: 1;
         }
 
         .main-container {
@@ -221,6 +232,7 @@
     <header class="header">
         <div class="header-content">
             <a href="#" class="logo">Hausenstein</a>
+            <span class="seiten-titel">Startseite</span>
         </div>
     </header>
 
@@ -268,7 +280,7 @@
         <button id="logoutBtn" class="logout-btn" style="display: none;">Abmelden</button>
     </main>
 
-    <div class="version">v1.0.0</div>
+    <div class="version">Version 1.0.1</div>
 
     <script>
         // Beispiel-Benutzer (in der Praxis sollten diese sicher gespeichert werden)

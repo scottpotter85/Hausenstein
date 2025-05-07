@@ -164,69 +164,145 @@
       border-radius: 4px;
       box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
+    .header {
+      background-color: #1a3b6e;
+      padding: 10px 0;
+    }
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+    .logo {
+      color: #fff;
+      font-size: 1.5rem;
+      font-weight: 600;
+      text-decoration: none;
+      position: absolute;
+      left: 24px;
+    }
+    .seiten-titel {
+      color: #fff;
+      font-size: 1.3em;
+      font-weight: 600;
+      text-align: center;
+      flex: 1;
+    }
+    .button-row-oben {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: flex-start;
+      width: 240px;
+      margin-left: 18px;
+      margin-top: 18px;
+    }
+    .button-row-oben a,
+    .button-row-oben button {
+      display: block;
+      width: 100%;
+      min-width: 180px;
+      max-width: 100%;
+      box-sizing: border-box;
+      margin: 0;
+      text-align: left;
+      font-size: 15px;
+      font-weight: 600;
+      padding: 10px 18px;
+      border-radius: 7px;
+      background: linear-gradient(90deg, #1a3b6e 60%, #2c5282 100%);
+      color: #fff;
+      border: none;
+      box-shadow: 0 1px 4px 0 rgba(0,0,0,0.07);
+      letter-spacing: 0.3px;
+      transition: background 0.2s;
+      cursor: pointer;
+    }
+    .button-row-oben a:hover,
+    .button-row-oben button:hover {
+      background: linear-gradient(90deg, #2c5282 60%, #1a3b6e 100%);
+    }
+    .button-row-oben .reset-button {
+      background: #dc2626;
+    }
+    .button-row-oben .reset-button:hover {
+      background: #b91c1c;
+    }
+    .button-row-oben .pdf-button {
+      background: #1a3b6e;
+    }
+    .button-row-oben .pdf-button:hover {
+      background: #2c5282;
+    }
   </style>
 </head>
 <body>
-  <a href="index.html" style="
-    display: block;
-    margin-left: 18px;
-    margin-top: 18px;
-    margin-bottom: 8px;
-    padding: 7px 18px;
-    width: 220px;
-    background: linear-gradient(90deg, #1a3b6e 60%, #2c5282 100%);
-    color: #fff;
-    border-radius: 7px;
-    font-weight: 600;
-    font-size: 15px;
-    text-decoration: none;
-    box-shadow: 0 1px 4px 0 rgba(0,0,0,0.07);
-    letter-spacing: 0.3px;
-    transition: background 0.2s;
-  "
-  onmouseover="this.style.background='linear-gradient(90deg, #2c5282 60%, #1a3b6e 100%)'"
-  onmouseout="this.style.background='linear-gradient(90deg, #1a3b6e 60%, #2c5282 100%)'"
-  >← Zurück zur Startseite</a>
-  <h2>Verpackungsplotter Preisberechner</h2>
-  <form id="plotterForm" onsubmit="event.preventDefault(); berechnePlotter();">
-    <div style="display: flex; gap: 24px; flex-wrap: wrap;">
-      <fieldset class="form-section" style="flex: 1 1 250px; min-width: 220px;">
-        <legend>Auftragsdaten</legend>
-        <label>Artikelnummer: <input type="text" id="artikelnummer" placeholder="z.B. PLT-001"></label>
-        <label>Anzahl Verpackungen: <input type="number" id="anzahlTeile" min="1" value="1" required title="Wie viele Verpackungen werden benötigt?"></label>
-        <label>Schneidweg pro Verpackung (mm): <input type="number" id="schnittLaenge" min="0" required title="Gesamtlänge der Schnitte pro Verpackung in mm"></label>
-        <label>Rillweg pro Verpackung (mm): <input type="number" id="rillLaenge" min="0" required title="Gesamtlänge der Rillungen pro Verpackung in mm"></label>
-      </fieldset>
-      <fieldset class="form-section" style="flex: 1 1 250px; min-width: 220px;">
-        <legend>Materialdaten</legend>
-        <label>Wellpappbogen Länge (mm): <input type="number" id="bogenLaenge" required title="Länge des Wellpappbogens in mm"></label>
-        <label>Wellpappbogen Breite (mm): <input type="number" id="bogenBreite" required title="Breite des Wellpappbogens in mm"></label>
-        <label>Kosten pro Bogen (€): <input type="number" id="bogenKosten" min="0" step="0.01" required title="Kosten pro Wellpappbogen in Euro"></label>
-      </fieldset>
-      <fieldset class="form-section" style="flex: 1 1 250px; min-width: 220px;">
-        <legend>Produktionsparameter</legend>
-        <label>Schneidgeschwindigkeit (mm/s): <input type="number" id="schnittGeschwindigkeit" value="60" readonly title="Schneidgeschwindigkeit in mm/s"></label>
-        <label>Rillgeschwindigkeit (mm/s): <input type="number" id="rillGeschwindigkeit" value="250" readonly title="Rillgeschwindigkeit in mm/s"></label>
-        <label>Rüstzeit (min): <input type="number" id="ruestzeit" min="0" value="15" required title="Rüstzeit in Minuten"></label>
-        <label>Preiseinheit (Menge):
-          <select id="preiseinheit" required title="Preis für diese Stückzahl">
-            <option value="1">1 Stück</option>
-            <option value="100" selected>100 Stück</option>
-            <option value="1000">1000 Stück</option>
-          </select>
-        </label>
-      </fieldset>
+  <header class="header">
+    <div class="header-content">
+      <a href="#" class="logo">Hausenstein</a>
+      <span class="seiten-titel">Verpackungsplotter Preisberechner</span>
     </div>
-    <div style="display: flex; justify-content: center; gap: 15px; margin-top: 20px;">
-      <button type="submit" style="background: linear-gradient(90deg, #1a3b6e 60%, #2c5282 100%); min-width: 120px;">Berechnen</button>
-      <button type="button" class="pdf-button" onclick="exportToPDF()" style="min-width: 120px;">Als PDF exportieren</button>
-      <button type="button" class="reset-button" onclick="resetForm()" style="min-width: 120px;">Formular zurücksetzen</button>
+  </header>
+  <div style="display: flex; align-items: flex-start;">
+    <div class="button-row-oben">
+      <a href="index.html">← Zurück zur Startseite</a>
+      <button type="button" class="pdf-button" onclick="exportToPDF()">Als PDF exportieren</button>
+      <button type="button" class="reset-button" onclick="resetForm()">Formular zurücksetzen</button>
     </div>
-  </form>
-  <div style="display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; margin-top: 16px; margin-left: 40px;">
-    <div class="result" id="ergebnis" style="flex: 1 1 0; min-width: 200px; max-width: 38%; font-size:12px;"></div>
+    <div style="display: inline-block; margin-top: 10mm; position: relative; left: 0%; margin: 0 auto; width: 100%;">
+      <form id="plotterForm" onsubmit="event.preventDefault(); berechnePlotter();">
+        <div style="display: flex; gap: 24px; flex-wrap: wrap;">
+          <fieldset class="form-section" style="flex: 1 1 250px; min-width: 220px;">
+            <legend>Auftragsdaten</legend>
+            <label>Artikelnummer: <input type="text" id="artikelnummer" placeholder="z.B. PLT-001"></label>
+            <label>Anzahl Verpackungen: <input type="number" id="anzahlTeile" min="1" value="1" required title="Wie viele Verpackungen werden benötigt?"></label>
+            <label>Schneidweg pro Verpackung (mm): <input type="number" id="schnittLaenge" min="0" required title="Gesamtlänge der Schnitte pro Verpackung in mm"></label>
+            <label>Rillweg pro Verpackung (mm): <input type="number" id="rillLaenge" min="0" required title="Gesamtlänge der Rillungen pro Verpackung in mm"></label>
+          </fieldset>
+          <fieldset class="form-section" style="flex: 1 1 250px; min-width: 220px;">
+            <legend>Materialdaten</legend>
+            <label>Wellpappbogen Länge (mm): <input type="number" id="bogenLaenge" required title="Länge des Wellpappbogens in mm" value="1700"></label>
+            <label>Wellpappbogen Breite (mm): <input type="number" id="bogenBreite" required title="Breite des Wellpappbogens in mm" value="1900"></label>
+            <label>Material:
+              <select id="materialtyp" required>
+                <option value="1.20E">1.20E</option>
+                <option value="1.30B">1.30B</option>
+                <option value="1.40C">1.40C</option>
+                <option value="2.50BC">2.50BC</option>
+                <option value="2.25EB">2.25EB</option>
+              </select>
+            </label>
+            <label>Verpackungen pro Bogen:
+              <input type="number" id="verpackungenProBogen" min="1" required title="Wie viele Verpackungen passen auf einen Bogen?">
+            </label>
+          </fieldset>
+          <fieldset class="form-section" style="flex: 1 1 250px; min-width: 220px;">
+            <legend>Produktionsparameter</legend>
+            <label>Schneidgeschwindigkeit (mm/s): <input type="number" id="schnittGeschwindigkeit" value="60" readonly title="Schneidgeschwindigkeit in mm/s"></label>
+            <label>Rillgeschwindigkeit (mm/s): <input type="number" id="rillGeschwindigkeit" value="250" readonly title="Rillgeschwindigkeit in mm/s"></label>
+            <label>Rüstzeit (min): <input type="number" id="ruestzeit" min="0" value="15" required title="Rüstzeit in Minuten"></label>
+            <label>Preiseinheit (Menge):
+              <select id="preiseinheit" required title="Preis für diese Stückzahl">
+                <option value="1">1 Stück</option>
+                <option value="100" selected>100 Stück</option>
+                <option value="1000">1000 Stück</option>
+              </select>
+            </label>
+          </fieldset>
+        </div>
+        <div style="display: flex; justify-content: center; gap: 15px; margin-top: 20px;">
+          <button type="submit" style="background: linear-gradient(90deg, #1a3b6e 60%, #2c5282 100%); min-width: 120px;">Berechnen</button>
+        </div>
+      </form>
+      <div style="display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; margin-top: 16px; margin-left: 40px;">
+        <div class="result" id="ergebnis" style="flex: 1 1 0; min-width: 200px; max-width: 38%; font-size:12px;"></div>
+      </div>
+    </div>
   </div>
-  <div class="version">v1.0.0</div>
+  <div class="version">v1.0.1</div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script>
     // Konstanten für die Berechnung
@@ -253,17 +329,25 @@
       const anzahl = parseInt(document.getElementById('anzahlTeile').value);
       const schnittLaenge = parseInt(document.getElementById('schnittLaenge').value);
       const rillLaenge = parseInt(document.getElementById('rillLaenge').value);
-      const bogenLaenge = parseInt(document.getElementById('bogenLaenge').value);
-      const bogenBreite = parseInt(document.getElementById('bogenBreite').value);
-      const bogenKosten = parseFloat(document.getElementById('bogenKosten').value);
+      let bogenLaenge = parseInt(document.getElementById('bogenLaenge').value);
+      let bogenBreite = parseInt(document.getElementById('bogenBreite').value);
+      const materialtyp = document.getElementById('materialtyp').value;
+      const materialPreise = {
+        '1.20E': 1.62,
+        '1.30B': 1.41,
+        '1.40C': 1.64,
+        '2.50BC': 2.12,
+        '2.25EB': 1.90
+      };
+      const bogenKosten = materialPreise[materialtyp];
+      const verpackungenProBogen = parseInt(document.getElementById('verpackungenProBogen').value);
       const schnittGeschwindigkeit = parseInt(document.getElementById('schnittGeschwindigkeit').value);
       const rillGeschwindigkeit = parseInt(document.getElementById('rillGeschwindigkeit').value);
       const ruestzeit = parseInt(document.getElementById('ruestzeit').value);
 
       // Berechnungen
-      // 1. Maschinenkosten pro Jahr
-      const maschinenKostenProJahr = ANLAGEKOSTEN / NUTZUNGSDAUER;
-      const maschinenKostenProStunde = maschinenKostenProJahr / ARBEITSSTUNDEN_PRO_JAHR;
+      const benoetigteBogen = Math.ceil(anzahl / verpackungenProBogen);
+      const materialKosten = benoetigteBogen * bogenKosten;
 
       // 2. Zeitberechnung
       const schnittzeit = (anzahl * schnittLaenge) / schnittGeschwindigkeit; // in Sekunden
@@ -274,17 +358,12 @@
       // 3. Stromkosten
       const stromKosten = PLOTTER_LEISTUNG * STROMKOSTEN_PRO_KWH * gesamtzeitStunden;
 
-      // 4. Materialkosten
-      const bogenFlaeche = bogenLaenge * bogenBreite; // mm²
-      const verpackungFlaeche = schnittLaenge * rillLaenge; // mm² (vereinfachte Berechnung)
-      const verpackungenProBogen = Math.floor(bogenFlaeche / verpackungFlaeche);
-      const benoetigteBogen = Math.ceil(anzahl / verpackungenProBogen);
-      const materialKosten = benoetigteBogen * bogenKosten;
-
       // 5. Personalkosten
       const personalkosten = gesamtzeitStunden * PERSONALKOSTEN_PRO_STUNDE;
 
       // 6. Gesamtkosten
+      const maschinenKostenProJahr = ANLAGEKOSTEN / NUTZUNGSDAUER;
+      const maschinenKostenProStunde = maschinenKostenProJahr / ARBEITSSTUNDEN_PRO_JAHR;
       const zeitKosten = gesamtzeitStunden * maschinenKostenProStunde;
       const gesamtKosten = zeitKosten + stromKosten + materialKosten + personalkosten;
 
@@ -308,6 +387,9 @@
           <span style="font-size:1em; font-weight:900; color:#fff; background:#2c5282; border-radius:6px; padding:2px 10px; margin:0 7px; display:inline-block;">${preisProEinheit.toFixed(2)} €</span>
           <span style="font-size:0.8em; font-weight:600; color:#e3e8ee;">${einheitText}</span>
         </div>
+        <b>Material:</b> ${materialtyp} (${bogenKosten.toFixed(2)} €/Stück)<br>
+        <b>Verpackungen pro Bogen:</b> ${verpackungenProBogen}<br>
+        <b>Benötigte Bogen:</b> ${benoetigteBogen}<br>
         <b>Gesamtkosten:</b> ${gesamtKosten.toFixed(2)} €<br>
         <b>Kosten pro Stück:</b> ${(gesamtKosten / anzahl).toFixed(2)} €<br>
         <b>Schneidzeit:</b> ${formatZeit(schnittzeit / 60)}<br>
@@ -318,14 +400,12 @@
         <b>Stromkosten:</b> ${stromKosten.toFixed(2)} €<br>
         <b>Maschinenkosten:</b> ${zeitKosten.toFixed(2)} €<br>
         <b>Personalkosten:</b> ${personalkosten.toFixed(2)} €<br>
-        <b>Benötigte Bogen:</b> ${benoetigteBogen}<br>
-        <b>Verpackungen pro Bogen:</b> ${verpackungenProBogen}<br>
         <br>
         <b>Kostenaufschlüsselung pro Stunde:</b><br>
         - Maschinenkosten: ${maschinenKostenProStunde.toFixed(2)} €<br>
         - Personalkosten: ${PERSONALKOSTEN_PRO_STUNDE.toFixed(2)} €<br>
         - Stromkosten: ${(PLOTTER_LEISTUNG * STROMKOSTEN_PRO_KWH).toFixed(2)} €<br>
-        - Gesamtkosten: ${(maschinenKostenProStunde + PERSONALKOSTEN_PRO_STUNDE + PLOTTER_LEISTUNG * STROMKOSTEN_PRO_KWH).toFixed(2)} €
+        - Gesamtkosten: ${(maschinenKostenProStunde + PERSONALKOSTEN_PRO_STUNDE + PLOTTER_LEISTUNG * STROMKOSTEN_PRO_KWH).toFixed(2)} €<br>
       `;
     }
 
@@ -365,7 +445,7 @@
       // Materialdaten
       doc.text(`Bogenmaße: ${document.getElementById('bogenLaenge').value}x${document.getElementById('bogenBreite').value} mm`, 25, yPos);
       yPos += 5;
-      doc.text(`Kosten pro Bogen: ${document.getElementById('bogenKosten').value} €`, 25, yPos);
+      doc.text(`Material: ${document.getElementById('materialtyp').value}`, 25, yPos);
       yPos += 5;
       
       // Produktionsparameter

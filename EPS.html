@@ -196,93 +196,162 @@
       border-radius: 4px;
       box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
+    .header {
+      background-color: #1a3b6e;
+      padding: 10px 0;
+    }
+    .header-content {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+    .logo {
+      color: #fff;
+      font-size: 1.5rem;
+      font-weight: 600;
+      text-decoration: none;
+      position: absolute;
+      left: 24px;
+    }
+    .seiten-titel {
+      color: #fff;
+      font-size: 1.3em;
+      font-weight: 600;
+      text-align: center;
+      flex: 1;
+    }
+    .button-row-oben {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: flex-start;
+      width: 240px;
+      margin-left: 18px;
+      margin-top: 18px;
+    }
+    .button-row-oben a,
+    .button-row-oben button {
+      display: block;
+      width: 100%;
+      min-width: 180px;
+      max-width: 100%;
+      box-sizing: border-box;
+      margin: 0;
+      text-align: left;
+      font-size: 15px;
+      font-weight: 600;
+      padding: 10px 18px;
+      border-radius: 7px;
+      background: linear-gradient(90deg, #1a3b6e 60%, #2c5282 100%);
+      color: #fff;
+      border: none;
+      box-shadow: 0 1px 4px 0 rgba(0,0,0,0.07);
+      letter-spacing: 0.3px;
+      transition: background 0.2s;
+      cursor: pointer;
+    }
+    .button-row-oben a:hover,
+    .button-row-oben button:hover {
+      background: linear-gradient(90deg, #2c5282 60%, #1a3b6e 100%);
+    }
+    .button-row-oben .reset-button {
+      background: #dc2626;
+    }
+    .button-row-oben .reset-button:hover {
+      background: #b91c1c;
+    }
+    .button-row-oben .pdf-button {
+      background: #1a3b6e;
+    }
+    .button-row-oben .pdf-button:hover {
+      background: #2c5282;
+    }
   </style>
 </head>
 <body>
-  <a href="index.html" style="
-    display: block;
-    margin-left: 18px;
-    margin-top: 18px;
-    margin-bottom: 8px;
-    padding: 7px 18px;
-    width: 220px;
-    background: linear-gradient(90deg, #1a3b6e 60%, #2c5282 100%);
-    color: #fff;
-    border-radius: 7px;
-    font-weight: 600;
-    font-size: 15px;
-    text-decoration: none;
-    box-shadow: 0 1px 4px 0 rgba(0,0,0,0.07);
-    letter-spacing: 0.3px;
-    transition: background 0.2s;
-  "
-  onmouseover="this.style.background='linear-gradient(90deg, #2c5282 60%, #1a3b6e 100%)'"
-  onmouseout="this.style.background='linear-gradient(90deg, #1a3b6e 60%, #2c5282 100%)'"
-  >← Zurück zur Startseite</a>
-  <h2>EPS Schneideanlagen Preisberechner</h2>
-  <form id="epsForm" onsubmit="event.preventDefault(); berechneEPS();">
-    <div style="display: flex; gap: 24px; flex-wrap: wrap;">
-      <fieldset class="form-section" style="flex: 1 1 250px; min-width: 220px;">
-        <legend>Rohblockdaten</legend>
-        <label>Artikelnummer: <input type="text" id="artikelnummer" placeholder="z.B. EPS-001"></label>
-        <label>Länge (mm): <input type="number" id="blockLaenge" required title="Länge des Rohblocks in mm" value="2030"></label>
-        <label>Breite (mm): <input type="number" id="blockBreite" required title="Breite des Rohblocks in mm" value="1020"></label>
-        <label>Höhe (mm): <input type="number" id="blockHoehe" required title="Höhe des Rohblocks in mm" value="1230"></label>
-        <label>Rohdichte (kg/m³):
-          <select id="dichte" required title="Rohdichte des Blocks">
-            <option value="15">15</option>
-            <option value="18">18</option>
-            <option value="27">27</option>
-          </select>
-        </label>
-      </fieldset>
-      <fieldset class="form-section" style="flex: 1 1 250px; min-width: 220px;">
-        <legend>Bauteildaten</legend>
-        <label>Länge (mm): <input type="number" id="teilLaenge" required title="Länge des Bauteils in mm"></label>
-        <label>Breite (mm): <input type="number" id="teilBreite" required title="Breite des Bauteils in mm"></label>
-        <label>Höhe (mm): <input type="number" id="teilHoehe" required title="Höhe des Bauteils in mm"></label>
-        <label>Anzahl: <input type="number" id="anzahlTeile" min="1" value="1" required title="Wie viele Bauteile werden benötigt?"></label>
-      </fieldset>
-      <fieldset class="form-section" style="flex: 1 1 250px; min-width: 220px;">
-        <legend>Produktionsparameter</legend>
-        <label>Schneidegeschwindigkeit (mm/min): <input type="number" id="geschwindigkeit" required title="Schneidegeschwindigkeit in mm/min"></label>
-        <label>Anzahl Drähte (Längs/Quer): <input type="number" id="anzahlDraehte" min="1" value="1" required title="Wie viele Drähte sind eingespannt?"></label>
-        <label>Abbrand pro Schnitt (mm): <input type="number" id="abbrand" min="0" value="2" required title="Abbrand durch Schneidedraht in mm"></label>
-        <label>Preiseinheit (Menge):
-          <select id="preiseinheit" required title="Preis für diese Stückzahl">
-            <option value="1">1 Stück</option>
-            <option value="100" selected>100 Stück</option>
-            <option value="1000">1000 Stück</option>
-          </select>
-        </label>
-        <label>Verpackung:
-          <select id="verpackungstyp" onchange="toggleVerpackungFrei()">
-            <option value="" selected disabled>Bitte auswählen</option>
-            <option value="frei">Frei wählbar</option>
-            <option value="palette">Palette</option>
-            <option value="v1806">V1806</option>
-          </select>
-        </label>
-        <div id="verpackungFreiFields" style="display:none;">
-          <label>Länge (mm): <input type="number" id="verpackungLaenge" min="1" value="1200"></label>
-          <label>Breite (mm): <input type="number" id="verpackungBreite" min="1" value="800"></label>
-          <label>Höhe (mm): <input type="number" id="verpackungHoehe" min="1" value="2000"></label>
+  <header class="header">
+    <div class="header-content">
+      <a href="#" class="logo">Hausenstein</a>
+      <span class="seiten-titel">EPS Schneideanlagen Preisberechner</span>
+    </div>
+  </header>
+  <div style="display: flex; align-items: flex-start;">
+    <div class="button-row-oben">
+      <a href="index.html">← Zurück zur Startseite</a>
+      <button type="button" class="pdf-button" onclick="exportToPDF()">Als PDF exportieren</button>
+      <button type="button" class="reset-button" onclick="resetForm()">Formular zurücksetzen</button>
+    </div>
+    <div style="display: inline-block; margin-top: 10mm; position: relative; left: 0%; margin: 0 auto; width: 100%;">
+      <form id="epsForm" onsubmit="event.preventDefault(); berechneEPS();">
+        <div style="display: flex; gap: 24px; flex-wrap: wrap;">
+          <fieldset class="form-section" style="flex: 1 1 250px; min-width: 220px;">
+            <legend>Rohblockdaten</legend>
+            <label>Artikelnummer: <input type="text" id="artikelnummer" placeholder="z.B. EPS-001"></label>
+            <label>Länge (X) [mm]: <input type="number" id="blockLaenge" required title="Länge (X) des Rohblocks in mm" value="2030"></label>
+            <label>Breite (Z) [mm]: <input type="number" id="blockBreite" required title="Breite (Z) des Rohblocks in mm" value="1020"></label>
+            <label>Höhe (Y) [mm]: <input type="number" id="blockHoehe" required title="Höhe (Y) des Rohblocks in mm" value="1230"></label>
+            <label>Rohdichte (kg/m³):
+              <select id="dichte" required title="Rohdichte des Blocks">
+                <option value="15">15</option>
+                <option value="18">18</option>
+                <option value="27">27</option>
+              </select>
+            </label>
+          </fieldset>
+          <fieldset class="form-section" style="flex: 1 1 250px; min-width: 220px;">
+            <legend>Bauteildaten</legend>
+            <label>Länge (X) [mm]: <input type="number" id="teilLaenge" required title="Länge (X) des Bauteils in mm"></label>
+            <label>Breite (Z) [mm]: <input type="number" id="teilBreite" required title="Breite (Z) des Bauteils in mm"></label>
+            <label>Höhe (Y) [mm]: <input type="number" id="teilHoehe" required title="Höhe (Y) des Bauteils in mm"></label>
+            <label>Anzahl: <input type="number" id="anzahlTeile" min="1" value="1" required title="Wie viele Bauteile werden benötigt?"></label>
+          </fieldset>
+          <fieldset class="form-section" style="flex: 1 1 250px; min-width: 220px;">
+            <legend>Produktionsparameter</legend>
+            <label>Schneidegeschwindigkeit (mm/min): <input type="number" id="geschwindigkeit" required title="Schneidegeschwindigkeit in mm/min"></label>
+            <label>Anzahl Drähte (Längs/Quer): <input type="number" id="anzahlDraehte" min="1" value="1" required title="Wie viele Drähte sind eingespannt?"></label>
+            <label>Abbrand pro Schnitt (mm): <input type="number" id="abbrand" min="0" value="2" required title="Abbrand durch Schneidedraht in mm"></label>
+            <label>Preiseinheit (Menge):
+              <select id="preiseinheit" required title="Preis für diese Stückzahl">
+                <option value="1">1 Stück</option>
+                <option value="100" selected>100 Stück</option>
+                <option value="1000">1000 Stück</option>
+              </select>
+            </label>
+            <label>Verpackung:
+              <select id="verpackungstyp" onchange="toggleVerpackungFrei()">
+                <option value="" selected disabled>Bitte auswählen</option>
+                <option value="frei">Frei wählbar</option>
+                <option value="palette">Palette</option>
+                <option value="v1806">V1806</option>
+              </select>
+            </label>
+            <div id="verpackungFreiFields" style="display:none;">
+              <label>Länge (mm): <input type="number" id="verpackungLaenge" min="1" value="1200"></label>
+              <label>Breite (mm): <input type="number" id="verpackungBreite" min="1" value="800"></label>
+              <label>Höhe (mm): <input type="number" id="verpackungHoehe" min="1" value="2000"></label>
+            </div>
+            <span class="hint">Der Abstand zwischen den Bauteilen entspricht dem eingestellten Abbrand.</span>
+          </fieldset>
         </div>
-        <span class="hint">Der Abstand zwischen den Bauteilen entspricht dem eingestellten Abbrand.</span>
-      </fieldset>
+        <div style="display: flex; justify-content: center; gap: 15px; margin-top: 20px;">
+          <button type="submit" style="background: linear-gradient(90deg, #1a3b6e 60%, #2c5282 100%); min-width: 120px;">Berechnen</button>
+        </div>
+      </form>
+      <div id="visual-row" style="display: flex; gap: 20px; align-items: stretch; flex-wrap: nowrap; margin-top: 16px; margin-left: 0; margin-bottom: 60px;">
+        <div id="block3d" style="flex: 1 1 0; min-width: 200px; min-height: 200px; background:#fff;"></div>
+        <canvas id="blockCanvas" style="flex: 1 1 0; min-width: 200px; min-height: 200px; background:#fff;"></canvas>
+        <div class="result" id="ergebnis" style="flex: 1 1 0; min-width: 200px; font-size:12px;"></div>
+      </div>
     </div>
-    <div style="display: flex; justify-content: center; gap: 15px; margin-top: 20px;">
-      <button type="submit" style="background: linear-gradient(90deg, #1a3b6e 60%, #2c5282 100%); min-width: 120px;">Berechnen</button>
-      <button type="button" class="pdf-button" onclick="exportToPDF()" style="min-width: 120px;">Als PDF exportieren</button>
-      <button type="button" class="reset-button" onclick="resetForm()" style="min-width: 120px;">Formular zurücksetzen</button>
-    </div>
-  </form>
-  <div style="display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; margin-top: 16px; margin-left: 40px;">
-    <div class="result" id="ergebnis" style="flex: 1 1 0; min-width: 200px; max-width: 38%; font-size:12px;"></div>
-    <canvas id="blockCanvas" width="420" height="250" style="border:1px solid #bbb; background:#fff; flex: 1 1 0; max-width: 38%; min-width: 200px;"></canvas>
   </div>
-  <div class="version">v1.0.0</div>
+  <div class="version">v1.0.1</div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.min.js"></script>
   <script>
     // Funktion zum Zurücksetzen des Formulars
     function resetForm() {
@@ -298,6 +367,9 @@
         const canvas = document.getElementById('blockCanvas');
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+        // 3D-Zeichnung leeren
+        const block3d = document.getElementById('block3d');
+        if (block3d) block3d.innerHTML = '';
         // Standardwerte setzen
         document.getElementById('blockLaenge').value = '2030';
         document.getElementById('blockBreite').value = '1020';
@@ -375,12 +447,12 @@
       const abbrand = parseFloat(document.getElementById('abbrand').value) || 2; // mm Abbrand pro Schnitt (anpassbar)
       const gesAbstand = abbrand; // Nur Abbrand als Abstand zwischen Bauteilen
       // Eingaben holen
-      const blockL = parseInt(document.getElementById('blockLaenge').value);
-      const blockB = parseInt(document.getElementById('blockBreite').value);
-      const blockH = parseInt(document.getElementById('blockHoehe').value);
-      const teilL = parseInt(document.getElementById('teilLaenge').value);
-      const teilB = parseInt(document.getElementById('teilBreite').value);
-      const teilH = parseInt(document.getElementById('teilHoehe').value);
+      const blockL = parseInt(document.getElementById('blockLaenge').value); // X
+      const blockH = parseInt(document.getElementById('blockHoehe').value); // Y
+      const blockB = parseInt(document.getElementById('blockBreite').value); // Z
+      const teilL = parseInt(document.getElementById('teilLaenge').value); // X
+      const teilH = parseInt(document.getElementById('teilHoehe').value); // Y
+      const teilB = parseInt(document.getElementById('teilBreite').value); // Z
       const anzahl = parseInt(document.getElementById('anzahlTeile').value);
       const geschw = parseInt(document.getElementById('geschwindigkeit').value);
       const dichte = parseFloat(document.getElementById('dichte').value);
@@ -430,8 +502,16 @@
       // Beste Orientierung für weitere Berechnung
       const beste = top3[0];
       // Wie viele Blöcke werden benötigt?
-      const benoetigteBloecke = Math.ceil(anzahl / beste.maxTeile);
+      const benoetigteBloeckeRaw = Math.ceil(anzahl / beste.maxTeile);
       const letzteBlockTeile = anzahl % beste.maxTeile === 0 ? beste.maxTeile : anzahl % beste.maxTeile;
+      // Nutzungsgrad des letzten Blocks
+      const nutzungsgrad = (letzteBlockTeile * beste.teilVol) / beste.blockVol;
+      let benoetigteBloecke = benoetigteBloeckeRaw;
+      let letzterBlockBerechnet = true;
+      if (benoetigteBloeckeRaw > 1 && nutzungsgrad <= 0.5) {
+        benoetigteBloecke = benoetigteBloeckeRaw - 1;
+        letzterBlockBerechnet = false;
+      }
       // Gewicht
       const blockGew = beste.blockVol * dichte;
       const gesamtGew = beste.teilVol * anzahl * dichte;
@@ -440,9 +520,52 @@
       if (dichte === 15) preisProM3 = 49.70;
       else if (dichte === 18) preisProM3 = 60.68;
       else if (dichte === 27) preisProM3 = 72.42;
-      // Materialkosten
-      const kostenProBauteil = beste.teilVol * preisProM3;
-      const kostenGesamt = kostenProBauteil * anzahl;
+      // Materialkosten inkl. Abfall: gesamtes Blockvolumen wird berechnet
+      let materialkosten_voll = (benoetigteBloeckeRaw - 1) * beste.blockVol * preisProM3;
+      let materialkosten_letzter = 0;
+      if (benoetigteBloeckeRaw === 1) {
+        // Es gibt nur einen Block
+        if (nutzungsgrad > 0.5) {
+          materialkosten_letzter = beste.blockVol * preisProM3;
+        } else {
+          materialkosten_letzter = letzteBlockTeile * beste.teilVol * preisProM3;
+        }
+      } else {
+        // Mehrere Blöcke
+        if (nutzungsgrad > 0.5) {
+          materialkosten_letzter = beste.blockVol * preisProM3;
+        } else {
+          materialkosten_letzter = letzteBlockTeile * beste.teilVol * preisProM3;
+        }
+      }
+      const materialkosten = materialkosten_voll + materialkosten_letzter;
+      const kostenProBauteil = materialkosten / anzahl;
+      const kostenGesamt = materialkosten;
+      // Tatsächlicher Materialwert und Abfall
+      const gesamtMaterialwert = anzahl * beste.teilVol * preisProM3;
+      // Abfallberechnung
+      let abfallVolVoll = (benoetigteBloeckeRaw - 1) * (beste.blockVol - beste.maxTeile * beste.teilVol);
+      let abfallVolRest = 0;
+      if (benoetigteBloeckeRaw === 1) {
+        // Nur ein Block
+        if (nutzungsgrad > 0.5) {
+          abfallVolRest = beste.blockVol - (letzteBlockTeile * beste.teilVol);
+        } else {
+          // Anteiliger Abfall pro Bauteil im Block
+          const abfallProBauteil = (beste.blockVol - (beste.maxTeile * beste.teilVol)) / beste.maxTeile;
+          abfallVolRest = letzteBlockTeile * abfallProBauteil;
+        }
+      } else {
+        // Mehrere Blöcke
+        if (nutzungsgrad > 0.5) {
+          abfallVolRest = beste.blockVol - (letzteBlockTeile * beste.teilVol);
+        } else {
+          const abfallProBauteil = (beste.blockVol - (beste.maxTeile * beste.teilVol)) / beste.maxTeile;
+          abfallVolRest = letzteBlockTeile * abfallProBauteil;
+        }
+      }
+      const gesamtAbfallVol = abfallVolVoll + abfallVolRest;
+      const gesamtAbfallWert = gesamtAbfallVol * preisProM3;
       // Exakte Schnittzeitberechnung (alle Schnitte in L, B, H)
       // Anzahl Schnitte pro Richtung (immer n-1 Schnitte)
       const schnitteL = beste.nL > 0 ? beste.nL - 1 : 0;
@@ -453,9 +576,9 @@
       // Schnittweg pro Richtung (mm)
       const effektiveSchnitteL = Math.ceil(schnitteL / anzahlDraehte);
       const effektiveSchnitteB = Math.ceil(schnitteB / anzahlDraehte);
-      const schnittwegL = effektiveSchnitteL * blockB; // Längsschnitte gehen über die Breite
-      const schnittwegB = effektiveSchnitteB * blockL; // Querschnitte gehen über die Länge
-      const schnittwegH = schnitteH * blockL; // Höhenschnitte: alle Bauteile werden auf einmal geschnitten (über die volle Blocklänge)
+      const schnittwegL = effektiveSchnitteL * blockB; // Längsschnitte gehen über die Breite (Z)
+      const schnittwegB = effektiveSchnitteB * blockL; // Querschnitte gehen über die Länge (X)
+      const schnittwegH = schnitteH * blockL; // Höhenschnitte: alle Bauteile werden auf einmal geschnitten (über die volle Blocklänge X)
       // Schnittzeit pro Richtung (min)
       const schnittzeitL = schnittwegL / geschw;
       const schnittzeitB = schnittwegB / geschw;
@@ -535,9 +658,12 @@
           <span style="font-size:1em; font-weight:900; color:#fff; background:#2c5282; border-radius:6px; padding:2px 10px; margin:0 7px; display:inline-block;">${preisProEinheit.toFixed(2)} €</span>
           <span style="font-size:0.8em; font-weight:600; color:#e3e8ee;">${einheitText}</span>
         </div>
+        <b>Tatsächlicher Materialwert (nur Bauteile):</b> ${gesamtMaterialwert.toFixed(2)} €<br>
+        <b>Tatsächlicher Abfall:</b> ${gesamtAbfallVol.toFixed(3)} m³ (${gesamtAbfallWert.toFixed(2)} €)<br>
         <b>Optimale Ausrichtung:</b> ${beste.name}<br>
         <b>Max. Bauteile pro Block:</b> ${beste.maxTeile}<br>
-        <b>Benötigte Blöcke:</b> ${benoetigteBloecke}<br>
+        <b>Benötigte Blöcke:</b> ${benoetigteBloeckeRaw}<br>
+        <b>Berechnete Blöcke:</b> ${benoetigteBloecke}<br>
         <b>Bauteile im letzten Block:</b> ${letzteBlockTeile}<br>
         <b>Verpackung:</b> ${verpackungstyp === 'palette' ? 'Palette' : verpackungstyp === 'v1806' ? 'V1806' : `Frei (${vL}x${vB}x${vH} mm)`}<br>
         <b>Max. Bauteile pro Verpackung:</b> ${maxProVerpackung}<br>
@@ -554,55 +680,58 @@
         <b>Top 3 Orientierungen (nach wenigstem Abfall):</b><br>
         ${tabelle}
       `;
-      // Zeichnung aktualisieren (Draufsicht: Block-Länge x Block-Breite, Bauteile als Rechtecke)
-      zeichneBlock(blockL, blockB, beste.l, beste.b, beste.nL, beste.nB, gesAbstand, beste.maxTeile, anzahl, beste.name);
+      // Zeichnung aktualisieren (Draufsicht: Block-Länge x Block-Höhe, Bauteile als Rechtecke)
+      syncVisualHeights();
+      zeichneBlock(blockL, blockH, beste.l, beste.h, beste.nL, beste.nH, gesAbstand, beste.maxTeile, anzahl, beste.name);
+      renderBlock3D(blockL, blockB, blockH, beste.l, beste.b, beste.h, beste.nL, beste.nB, beste.nH, gesAbstand, beste.maxTeile, anzahl);
       // Verpackung Dropdown Umschalten
       function toggleVerpackungFrei() {
         const typ = document.getElementById('verpackungstyp').value;
         document.getElementById('verpackungFreiFields').style.display = (typ === 'frei') ? 'block' : 'none';
       }
     }
-    // Zeichnet die Anordnung der Bauteile im Block (Draufsicht)
-    function zeichneBlock(blockL, blockB, teilL, teilB, nL, nB, abstand, maxTeile, anzahl, orientName) {
+    // Zeichnet die Anordnung der Bauteile im Block (Draufsicht X/Y)
+    function zeichneBlock(blockL, blockH, teilL, teilH, nL, nH, abstand, maxTeile, anzahl, orientName) {
+      // Zeichne X (Länge) und Y (Höhe) als Rechteck
+      const blockB = parseInt(document.getElementById('blockBreite').value); // Z
       const canvas = document.getElementById('blockCanvas');
       const ctx = canvas.getContext('2d');
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      // Wenn keine Daten, nur leeres Feld
-      if (!blockL || !blockB || !teilL || !teilB || !nL || !nB) {
+      if (!blockL || !blockH || !teilL || !teilH || !nL || !nH) {
         ctx.font = '16px Helvetica';
         ctx.fillStyle = '#bbb';
         ctx.fillText('Keine Zeichnung möglich', 120, 180);
         return;
       }
-      // Ränder
       const margin = 30;
-      // Maßstab berechnen
+      // Maßstab für X (Länge) und Y (Höhe)
       const scaleL = (canvas.width - 2*margin) / blockL;
-      const scaleB = (canvas.height - 2*margin) / blockB;
-      const scale = Math.min(scaleL, scaleB);
-      // Block zeichnen
+      const scaleH = (canvas.height - 2*margin) / blockH;
+      const scale = Math.min(scaleL, scaleH);
+      // Block zeichnen (X × Y)
       ctx.strokeStyle = '#333';
       ctx.lineWidth = 2;
-      ctx.strokeRect(margin, margin, blockL*scale, blockB*scale);
-      // Bauteile zeichnen
+      ctx.strokeRect(margin, margin, blockL*scale, blockH*scale);
+      // Bauteile zeichnen (nur als grobe Darstellung, nicht exakt gestapelt wie im 3D-Block)
       let gezeichnet = 0;
       for (let i = 0; i < nL; i++) {
-        for (let j = 0; j < nB; j++) {
+        for (let j = 0; j < nH; j++) {
           if (gezeichnet >= Math.min(maxTeile, anzahl)) break;
+          // Verteile die Bauteile gleichmäßig im X/Y-Rechteck (X = teilL, Y = teilH)
           const x = margin + i * (teilL + abstand) * scale;
-          const y = margin + j * (teilB + abstand) * scale;
+          const y = margin + j * (teilH + abstand) * scale;
           ctx.fillStyle = '#7ec6f7';
           ctx.strokeStyle = '#1976d2';
           ctx.lineWidth = 1;
-          ctx.fillRect(x, y, teilL*scale, teilB*scale);
-          ctx.strokeRect(x, y, teilL*scale, teilB*scale);
+          ctx.fillRect(x, y, teilL*scale, teilH*scale);
+          ctx.strokeRect(x, y, teilL*scale, teilH*scale);
           gezeichnet++;
         }
       }
       // Legende
       ctx.font = '13px Helvetica';
       ctx.fillStyle = '#222';
-      ctx.fillText('Block: ' + blockL + ' x ' + blockB + ' mm', margin, 18);
+      ctx.fillText('Block: Länge (X): ' + blockL + ' mm, Höhe (Y): ' + blockH + ' mm', margin, 18);
     }
     // Setzt die Standard-Schneidegeschwindigkeit je nach Dichte
     function setzeGeschwindigkeitNachDichte() {
@@ -617,89 +746,194 @@
     // PDF Export Funktion
     function exportToPDF() {
       const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
-      
+      const doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
       // Titel und Artikelnummer
-      doc.setFontSize(16);
-      doc.text('EPS Schneideanlagen Preisberechnung', 20, 15);
+      doc.setFontSize(18);
+      doc.text('EPS Schneideanlagen Preisberechnung', 30, 36);
       const artikelnummer = document.getElementById('artikelnummer').value;
       if (artikelnummer) {
-        doc.setFontSize(14);
-        doc.setTextColor(26, 59, 110); // Blau (#1a3b6e)
-        doc.text(`Artikelnummer: ${artikelnummer}`, 20, 25);
-        doc.setTextColor(0, 0, 0); // Zurück zu Schwarz
+        doc.setFontSize(13);
+        doc.setTextColor(26, 59, 110);
+        doc.text(`Artikelnummer: ${artikelnummer}`, 30, 56);
+        doc.setTextColor(0, 0, 0);
       }
-      
-      // Layout für eine Seite
-      let yPos = artikelnummer ? 35 : 30;
-      
-      // Linke Spalte: Eingabedaten
-      doc.setFontSize(11);
-      doc.text('Eingabedaten:', 20, yPos);
-      yPos += 7;
-      
-      // Blockdaten
+      // Eingabedaten links oben
+      let yPos = artikelnummer ? 76 : 56;
       doc.setFontSize(10);
-      doc.text(`Block: ${document.getElementById('blockLaenge').value}x${document.getElementById('blockBreite').value}x${document.getElementById('blockHoehe').value} mm`, 25, yPos);
-      yPos += 5;
-      doc.text(`Rohdichte: ${document.getElementById('dichte').value} kg/m³`, 25, yPos);
-      yPos += 5;
-      
-      // Bauteildaten
-      doc.text(`Bauteil: ${document.getElementById('teilLaenge').value}x${document.getElementById('teilBreite').value}x${document.getElementById('teilHoehe').value} mm`, 25, yPos);
-      yPos += 5;
-      doc.text(`Anzahl: ${document.getElementById('anzahlTeile').value} Stück`, 25, yPos);
-      yPos += 5;
-      
-      // Produktionsparameter
-      doc.text(`Geschwindigkeit: ${document.getElementById('geschwindigkeit').value} mm/min`, 25, yPos);
-      yPos += 5;
-      doc.text(`Drähte: ${document.getElementById('anzahlDraehte').value}`, 25, yPos);
-      yPos += 5;
-      doc.text(`Abbrand: ${document.getElementById('abbrand').value} mm`, 25, yPos);
+      doc.text('Eingabedaten:', 30, yPos);
+      yPos += 12;
+      doc.setFontSize(9);
+      doc.text(`Block: ${document.getElementById('blockLaenge').value}x${document.getElementById('blockBreite').value}x${document.getElementById('blockHoehe').value} mm`, 34, yPos);
       yPos += 10;
-
-      // Rechte Spalte: Ergebnisse
+      doc.text(`Rohdichte: ${document.getElementById('dichte').value} kg/m³`, 34, yPos);
+      yPos += 10;
+      doc.text(`Bauteil: ${document.getElementById('teilLaenge').value}x${document.getElementById('teilBreite').value}x${document.getElementById('teilHoehe').value} mm`, 34, yPos);
+      yPos += 10;
+      doc.text(`Anzahl: ${document.getElementById('anzahlTeile').value} Stück`, 34, yPos);
+      yPos += 10;
+      doc.text(`Geschwindigkeit: ${document.getElementById('geschwindigkeit').value} mm/min`, 34, yPos);
+      yPos += 10;
+      doc.text(`Drähte: ${document.getElementById('anzahlDraehte').value}`, 34, yPos);
+      yPos += 10;
+      doc.text(`Abbrand: ${document.getElementById('abbrand').value} mm`, 34, yPos);
+      yPos += 16;
+      // Ergebnisse rechts oben
+      let resultY = artikelnummer ? 76 : 56;
+      doc.setFontSize(10);
+      doc.text('Ergebnisse:', pageWidth/2, resultY);
+      resultY += 12;
+      doc.setFontSize(9);
       const ergebnisDiv = document.getElementById('ergebnis');
       const ergebnisText = ergebnisDiv.innerText;
       const ergebnisLines = ergebnisText.split('\n')
         .filter(line => line.trim() !== '')
         .filter(line => !line.includes('Top 3 Orientierungen'))
-        .filter(line => !line.includes('Geschätzte Schnittzeit')); // Entferne die geschätzte Schnittzeit
-
-      doc.setFontSize(11);
-      doc.text('Ergebnisse:', 80, 30);
-      let resultY = 37;
-      doc.setFontSize(10);
-
+        .filter(line => !line.includes('Geschätzte Schnittzeit'))
+        .filter(line => !line.startsWith('Hinweis:'));
       ergebnisLines.forEach(line => {
         if (line.includes('Preis')) {
-          // Preis hervorheben
-          doc.setFontSize(14);
-          doc.setTextColor(26, 59, 110); // Blau (#1a3b6e)
+          doc.setFontSize(13);
+          doc.setTextColor(26, 59, 110);
           doc.setFont(undefined, 'bold');
-          doc.text(line, 80, resultY);
-          resultY += 10;
-          doc.setFontSize(10);
-          doc.setTextColor(0, 0, 0); // Zurück zu Schwarz
+          doc.text(line, pageWidth/2, resultY);
+          resultY += 13;
+          doc.setFontSize(9);
+          doc.setTextColor(0, 0, 0);
           doc.setFont(undefined, 'normal');
         } else {
-          doc.text(line, 80, resultY);
-          resultY += 5;
+          doc.text(line, pageWidth/2, resultY);
+          resultY += 9;
         }
       });
-
-      // Zeichnung am unteren Rand
-      const canvas = document.getElementById('blockCanvas');
-      if (canvas) {
-        const imgData = canvas.toDataURL('image/png');
-        doc.addImage(imgData, 'PNG', 20, 140, 170, 80);
+      // Tabelle mittig unten
+      let tableY = Math.max(yPos, resultY) + 10;
+      // Beide Zeichnungen (3D und 2D) nebeneinander im PDF platzieren
+      const block3dDiv = document.getElementById('block3d');
+      const canvasBlock = document.getElementById('blockCanvas');
+      // 3D-Canvas direkt als Bild exportieren
+      const webglCanvas = block3dDiv ? block3dDiv.querySelector('canvas') : null;
+      if (webglCanvas && canvasBlock) {
+        window.html2canvas(canvasBlock, { scale: 1.2 }).then(canvas2d => {
+          const totalWidth = pageWidth - 60;
+          const imgWidth = totalWidth / 2 - 10;
+          const imgHeight3d = webglCanvas.height * (imgWidth / webglCanvas.width);
+          const imgHeight2d = canvas2d.height * (imgWidth / canvas2d.width);
+          const maxImgHeight = Math.max(imgHeight3d, imgHeight2d);
+          doc.addImage(webglCanvas.toDataURL('image/png'), 'PNG', 30, tableY, imgWidth, maxImgHeight);
+          doc.addImage(canvas2d.toDataURL('image/png'), 'PNG', 30 + imgWidth + 20, tableY, imgWidth, maxImgHeight);
+          const filename = artikelnummer ? `EPS_Berechnung_${artikelnummer}.pdf` : 'EPS_Berechnung.pdf';
+          doc.save(filename);
+        });
+      } else if (webglCanvas) {
+        const imgData3d = webglCanvas.toDataURL('image/png');
+        const imgWidth3d = pageWidth - 60;
+        const imgHeight3d = webglCanvas.height * (imgWidth3d / webglCanvas.width);
+        doc.addImage(imgData3d, 'PNG', 30, tableY, imgWidth3d, imgHeight3d);
+        const filename = artikelnummer ? `EPS_Berechnung_${artikelnummer}.pdf` : 'EPS_Berechnung.pdf';
+        doc.save(filename);
+      } else if (canvasBlock) {
+        window.html2canvas(canvasBlock, { scale: 1.2 }).then(canvas2d => {
+          const imgData2d = canvas2d.toDataURL('image/png');
+          const imgWidth2d = pageWidth - 60;
+          const imgHeight2d = canvas2d.height * (imgWidth2d / canvas2d.width);
+          doc.addImage(imgData2d, 'PNG', 30, tableY, imgWidth2d, imgHeight2d);
+          const filename = artikelnummer ? `EPS_Berechnung_${artikelnummer}.pdf` : 'EPS_Berechnung.pdf';
+          doc.save(filename);
+        });
+      } else {
+        const filename = artikelnummer ? `EPS_Berechnung_${artikelnummer}.pdf` : 'EPS_Berechnung.pdf';
+        doc.save(filename);
       }
-
-      // Speichern
-      const filename = artikelnummer ? `EPS_Berechnung_${artikelnummer}.pdf` : 'EPS_Berechnung.pdf';
-      doc.save(filename);
     }
+    // 3D-Visualisierung mit three.js
+    let threeScene, threeRenderer, threeCamera, threeControls;
+    function renderBlock3D(blockL, blockB, blockH, teilL, teilB, teilH, nL, nB, nH, abstand, maxTeile, anzahl) {
+      const container = document.getElementById('block3d');
+      // Vorherige Szene entfernen
+      if (threeRenderer) {
+        threeRenderer.dispose();
+        container.innerHTML = '';
+      }
+      // Szene, Kamera, Renderer
+      threeScene = new THREE.Scene();
+      threeScene.background = new THREE.Color(0xf7fafc);
+      const aspect = container.offsetWidth / container.offsetHeight;
+      threeCamera = new THREE.PerspectiveCamera(45, aspect, 1, 10000);
+      threeCamera.position.set(blockL*1.2, -blockB*1.2, blockH*1.2);
+      threeCamera.up.set(0,0,1);
+      threeCamera.lookAt(new THREE.Vector3(blockL/2, blockB/2, blockH/2));
+      threeRenderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+      threeRenderer.setSize(container.offsetWidth, container.offsetHeight);
+      container.appendChild(threeRenderer.domElement);
+      // Controls
+      threeControls = new THREE.OrbitControls(threeCamera, threeRenderer.domElement);
+      threeControls.target.set(blockL/2, blockB/2, blockH/2);
+      threeControls.update();
+      // Block (sichtbarer)
+      const blockGeometry = new THREE.BoxGeometry(blockL, blockB, blockH);
+      const blockMaterial = new THREE.MeshBasicMaterial({ color: 0x1976d2, transparent: true, opacity: 0.35, wireframe: false });
+      const blockMesh = new THREE.Mesh(blockGeometry, blockMaterial);
+      blockMesh.position.set(blockL/2, blockB/2, blockH/2);
+      threeScene.add(blockMesh);
+      // Block-Rahmen (Wireframe)
+      const edges = new THREE.EdgesGeometry(blockGeometry);
+      const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x1976d2, linewidth: 2 }));
+      line.position.copy(blockMesh.position);
+      threeScene.add(line);
+      // Bauteile
+      const teilGeometry = new THREE.BoxGeometry(teilL, teilB, teilH);
+      let gezeichnet = 0;
+      for (let i = 0; i < nL; i++) {
+        for (let j = 0; j < nB; j++) {
+          for (let k = 0; k < nH; k++) {
+            if (gezeichnet >= Math.min(maxTeile, anzahl)) break;
+            // Abwechselnde Farben als Schachbrettmuster in allen Dimensionen
+            const farbe = ((i + j + k) % 2 === 0) ? 0x7ec6f7 : 0xf7b47e;
+            const teilMaterial = new THREE.MeshPhongMaterial({ color: farbe, shininess: 60 });
+            const teilMesh = new THREE.Mesh(teilGeometry, teilMaterial);
+            // Position: X = Länge, Y = Breite, Z = Höhe
+            teilMesh.position.set(
+              (i * (teilL + abstand)) + teilL/2,
+              (j * (teilB + abstand)) + teilB/2,
+              (k * (teilH + abstand)) + teilH/2
+            );
+            threeScene.add(teilMesh);
+            gezeichnet++;
+          }
+        }
+      }
+      // Licht
+      const light = new THREE.DirectionalLight(0xffffff, 0.8);
+      light.position.set(1,1,2);
+      threeScene.add(light);
+      const ambient = new THREE.AmbientLight(0xffffff, 0.5);
+      threeScene.add(ambient);
+      // Render-Loop
+      function animate() {
+        threeRenderer.render(threeScene, threeCamera);
+        requestAnimationFrame(animate);
+      }
+      animate();
+    }
+    // Synchronisiert die Höhe und Breite der Visualisierungen mit dem Ergebnisfeld
+    function syncVisualHeights() {
+      const ergebnis = document.getElementById('ergebnis');
+      const block3d = document.getElementById('block3d');
+      const blockCanvas = document.getElementById('blockCanvas');
+      if (!ergebnis || !block3d || !blockCanvas) return;
+      const height = ergebnis.offsetHeight;
+      block3d.style.height = height + 'px';
+      blockCanvas.height = height;
+      blockCanvas.style.height = height + 'px';
+      // Breite anpassen (optional, für Gleichmäßigkeit)
+      const width = ergebnis.offsetWidth;
+      block3d.style.width = width + 'px';
+      blockCanvas.width = width;
+      blockCanvas.style.width = width + 'px';
+    }
+    window.addEventListener('resize', syncVisualHeights);
   </script>
 </body>
 </html>

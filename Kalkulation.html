@@ -83,6 +83,19 @@
             border: 1.2px solid #388e3c;
             outline: none;
         }
+        input[readonly] {
+            background: #e3e8ee;
+            border-color: #bfc9d1;
+        }
+        .input-aufschlag-prozent {
+            width: 60px;
+            font-size: 1em;
+            text-align: right;
+            border: 1px solid #bfc9d1;
+            border-radius: 4px;
+            color: #1a3b6e;
+            background: #f7fafc;
+        }
         button {
             padding: 8px 18px;
             font-size: 14px;
@@ -249,9 +262,42 @@
         .button-row-oben .pdf-button:hover {
             background: #2c5282;
         }
+        .header {
+            background-color: #1a3b6e;
+            padding: 10px 0;
+        }
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        .logo {
+            color: #fff;
+            font-size: 1.5rem;
+            font-weight: 600;
+            text-decoration: none;
+            position: absolute;
+            left: 24px;
+        }
+        .seiten-titel {
+            color: #fff;
+            font-size: 1.3em;
+            font-weight: 600;
+            text-align: center;
+            flex: 1;
+        }
     </style>
 </head>
 <body>
+    <header class="header">
+        <div class="header-content">
+            <a href="#" class="logo">Hausenstein</a>
+            <span class="seiten-titel">Kalkulation</span>
+        </div>
+    </header>
     <div style="display: flex; align-items: flex-start;">
         <div class="button-row-oben">
             <a href="index.html">← Zurück zur Startseite</a>
@@ -259,14 +305,6 @@
             <button type="button" class="reset-button" id="reset-form-btn">Formular zurücksetzen</button>
         </div>
         <div style="display: inline-block; margin-top: 10mm; position: relative; left: 0%; margin: 0 auto;">
-            <h1 style="
-                text-align: center;
-                color: #1a3b6e;
-                font-size: 24px;
-                font-weight: 600;
-                margin-bottom: 20px;
-                letter-spacing: 0.5px;
-            ">Kalkulation</h1>
             <div id="root"></div>
         </div>
     </div>
@@ -1088,6 +1126,6 @@
         const root = ReactDOM.createRoot(document.getElementById("root"));
         root.render(<App />);
     </script>
-    <div class="version">Version 1.0.5</div>
+    <div class="version">Version 1.0.6</div>
 </body>
 </html> 
