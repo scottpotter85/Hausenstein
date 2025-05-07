@@ -3,7 +3,7 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <meta http-equiv="Content-Style-Type" content="text/css">
-  <title>EPS Preisberechner v1.0.0</title>
+  <title>EPS Preisberechner v1.1.0</title>
   <meta name="Generator" content="Cocoa HTML Writer">
   <meta name="CocoaVersion" content="2575.5">
   <style type="text/css">
@@ -310,8 +310,14 @@
           </fieldset>
           <fieldset class="form-section" style="flex: 1 1 250px; min-width: 220px;">
             <legend>Produktionsparameter</legend>
-            <label>Schneidegeschwindigkeit (mm/min): <input type="number" id="geschwindigkeit" required title="Schneidegeschwindigkeit in mm/min"></label>
-            <label>Anzahl Drähte (Längs/Quer): <input type="number" id="anzahlDraehte" min="1" value="1" required title="Wie viele Drähte sind eingespannt?"></label>
+            <label><b>XY-Schnitt:</b></label>
+            <label>Schneidegeschwindigkeit XY (mm/min): <input type="number" id="geschwindigkeitXY" required title="Schneidegeschwindigkeit XY in mm/min" value="600"></label>
+            <label>Anzahl Drähte XY: <input type="number" id="anzahlDraehteXY" min="1" value="1" required title="Wie viele Drähte sind für XY eingespannt?"></label>
+            <label><b>Z-Schnitt:</b></label>
+            <label>Schneidegeschwindigkeit Z (mm/min): <input type="number" id="geschwindigkeitZ" required title="Schneidegeschwindigkeit Z in mm/min" value="600"></label>
+            <label>Anzahl Drähte Z: <input type="number" id="anzahlDraehteZ" min="1" value="1" required title="Wie viele Drähte sind für Z eingespannt?"></label>
+            <label><b>Umstapeln:</b></label>
+            <label>Zeitaufwand Umstapeln pro Block (min): <input type="number" id="zeitUmstapeln" min="0" value="5" required title="Zeit für Umstapeln pro Block in Minuten"></label>
             <label>Abbrand pro Schnitt (mm): <input type="number" id="abbrand" min="0" value="2" required title="Abbrand durch Schneidedraht in mm"></label>
             <label>Preiseinheit (Menge):
               <select id="preiseinheit" required title="Preis für diese Stückzahl">
@@ -347,7 +353,7 @@
       </div>
     </div>
   </div>
-  <div class="version">v1.0.1</div>
+  <div class="version">v1.1.0</div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -435,14 +441,6 @@
       loadSavedValues();
     });
 
-    // Modifiziere die bestehende berechneEPS Funktion
-    const originalBerechneEPS = berechneEPS;
-    berechneEPS = function() {
-      originalBerechneEPS();
-      saveFormValues();
-      saveResults();
-    };
-
     function berechneEPS() {
       const abbrand = parseFloat(document.getElementById('abbrand').value) || 2; // mm Abbrand pro Schnitt (anpassbar)
       const gesAbstand = abbrand; // Nur Abbrand als Abstand zwischen Bauteilen
@@ -454,7 +452,6 @@
       const teilH = parseInt(document.getElementById('teilHoehe').value); // Y
       const teilB = parseInt(document.getElementById('teilBreite').value); // Z
       const anzahl = parseInt(document.getElementById('anzahlTeile').value);
-      const geschw = parseInt(document.getElementById('geschwindigkeit').value);
       const dichte = parseFloat(document.getElementById('dichte').value);
       // Warnung, falls Bauteil größer als Block
       if (teilL > blockL || teilB > blockB || teilH > blockH) {
@@ -566,30 +563,35 @@
       }
       const gesamtAbfallVol = abfallVolVoll + abfallVolRest;
       const gesamtAbfallWert = gesamtAbfallVol * preisProM3;
-      // Exakte Schnittzeitberechnung (alle Schnitte in L, B, H)
-      // Anzahl Schnitte pro Richtung (immer n-1 Schnitte)
-      const schnitteL = beste.nL > 0 ? beste.nL - 1 : 0;
-      const schnitteB = beste.nB > 0 ? beste.nB - 1 : 0;
-      const schnitteH = beste.nH > 0 ? beste.nH - 1 : 0;
-      // Anzahl Drähte berücksichtigen (mind. 1)
-      const anzahlDraehte = Math.max(1, parseInt(document.getElementById('anzahlDraehte').value));
-      // Schnittweg pro Richtung (mm)
-      const effektiveSchnitteL = Math.ceil(schnitteL / anzahlDraehte);
-      const effektiveSchnitteB = Math.ceil(schnitteB / anzahlDraehte);
-      const schnittwegL = effektiveSchnitteL * blockB; // Längsschnitte gehen über die Breite (Z)
-      const schnittwegB = effektiveSchnitteB * blockL; // Querschnitte gehen über die Länge (X)
-      const schnittwegH = schnitteH * blockL; // Höhenschnitte: alle Bauteile werden auf einmal geschnitten (über die volle Blocklänge X)
-      // Schnittzeit pro Richtung (min)
-      const schnittzeitL = schnittwegL / geschw;
-      const schnittzeitB = schnittwegB / geschw;
-      const schnittzeitH = schnittwegH / geschw;
+      // --- NEU: Variablen für zweistufige Kalkulation ---
+      const geschwXY = parseInt(document.getElementById('geschwindigkeitXY').value);
+      const anzahlDraehteXY = Math.max(1, parseInt(document.getElementById('anzahlDraehteXY').value));
+      const geschwZ = parseInt(document.getElementById('geschwindigkeitZ').value);
+      const anzahlDraehteZ = Math.max(1, parseInt(document.getElementById('anzahlDraehteZ').value));
+      const zeitUmstapeln = parseFloat(document.getElementById('zeitUmstapeln').value) || 0;
+      // --- ENDE NEU ---
+      // --- NEU: Zweistufige Schnittzeitberechnung ---
+      // Schritt 1: XY-Schnitt (X und Y)
+      const schnitteX = beste.nL > 0 ? beste.nL - 1 : 0;
+      const schnitteY = beste.nH > 0 ? beste.nH - 1 : 0;
+      const effektiveSchnitteX = Math.ceil(schnitteX / anzahlDraehteXY);
+      const effektiveSchnitteY = Math.ceil(schnitteY / anzahlDraehteXY);
+      const schnittwegX = effektiveSchnitteX * blockB; // X-Schnitte über Breite (Z)
+      const schnittwegY = effektiveSchnitteY * blockL; // Y-Schnitte über Länge (X)
+      const schnittzeitX = schnittwegX / geschwXY;
+      const schnittzeitY = schnittwegY / geschwXY;
+      // Schritt 2: Umstapeln
+      // Zeit pro Block (eingegeben)
+      // Schritt 3: Z-Schnitt
+      const schnitteZ = beste.nB > 0 ? beste.nB - 1 : 0;
+      const effektiveSchnitteZ = Math.ceil(schnitteZ / anzahlDraehteZ);
+      const schnittwegZ = effektiveSchnitteZ * blockL; // Z-Schnitte über Länge (X)
+      const schnittzeitZ = schnittwegZ / geschwZ;
       // Gesamtschnittzeit pro Block (min)
-      const schnittzeitBlock = (schnittzeitL + schnittzeitB + schnittzeitH);
-      // Schnittzeit pro Bauteil (min)
+      const schnittzeitBlock = schnittzeitX + schnittzeitY + zeitUmstapeln + schnittzeitZ;
+      // --- ENDE NEU ---
+      // Schnittzeit pro Bauteil (min) wieder korrekt berechnen
       const schnittzeitBauteil = beste.maxTeile > 0 ? (schnittzeitBlock / beste.maxTeile) : 0;
-      console.log('Debug - Schnittzeit pro Block:', schnittzeitBlock);
-      console.log('Debug - Max Teile pro Block:', beste.maxTeile);
-      console.log('Debug - Schnittzeit pro Bauteil:', schnittzeitBauteil);
       // Maschinenkosten (35,34 €/h) jetzt korrekt auf Basis der Schnittzeit
       const maschinenStunden = schnittzeitBlock / 60; // Stunden pro Block (exakt)
       const maschinenKostenProBlock = maschinenStunden * 35.34;
@@ -684,6 +686,8 @@
       syncVisualHeights();
       zeichneBlock(blockL, blockH, beste.l, beste.h, beste.nL, beste.nH, gesAbstand, beste.maxTeile, anzahl, beste.name);
       renderBlock3D(blockL, blockB, blockH, beste.l, beste.b, beste.h, beste.nL, beste.nB, beste.nH, gesAbstand, beste.maxTeile, anzahl);
+      saveFormValues();
+      saveResults();
       // Verpackung Dropdown Umschalten
       function toggleVerpackungFrei() {
         const typ = document.getElementById('verpackungstyp').value;
@@ -736,10 +740,18 @@
     // Setzt die Standard-Schneidegeschwindigkeit je nach Dichte
     function setzeGeschwindigkeitNachDichte() {
       const dichte = document.getElementById('dichte').value;
-      const geschwInput = document.getElementById('geschwindigkeit');
-      if (dichte == '15') geschwInput.value = 650;
-      else if (dichte == '18') geschwInput.value = 600;
-      else if (dichte == '27') geschwInput.value = 450;
+      const geschwXYInput = document.getElementById('geschwindigkeitXY');
+      const geschwZInput = document.getElementById('geschwindigkeitZ');
+      if (dichte == '15') {
+        geschwXYInput.value = 650;
+        geschwZInput.value = 650;
+      } else if (dichte == '18') {
+        geschwXYInput.value = 600;
+        geschwZInput.value = 600;
+      } else if (dichte == '27') {
+        geschwXYInput.value = 450;
+        geschwZInput.value = 450;
+      }
     }
     document.getElementById('dichte').addEventListener('change', setzeGeschwindigkeitNachDichte);
 
@@ -773,9 +785,9 @@
       yPos += 10;
       doc.text(`Anzahl: ${document.getElementById('anzahlTeile').value} Stück`, 34, yPos);
       yPos += 10;
-      doc.text(`Geschwindigkeit: ${document.getElementById('geschwindigkeit').value} mm/min`, 34, yPos);
+      doc.text(`Geschwindigkeit: ${document.getElementById('geschwindigkeitXY').value} mm/min`, 34, yPos);
       yPos += 10;
-      doc.text(`Drähte: ${document.getElementById('anzahlDraehte').value}`, 34, yPos);
+      doc.text(`Drähte: ${document.getElementById('anzahlDraehteXY').value}`, 34, yPos);
       yPos += 10;
       doc.text(`Abbrand: ${document.getElementById('abbrand').value} mm`, 34, yPos);
       yPos += 16;
