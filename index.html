@@ -7,14 +7,17 @@
     <link rel="icon" type="image/png" sizes="192x192" href="icon.png">
     <link rel="apple-touch-icon" sizes="180x180" href="icon.png">
     <link rel="manifest" href="manifest.json">
+    <!-- Material Icons für SAP-Fiori-ähnliche Optik -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #1a3b6e;
-            --secondary-color: #2c5282;
-            --accent-color: #e53e3e;
-            --text-color: #2d3748;
-            --light-bg: #f7fafc;
+            --primary-color: #003366;
+            --secondary-color: #002244;
+            --accent-color: #e9730c;
+            --text-color: #32363a;
+            --light-bg: #f7f9fa;
             --white: #ffffff;
+            --tile-shadow: 0 2px 8px rgba(0,0,0,0.07);
         }
 
         * {
@@ -24,17 +27,17 @@
         }
 
         body {
-            font-family: 'Segoe UI', Arial, sans-serif;
+            font-family: '72', 'Segoe UI', Arial, sans-serif;
             line-height: 1.6;
             color: var(--text-color);
             background-color: var(--light-bg);
         }
 
         .header {
-            background-color: var(--primary-color);
+            background: var(--primary-color);
             color: var(--white);
-            padding: 10px 0;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 24px 0 16px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
         }
 
         .header-content {
@@ -42,97 +45,109 @@
             margin: 0 auto;
             padding: 0 2rem;
             display: flex;
-            justify-content: center;
             align-items: center;
-            position: relative;
+            justify-content: space-between;
         }
 
         .logo {
-            font-size: 1.5rem;
+            font-size: 2rem;
             font-weight: bold;
             color: var(--white);
             text-decoration: none;
-            position: absolute;
-            left: 2rem;
+            letter-spacing: 2px;
         }
 
         .seiten-titel {
-            color: #fff;
-            font-size: 1.3em;
+            font-size: 1.5rem;
             font-weight: 600;
-            text-align: center;
-            flex: 1;
+            color: var(--white);
+            margin-left: 1.5rem;
         }
 
         .main-container {
             max-width: 1200px;
-            margin: 2rem auto;
+            margin: 2.5rem auto 0 auto;
             padding: 0 2rem;
         }
 
         .login-container {
-            background-color: var(--white);
+            background: var(--white);
             border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: var(--tile-shadow);
             padding: 2rem;
             margin-bottom: 2rem;
         }
 
         .welcome-section {
-            background-color: var(--white);
+            background: var(--white);
             border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: var(--tile-shadow);
             padding: 2rem;
             margin-bottom: 2rem;
             display: none;
         }
 
         .nav-links {
-            display: none;
-            background-color: var(--white);
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            padding: 2rem;
+            background: none;
+            box-shadow: none;
+            padding: 0;
             margin-bottom: 2rem;
         }
 
         .nav-links h2 {
             color: var(--primary-color);
-            margin-bottom: 1.5rem;
-            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            font-size: 2rem;
+            font-weight: 500;
         }
 
         .nav-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 2.5rem;
         }
 
         .nav-card {
-            background-color: var(--light-bg);
-            border-radius: 6px;
-            padding: 1.5rem;
+            background: var(--white);
+            border-radius: 16px;
+            box-shadow: var(--tile-shadow);
+            padding: 1.5rem 1rem 1rem 1rem;
             text-align: center;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: box-shadow 0.2s, transform 0.2s;
+            cursor: pointer;
+            border: 1px solid #e5eaf3;
+            position: relative;
         }
 
         .nav-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 24px rgba(10,110,209,0.10);
+            transform: translateY(-4px) scale(1.03);
+            border-color: var(--primary-color);
         }
 
         .nav-card a {
             color: var(--primary-color);
             text-decoration: none;
             font-weight: 600;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             display: block;
+            margin-top: 1.2rem;
         }
 
         .nav-card p {
-            color: var(--text-color);
+            color: #5a5d5f;
             margin-top: 0.5rem;
-            font-size: 0.9rem;
+            font-size: 1rem;
+        }
+
+        .nav-card .material-icons {
+            font-size: 2.2rem;
+            color: var(--primary-color);
+            background: #eaf3fc;
+            border-radius: 50%;
+            padding: 10px;
+            margin-bottom: 0.5rem;
+            box-shadow: 0 2px 8px rgba(10,110,209,0.07);
         }
 
         form {
@@ -174,11 +189,20 @@
         }
 
         .logout-btn {
-            background-color: var(--accent-color);
+            background: var(--accent-color);
+            color: var(--white);
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 0.75rem 1.5rem;
+            margin-top: 1.5rem;
+            transition: background 0.2s;
         }
 
         .logout-btn:hover {
-            background-color: #c53030;
+            background: #b85c00;
         }
 
         .error-message {
@@ -258,29 +282,43 @@
         <div class="nav-links" id="navLinks">
             <h2>Unsere Services</h2>
             <div class="nav-grid">
-                <div class="nav-card">
-                    <a href="Kalkulation.html">Kalkulation</a>
+                <a href="Kalkulation.html" class="nav-card" style="text-decoration:none;">
+                    <span class="material-icons">calculate</span>
+                    <div style="color:var(--primary-color);font-weight:600;font-size:1.2rem;margin-top:1.2rem;">Kalkulation</div>
                     <p>Berechnen Sie Ihre Kosten mit unserem professionellen Kalkulationstool</p>
-                </div>
-                <div class="nav-card">
-                    <a href="EPS.html">EPS-Berechnung</a>
+                </a>
+                <a href="EPS.html" class="nav-card" style="text-decoration:none;">
+                    <span class="material-icons">view_in_ar</span>
+                    <div style="color:var(--primary-color);font-weight:600;font-size:1.2rem;margin-top:1.2rem;">EPS-Berechnung</div>
                     <p>Optimieren Sie Ihre EPS-Produktion mit unserem spezialisierten Tool</p>
-                </div>
-                <div class="nav-card">
-                    <a href="Drucker.html">Digitaler Verpackungsdruck</a>
+                </a>
+                <a href="Drucker.html" class="nav-card" style="text-decoration:none;">
+                    <span class="material-icons">print</span>
+                    <div style="color:var(--primary-color);font-weight:600;font-size:1.2rem;margin-top:1.2rem;">Digitaler Verpackungsdruck</div>
                     <p>Kalkulieren Sie die Kosten für digitalen Verpackungsdruck</p>
-                </div>
-                <div class="nav-card">
-                    <a href="Plotter.html">Verpackungsplotter</a>
+                </a>
+                <a href="Plotter.html" class="nav-card" style="text-decoration:none;">
+                    <span class="material-icons">content_cut</span>
+                    <div style="color:var(--primary-color);font-weight:600;font-size:1.2rem;margin-top:1.2rem;">Verpackungsplotter</div>
                     <p>Berechnen Sie die Kosten für das Schneiden und Rillen von Verpackungen</p>
-                </div>
+                </a>
+                <a href="Aufgabe.html" class="nav-card" style="text-decoration:none;">
+                    <span class="material-icons">assignment</span>
+                    <div style="color:var(--primary-color);font-weight:600;font-size:1.2rem;margin-top:1.2rem;">Aufgaben</div>
+                    <p>Verwalten Sie Ihre Aufgaben zentral im Netzwerk</p>
+                </a>
+                <a href="Produktionsaufträge.html" class="nav-card" style="text-decoration:none;">
+                    <span class="material-icons">factory</span>
+                    <div style="color:var(--primary-color);font-weight:600;font-size:1.2rem;margin-top:1.2rem;">Produktionsaufträge</div>
+                    <p>Verwalten Sie Ihre Produktionsaufträge und das Archiv zentral</p>
+                </a>
             </div>
         </div>
 
         <button id="logoutBtn" class="logout-btn" style="display: none;">Abmelden</button>
     </main>
 
-    <div class="version">Version 1.0.1</div>
+    <div class="version">Version 1.0.2</div>
 
     <script>
         // Beispiel-Benutzer (in der Praxis sollten diese sicher gespeichert werden)

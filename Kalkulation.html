@@ -14,6 +14,7 @@
             margin: 0;
             background: #f7fafc;
             color: #2d3748;
+            padding-top: 0;
         }
         h2 {
             margin-top: 18px;
@@ -24,13 +25,20 @@
             letter-spacing: 0.5px;
             font-size: 1.35rem;
         }
+        .main-flex-container {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            width: 100%;
+            margin-top: 5mm;
+        }
+        .button-leiste {
+            min-width: 200px;
+            margin-right: 32px;
+            margin-top: 0;
+        }
         form {
-            margin: 0 auto;
-            max-width: 1400px;
-            background: #fff;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px 0 rgba(30,60,90,0.06);
-            padding: 32px 24px 16px 24px;
+            margin: 0;
         }
         .form-row {
             display: flex;
@@ -298,17 +306,80 @@
             <span class="seiten-titel">Kalkulation</span>
         </div>
     </header>
-    <div style="display: flex; align-items: flex-start;">
-        <div class="button-row-oben">
-            <a href="index.html">← Zurück zur Startseite</a>
-            <button type="button" class="pdf-button" id="pdf-export-btn">Als PDF exportieren</button>
-            <button type="button" class="reset-button" id="reset-form-btn">Formular zurücksetzen</button>
-        </div>
-        <div style="display: inline-block; margin-top: 10mm; position: relative; left: 0%; margin: 0 auto;">
-            <div id="root"></div>
-        </div>
-    </div>
+    <div id="root"></div>
     <script type="text/babel">
+    const API_BASE = "http://192.168.1.20:5050";
+    const API_URL = 'http://192.168.1.20:5050/api/kalkulationen'; // ggf. IP anpassen!
+    let kalkulationen = [];
+    let sortField = null;
+    let sortDir = 1;
+
+    async function fetchKalkulationenFromServer() {
+      const res = await fetch(API_URL);
+      kalkulationen = await res.json();
+    }
+
+    async function addKalkulationToServer(kalkulation) {
+      const res = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(kalkulation)
+      });
+      return await res.json();
+    }
+
+    async function updateKalkulationOnServer(id, kalkulation) {
+      await fetch(`${API_URL}/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(kalkulation)
+      });
+    }
+
+    async function deleteKalkulationOnServer(id) {
+      await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+    }
+
+    async function renderKalkulationen() {
+      await fetchKalkulationenFromServer();
+      // Hier folgt die Logik zum Rendern der Kalkulationen analog zu renderTasks in Aufgabe.html
+      // ...
+    }
+
+    async function addKalkulation() {
+      // Sammle die Felder für eine neue Kalkulation (analog zu addTask)
+      // ...
+      await addKalkulationToServer({ /* Felder */ });
+      renderKalkulationen();
+    }
+
+    async function updateKalkulationField(id, field, value) {
+      const kalk = kalkulationen.find(k => k.id === id);
+      if (!kalk) return;
+      kalk[field] = value;
+      await updateKalkulationOnServer(id, kalk);
+      renderKalkulationen();
+    }
+
+    async function deleteKalkulation(id) {
+      if (confirm("Möchtest du diese Kalkulation wirklich löschen?")) {
+        await deleteKalkulationOnServer(id);
+        renderKalkulationen();
+      }
+    }
+
+    function sortKalkulationen(field) {
+      if (sortField === field) {
+        sortDir = -sortDir;
+      } else {
+        sortField = field;
+        sortDir = 1;
+      }
+      renderKalkulationen();
+    }
+
+    window.addEventListener('DOMContentLoaded', renderKalkulationen);
+
         // Hilfsfunktion für deutsche Zahlenformatierung
         function formatDE(num) {
             return Number(num).toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -407,6 +478,9 @@
             const [lagerDauer, setLagerDauer] = React.useState("");
             const [lagerGebuehr] = React.useState(5.5);
             const [dummyState, setDummyState] = React.useState(0);
+            const [savedCalculations, setSavedCalculations] = React.useState([]);
+            const [searchQuery, setSearchQuery] = React.useState("");
+            const [showDatabase, setShowDatabase] = React.useState(false);
 
             // Versand aktivieren, sobald mindestens ein Artikel in der Sendung ist
             React.useEffect(() => {
@@ -572,13 +646,14 @@
                 setPlz("");
                 setLieferantenSkonto("2");
                 setSkonto("2");
-                setArtikelListe([]);
+                setArtikelListe([]); // Artikelliste leeren
                 setGesamtMenge(0);
-                setSendungsVersandkosten(0);
+                setSendungsVersandkosten(0); // Versandkosten zurücksetzen
                 setVergleiche([]);
                 setVersandAktiv(false);
                 setLagerPaletten("");
                 setLagerDauer("");
+                setDummyState(s => s + 1); // Re-Render erzwingen
             }
 
             // Artikel zur Sendung hinzufügen
@@ -759,373 +834,614 @@
                 });
             }
 
-            // Event-Handler für die globalen Buttons oben
-            React.useEffect(() => {
-                // PDF-Export Button
-                const pdfBtn = document.getElementById('pdf-export-btn');
-                if (pdfBtn) pdfBtn.onclick = exportierePDF;
-                // Reset-Button
-                const resetBtn = document.getElementById('reset-form-btn');
-                if (resetBtn) resetBtn.onclick = resetForm;
-            }, []);
+            // Hilfsfunktion für eindeutige ID
+            function generateKalkulationId() {
+                return Date.now().toString() + Math.floor(Math.random()*10000).toString();
+            }
+
+            // Speichern
+            async function saveKalkulation() {
+                // Eindeutige ID für die Kalkulation
+                const kalkulation_id = generateKalkulationId();
+                const datum = new Date().toLocaleString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+                const artikelListe = artikelMitFracht; // alle Artikel mit Fracht und Details
+                try {
+                    const response = await fetch('http://192.168.1.20:5050/api/kalkulationen', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ kalkulation_id, datum, artikelListe })
+                    });
+                    const data = await response.json();
+                    if (data.status === 'success') {
+                        alert('Kalkulation erfolgreich gespeichert!');
+                        await loadKalkulationen();
+                        resetForm();
+                    }
+                } catch (error) {
+                    alert('Fehler beim Speichern!');
+                }
+            }
+
+            // Laden
+            async function loadKalkulationen() {
+                try {
+                    const response = await fetch('http://192.168.1.20:5050/api/kalkulationen');
+                    const data = await response.json();
+                    setSavedCalculations(data);
+                } catch (error) {
+                    alert('Fehler beim Laden!');
+                }
+            }
+
+            // Suche
+            const filteredCalculations = savedCalculations.filter(calc =>
+                (!searchQuery ||
+                    (calc.kunde && calc.kunde.toLowerCase().includes(searchQuery.toLowerCase())) ||
+                    (calc.beschreibung && calc.beschreibung.toLowerCase().includes(searchQuery.toLowerCase())) ||
+                    (calc.material && calc.material.toLowerCase().includes(searchQuery.toLowerCase()))
+                )
+            );
+
+            // Beim ersten Rendern laden
+            React.useEffect(() => { loadKalkulationen(); }, []);
+
+            // Kompakte Datenbank-Übersichtstabelle (gruppiert, mit Checkboxen zum Löschen)
+            function DatabaseTable() {
+                const [selectedRows, setSelectedRows] = React.useState([]);
+                const [deleteError, setDeleteError] = React.useState("");
+                // Alle Artikel aus allen Kalkulationen in einer Liste sammeln
+                const allArtikel = savedCalculations.flatMap(kalk => kalk.artikel);
+                const handleCheckboxChange = React.useCallback((id, checked) => {
+                    setSelectedRows(prev => {
+                        if (checked) {
+                            return [...prev, id];
+                        } else {
+                            return prev.filter(rowId => rowId !== id);
+                        }
+                    });
+                }, []);
+
+                const handleDeleteSelected = React.useCallback(async () => {
+                    try {
+                        if (selectedRows.length === 0) return;
+                        if (!window.confirm('Ausgewählte Einträge wirklich löschen?')) return;
+                        let errors = [];
+                        for (const id of selectedRows) {
+                            try {
+                                const res = await fetch(`http://192.168.1.20:5050/api/kalkulationen/${id}`, {
+                                    method: 'DELETE',
+                                    headers: { 'Content-Type': 'application/json' }
+                                });
+                                if (!res.ok) errors.push(id);
+                            } catch (err) {
+                                errors.push(id);
+                            }
+                        }
+                        setSelectedRows([]);
+                        await loadKalkulationen();
+                        if (errors.length === 0) {
+                            setDeleteError("");
+                            alert('Löschen erfolgreich!');
+                        } else {
+                            setDeleteError('Folgende Einträge konnten nicht gelöscht werden: ' + errors.join(", "));
+                        }
+                    } catch (e) {
+                        console.log("Fehler beim Löschen:", e);
+                        setDeleteError("Fehler beim Löschen: " + e.message);
+                    }
+                }, [selectedRows]);
+
+                const handleLoadSelected = React.useCallback(() => {
+                    if (selectedRows.length === 0) return;
+                    // Finde alle ausgewählten Artikel
+                    const selectedArtikel = [];
+                    savedCalculations.forEach(kalk => {
+                        kalk.artikel.forEach(row => {
+                            if (selectedRows.includes(row.id)) {
+                                selectedArtikel.push({
+                                    interneNummer: row.angebotsnummer || '',
+                                    kundenname: row.kundenname || '',
+                                    ekJePreiseinheit: row.ek_je_pe || 0,
+                                    mengeNum: row.menge || 0,
+                                    anzahlPaletten: row.paletten || 0,
+                                    aufschlagProzent: row.aufschlag || 0,
+                                    einheit: 1000, // Standardwert, ggf. anpassen
+                                    anteiligeFracht: row.anteilige_fracht || 0,
+                                    lagerkostenProEinheit: 0 // Standardwert, ggf. anpassen
+                                });
+                            }
+                        });
+                    });
+                    setArtikelListe(selectedArtikel);
+                    // Optional: Datenbank-Ansicht schließen
+                    // setShowDatabase(false);
+                }, [selectedRows, savedCalculations]);
+
+                return (
+                    <div style={{ marginTop: 20, padding: 20, background: '#fff', borderRadius: 8, boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+                        <h2 style={{fontSize:'15px'}}>Datenbank-Übersicht</h2>
+                        {deleteError && (
+                            <div style={{color: 'red', fontWeight: 'bold', marginBottom: 10}}>
+                                {deleteError}
+                            </div>
+                        )}
+                        <div style={{display:'flex',justifyContent:'flex-end',gap:10,marginBottom:10}}>
+                            <button 
+                                type="button"
+                                onClick={handleLoadSelected}
+                                disabled={selectedRows.length === 0}
+                                style={{
+                                    background: selectedRows.length === 0 ? '#ccc' : '#1a3b6e',
+                                    color: '#fff',
+                                    fontWeight: 'bold',
+                                    border: 'none',
+                                    borderRadius: 5,
+                                    padding: '5px 12px',
+                                    fontSize: '13px',
+                                    cursor: selectedRows.length === 0 ? 'not-allowed' : 'pointer'
+                                }}
+                            >
+                                Ausgewählte laden
+                            </button>
+                            <button 
+                                type="button"
+                                onClick={handleDeleteSelected} 
+                                disabled={selectedRows.length === 0}
+                                style={{
+                                    background: selectedRows.length === 0 ? '#ccc' : '#dc2626',
+                                    color: '#fff',
+                                    fontWeight: 'bold',
+                                    border: 'none',
+                                    borderRadius: 5,
+                                    padding: '5px 12px',
+                                    fontSize: '13px',
+                                    cursor: selectedRows.length === 0 ? 'not-allowed' : 'pointer'
+                                }}
+                            >
+                                Ausgewählte löschen
+                            </button>
+                        </div>
+                        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize:'13px' }}>
+                            <thead>
+                                <tr style={{ background: '#e3e8ee', color: '#1a3b6e' }}>
+                                    <th style={{width: '30px'}}></th>
+                                    <th>Angebotsnummer</th>
+                                    <th>Kundenname</th>
+                                    <th>Menge</th>
+                                    <th>Paletten</th>
+                                    <th>EK je PE</th>
+                                    <th>Einkaufssumme</th>
+                                    <th>Verkaufssumme</th>
+                                    <th>VK je PE</th>
+                                    <th>Aufschlag %</th>
+                                    <th>anteilige Fracht</th>
+                                    <th>DB gesamt</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {allArtikel.map(row => (
+                                    <tr key={row.id} style={{ borderBottom: '1px solid #bfc9d1' }}>
+                                        <td style={{textAlign: 'center'}}>
+                                            <input 
+                                                type="checkbox" 
+                                                checked={selectedRows.includes(row.id)} 
+                                                onChange={e => handleCheckboxChange(row.id, e.target.checked)}
+                                                style={{ 
+                                                    cursor: 'pointer',
+                                                    width: '16px',
+                                                    height: '16px'
+                                                }}
+                                            />
+                                        </td>
+                                        <td>{row.angebotsnummer}</td>
+                                        <td>{row.kundenname}</td>
+                                        <td>{row.menge}</td>
+                                        <td>{row.paletten}</td>
+                                        <td>€{formatDE(row.ek_je_pe)}</td>
+                                        <td>€{formatDE(row.einkaufssumme)}</td>
+                                        <td>€{formatDE(row.verkaufssumme)}</td>
+                                        <td>€{formatDE(row.vk_je_pe)}</td>
+                                        <td>{row.aufschlag}</td>
+                                        <td>{row.anteilige_fracht > 0 ? '€' + formatDE(row.anteilige_fracht) : '-'}</td>
+                                        <td>€{formatDE(row.db_gesamt)}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                );
+            }
+
+            // Button-Leiste oben (jetzt innerhalb von React)
+            const ButtonLeiste = () => (
+                <div className="button-row-oben">
+                    <a href="index.html" style={{ textDecoration: 'none', color: '#fff', background: '#1a3b6e', borderRadius: 7, padding: '10px 18px', fontWeight: 600, display: 'block', marginBottom: 8 }}>
+                        ← Zurück zur Startseite
+                    </a>
+                    <button type="button" className="pdf-button" onClick={exportierePDF}>Als PDF exportieren</button>
+                    <button type="button" className="reset-button" onClick={resetForm}>Formular zurücksetzen</button>
+                </div>
+            );
 
             return (
-                <form onSubmit={berechneErgebnis}>
-                    <div className="form-row">
-                        <fieldset className="form-section">
-                            <legend>Kundendaten</legend>
-                            <label>Interne Angebotsnummer:
-                                <input type="text" value={interneNummer} onChange={e => setInterneNummer(e.target.value)} placeholder="z.B. AN-001" />
-                            </label>
-                            <label>Kundenname:
-                                <input type="text" value={kundenname} onChange={e => setKundenname(e.target.value)} placeholder="Kundenname" />
-                            </label>
-                            <div className="result-section" style={{ marginTop: "15px" }}>
-                                <div style={{ marginBottom: "15px" }}>
-                                    <strong>VK je PE:</strong> €{formatDE(aktuellesErgebnis.vkJePreiseinheit + lagerkosten.proEinheit)}<br />
-                                    <span style={{
-                                        display: 'inline-block',
-                                        background: '#e3e8ee',
-                                        color: '#1a3b6e',
-                                        fontWeight: 'bold',
-                                        fontSize: '1.15em',
-                                        padding: '3px 10px',
-                                        borderRadius: '6px',
-                                        margin: '6px 0 6px 0'
-                                    }}>
-                                        VK: €{formatDE(aktuellesErgebnis.vkInklVersandJePreiseinheit + lagerkosten.proEinheit)}
-                                    </span><br />
-                                    <strong>DB gesamt:</strong> €{formatDE(aktuellesErgebnis.dbGesamt - lagerkosten.gesamt)}<br />
-                                    <strong>Paletten:</strong> {aktuellesErgebnis.anzahlPaletten}<br />
-                                    <strong>Frachtkosten (Sendung):</strong> €{
-                                        versandart === "stueckgut" && artikelMitFracht.length > 0
-                                            ? formatDE(artikelMitFracht.reduce((sum, a) => sum + (a.anteiligeFracht || 0), 0))
-                                            : formatDE(sendungsVersandkosten)
-                                    }<br />
-                                    <span style={{ color: '#1a3b6e' }}>
-                                        Lager gesamt: <strong>€{formatDE(lagerkosten.gesamt)}</strong> | je PE: <strong>€{formatDE(lagerkosten.proEinheit)}</strong>
-                                    </span>
-                                </div>
-                                <button
-                                    type="button"
-                                    onClick={artikelZurSendungHinzufuegen}
-                                    style={{
-                                        width: "100%",
-                                        fontWeight: "bold",
-                                        background: "linear-gradient(90deg, #1a3b6e 60%, #2c5282 100%)",
-                                        color: "#fff",
-                                        border: "none",
-                                        borderRadius: "7px",
-                                        padding: "8px 18px",
-                                        cursor: "pointer"
-                                    }}
-                                    tabIndex={5}
-                                >
-                                    Artikel zur Sendung hinzufügen
-                                </button>
-                            </div>
-                        </fieldset>
-                        <fieldset className="form-section">
-                            <legend>Kalkulation</legend>
-                            <label>EK je Preiseinheit:
-                                <input type="number" value={ek} onChange={e => setEk(e.target.value)} step="0.01" tabIndex={1} />
-                            </label>
-                            <label>Preiseinheit:
-                                <select value={preiseinheit} onChange={e => setPreiseinheit(e.target.value)} tabIndex={-1}>
-                                    <option value="1">1</option>
-                                    <option value="100">100</option>
-                                    <option value="1000">1.000</option>
-                                </select>
-                            </label>
-                            <label>Menge:
-                                <input type="number" value={menge} onChange={e => setMenge(e.target.value)} tabIndex={2} />
-                            </label>
-                            <label>Stück pro Palette:
-                                <input type="number" value={stueckProPalette} onChange={e => setStueckProPalette(e.target.value)} tabIndex={3} />
-                            </label>
-                            <label>Aufschlag in %:
-                                <input type="number" value={aufschlag} onChange={e => setAufschlag(e.target.value)} step="0.01" tabIndex={4} />
-                            </label>
-                            <label>VK Wunschpreis:
-                                <input type="number" value={vkWunsch} onChange={e => setVkWunsch(e.target.value)} step="0.01" />
-                            </label>
-                        </fieldset>
-                        <fieldset className="form-section"
-                            style={versandAktiv ? {} : { position: 'relative', opacity: 0.6 }}
-                        >
-                            <legend>Versand</legend>
-                            <label>Versandart:
-                                <select value={versandart} onChange={e => setVersandart(e.target.value)} disabled={!versandAktiv}>
-                                    <option value="lkw">LKW (max. 15 Paletten)</option>
-                                    <option value="lkwZug">LKW Zug (33 Paletten)</option>
-                                    <option value="bus">Bus</option>
-                                    <option value="spedition">Spedition</option>
-                                    <option value="stueckgut">Stückgut</option>
-                                </select>
-                            </label>
-                            {(versandart === "lkw" || versandart === "lkwZug" || versandart === "bus") && (
-                                <label>Strecke (km):
-                                    <input type="number" value={strecke} onChange={e => setStrecke(e.target.value)} disabled={!versandAktiv} />
+                <div className="main-flex-container">
+                    <div className="button-leiste">
+                        <ButtonLeiste />
+                    </div>
+                    <form onSubmit={berechneErgebnis}>
+                        <div className="form-row">
+                            <fieldset className="form-section">
+                                <legend>Kundendaten</legend>
+                                <label>Interne Angebotsnummer:
+                                    <input type="text" value={interneNummer} onChange={e => setInterneNummer(e.target.value)} placeholder="z.B. AN-001" style={{ borderColor: !interneNummer.trim() ? '#dc2626' : undefined }} tabIndex={1} />
+                                    {!interneNummer.trim() && <span style={{color:'#dc2626',fontSize:'12px'}}>Bitte ausfüllen</span>}
                                 </label>
-                            )}
-                            {versandart === "spedition" && (
-                                <label>Speditionskosten:
-                                    <input type="number" value={spedition} onChange={e => setSpedition(e.target.value)} step="0.01" disabled={!versandAktiv} />
+                                <label>Kundenname:
+                                    <input type="text" value={kundenname} onChange={e => setKundenname(e.target.value)} placeholder="Kundenname" style={{ borderColor: !kundenname.trim() ? '#dc2626' : undefined }} tabIndex={2} />
+                                    {!kundenname.trim() && <span style={{color:'#dc2626',fontSize:'12px'}}>Bitte ausfüllen</span>}
                                 </label>
-                            )}
-                            {versandart === "stueckgut" && (
-                                <label>PLZ:
-                                    <input type="text" value={plz} onChange={e => setPlz(e.target.value)} disabled={!versandAktiv} />
-                                </label>
-                            )}
-                            <div style={{
-                                marginTop: "15px",
-                                padding: "10px",
-                                background: "#fff",
-                                border: "1px solid #bfc9d1",
-                                borderRadius: "5px",
-                                fontSize: "13px"
-                            }}>
-                                <div style={{ 
-                                    color: "#1a3b6e", 
-                                    fontWeight: "600",
-                                    marginBottom: "5px",
-                                    borderBottom: "1px solid #e3e8ee",
-                                    paddingBottom: "5px"
-                                }}>
-                                    Frachtkosten
-                                </div>
-                                {versandart === "stueckgut" && frachtkosten.stueckgutHinweis && (
-                                    <div style={{ color: "#b91c1c", fontWeight: "bold", marginBottom: "8px" }}>
-                                        {frachtkosten.stueckgutHinweis}
+                                <div className="result-section" style={{ marginTop: "15px" }}>
+                                    <div style={{ marginBottom: "15px" }}>
+                                        <strong>VK je PE:</strong> €{formatDE(aktuellesErgebnis.vkJePreiseinheit + lagerkosten.proEinheit)}<br />
+                                        <span style={{
+                                            display: 'inline-block',
+                                            background: '#e3e8ee',
+                                            color: '#1a3b6e',
+                                            fontWeight: 'bold',
+                                            fontSize: '1.15em',
+                                            padding: '3px 10px',
+                                            borderRadius: '6px',
+                                            margin: '6px 0 6px 0'
+                                        }}>
+                                            VK: €{formatDE(aktuellesErgebnis.vkInklVersandJePreiseinheit + lagerkosten.proEinheit)}
+                                        </span><br />
+                                        <strong>DB gesamt:</strong> €{formatDE(aktuellesErgebnis.dbGesamt - lagerkosten.gesamt)}<br />
+                                        <strong>Paletten:</strong> {aktuellesErgebnis.anzahlPaletten}<br />
+                                        <strong>Frachtkosten (Sendung):</strong> €{
+                                            versandart === "stueckgut" && artikelMitFracht.length > 0
+                                                ? formatDE(artikelMitFracht.reduce((sum, a) => sum + (a.anteiligeFracht || 0), 0))
+                                                : formatDE(sendungsVersandkosten)
+                                        }<br />
+                                        <span style={{ color: '#1a3b6e' }}>
+                                            Lager gesamt: <strong>€{formatDE(lagerkosten.gesamt)}</strong> | je PE: <strong>€{formatDE(lagerkosten.proEinheit)}</strong>
+                                        </span>
                                     </div>
-                                )}
-                                <div style={{ textAlign: "right" }}>
-                                    <strong>Gesamt:</strong> €{formatDE(frachtkosten.gesamt)}
-                                </div>
-                                {versandart === "stueckgut" && frachtkosten.basis > 0 && (
-                                    <>
-                                        <div style={{ textAlign: "right", fontSize: "12px", color: "#666" }}>
-                                            Basis: €{formatDE(frachtkosten.basis)}
-                                        </div>
-                                        <div style={{ textAlign: "right", fontSize: "12px", color: "#666" }}>
-                                            Dieselzuschlag (15,26%): €{formatDE(frachtkosten.dieselzuschlag)}
-                                        </div>
-                                        <div style={{ textAlign: "right", fontSize: "12px", color: "#666" }}>
-                                            Palettentausch: €{formatDE(frachtkosten.palettentausch)}
-                                        </div>
-                                        <div style={{ textAlign: "right", fontSize: "12px", color: "#666" }}>
-                                            Versicherung: €{formatDE(frachtkosten.versicherung)}
-                                        </div>
-                                        <div style={{ textAlign: "right", fontSize: "12px", color: "#666" }}>
-                                            Preiserhöhung (5,59%): €{formatDE(frachtkosten.preiserhoehung)}
-                                        </div>
-                                        <div style={{ textAlign: "right", fontSize: "12px", color: "#666" }}>
-                                            gesetzl. Maut (7,94%): €{formatDE(frachtkosten.maut)}
-                                        </div>
-                                    </>
-                                )}
-                                {versandart === "lkw" && (
-                                    <>
-                                        <div style={{ textAlign: "right", fontSize: "12px", color: "#666" }}>
-                                            Preis pro km: €1,20
-                                        </div>
-                                        <div style={{ textAlign: "right", fontSize: "12px", color: "#666" }}>
-                                            Hin- und Rückfahrt: {parseFloat(strecke) || 0} km × 2
-                                        </div>
-                                    </>
-                                )}
-                                {versandart === "lkwZug" && (
-                                    <>
-                                        <div style={{ textAlign: "right", fontSize: "12px", color: "#666" }}>
-                                            Preis pro km: €1,60
-                                        </div>
-                                        <div style={{ textAlign: "right", fontSize: "12px", color: "#666" }}>
-                                            Hin- und Rückfahrt: {parseFloat(strecke) || 0} km × 2
-                                        </div>
-                                    </>
-                                )}
-                                {versandart === "bus" && (
-                                    <>
-                                        <div style={{ textAlign: "right", fontSize: "12px", color: "#666" }}>
-                                            Preis pro km: €0,80
-                                        </div>
-                                        <div style={{ textAlign: "right", fontSize: "12px", color: "#666" }}>
-                                            Hin- und Rückfahrt: {parseFloat(strecke) || 0} km × 2
-                                        </div>
-                                    </>
-                                )}
-                                {frachtkosten.paletten > 0 && (
-                                    <div style={{ textAlign: "right", fontSize: "12px", color: "#666", marginTop: "5px" }}>
-                                        Paletten: {frachtkosten.paletten}
-                                    </div>
-                                )}
-                                {artikelListe.length > 0 && (
                                     <button
                                         type="button"
-                                        onClick={berechneSendungsVersandkosten}
+                                        onClick={artikelZurSendungHinzufuegen}
                                         style={{
                                             width: "100%",
-                                            marginTop: "10px",
                                             fontWeight: "bold",
                                             background: "linear-gradient(90deg, #1a3b6e 60%, #2c5282 100%)",
                                             color: "#fff",
                                             border: "none",
                                             borderRadius: "7px",
                                             padding: "8px 18px",
-                                            cursor: "pointer",
-                                            fontSize: "13px"
+                                            cursor: "pointer"
                                         }}
+                                        tabIndex={7}
                                     >
-                                        Fracht berechnen
+                                        Artikel zur Sendung hinzufügen
                                     </button>
+                                </div>
+                            </fieldset>
+                            <fieldset className="form-section">
+                                <legend>Kalkulation</legend>
+                                <label>EK je Preiseinheit:
+                                    <input type="number" value={ek} onChange={e => setEk(e.target.value)} step="0.01" tabIndex={3} />
+                                </label>
+                                <label>Preiseinheit:
+                                    <select value={preiseinheit} onChange={e => setPreiseinheit(e.target.value)} tabIndex={-1}>
+                                        <option value="1">1</option>
+                                        <option value="100">100</option>
+                                        <option value="1000">1.000</option>
+                                    </select>
+                                </label>
+                                <label>Menge:
+                                    <input type="number" value={menge} onChange={e => setMenge(e.target.value)} tabIndex={4} />
+                                </label>
+                                <label>Stück pro Palette:
+                                    <input type="number" value={stueckProPalette} onChange={e => setStueckProPalette(e.target.value)} tabIndex={5} />
+                                </label>
+                                <label>Aufschlag in %:
+                                    <input type="number" value={aufschlag} onChange={e => setAufschlag(e.target.value)} step="0.01" tabIndex={6} />
+                                </label>
+                                <label>VK Wunschpreis:
+                                    <input type="number" value={vkWunsch} onChange={e => setVkWunsch(e.target.value)} step="0.01" tabIndex={-1} />
+                                </label>
+                            </fieldset>
+                            <fieldset className="form-section"
+                                style={versandAktiv ? {} : { position: 'relative', opacity: 0.6 }}
+                            >
+                                <legend>Versand</legend>
+                                <label>Versandart:
+                                    <select value={versandart} onChange={e => setVersandart(e.target.value)} disabled={!versandAktiv}>
+                                        <option value="lkw">LKW (max. 15 Paletten)</option>
+                                        <option value="lkwZug">LKW Zug (33 Paletten)</option>
+                                        <option value="bus">Bus</option>
+                                        <option value="spedition">Spedition</option>
+                                        <option value="stueckgut">Stückgut</option>
+                                    </select>
+                                </label>
+                                {(versandart === "lkw" || versandart === "lkwZug" || versandart === "bus") && (
+                                    <label>Strecke (km):
+                                        <input type="number" value={strecke} onChange={e => setStrecke(e.target.value)} disabled={!versandAktiv} />
+                                    </label>
                                 )}
-                            </div>
-                            {!versandAktiv && (
+                                {versandart === "spedition" && (
+                                    <label>Speditionskosten:
+                                        <input type="number" value={spedition} onChange={e => setSpedition(e.target.value)} step="0.01" disabled={!versandAktiv} />
+                                    </label>
+                                )}
+                                {versandart === "stueckgut" && (
+                                    <label>PLZ:
+                                        <input type="text" value={plz} onChange={e => setPlz(e.target.value)} disabled={!versandAktiv} />
+                                    </label>
+                                )}
                                 <div style={{
-                                    position: 'absolute',
-                                    top: 0, left: 0, right: 0, bottom: 0,
-                                    background: 'rgba(240,240,240,0.5)',
-                                    zIndex: 2,
-                                    pointerEvents: 'none',
-                                    borderRadius: '8px'
-                                }} />
-                            )}
-                        </fieldset>
-                        <fieldset className="form-section" style={{ minWidth: '140px', flex: '0.6 1 0' }}>
-                            <legend>Lagerung</legend>
-                            <label>Anzahl Paletten:
-                                <input type="number" value={aktuellesErgebnis.anzahlPaletten || 0} readOnly />
-                            </label>
-                            <label>Lagerdauer (Monate):
-                                <input type="number" value={lagerDauer} onChange={e => setLagerDauer(e.target.value)} />
-                            </label>
-                            <label>Lagergebühr je Palette/Monat (€):
-                                <input type="number" value={5.5} readOnly step="0.01" />
-                            </label>
-                            <div style={{ marginTop: 10, fontSize: 13, color: '#1a3b6e' }}>
-                                Gesamte Lagerkosten: <strong>€{formatDE(lagerkosten.gesamt)}</strong><br />
-                                Lagerkosten je Preiseinheit: <strong>€{formatDE(lagerkosten.proEinheit)}</strong>
-                            </div>
-                        </fieldset>
-                    </div>
-
-                    {/* Artikelliste und Frachtverteilung */}
-                    {artikelListe.length > 0 && (
-                        <div style={{ marginTop: "30px" }} id="artikel-tabelle">
-                            <div style={{ marginBottom: "10px", color: "#1a3b6e", fontWeight: "bold" }}>
-                                Artikel in der Sendung: {artikelListe.length}
-                            </div>
-                            <div style={{
-                                overflowX: "auto",
-                                background: "#f5f7fa",
-                                border: "1px solid #bfc9d1",
-                                borderRadius: "8px",
-                                boxShadow: "0 1px 2px 0 rgba(30,60,90,0.03)",
-                                padding: "8px",
-                                maxWidth: "1400px",
-                                margin: "0 auto"
-                            }}>
-                                <table style={{
-                                    borderCollapse: "collapse",
-                                    width: "100%",
-                                    fontSize: "0.90em",
+                                    marginTop: "15px",
+                                    padding: "10px",
                                     background: "#fff",
-                                    borderRadius: "8px",
-                                    overflow: "hidden"
+                                    border: "1px solid #bfc9d1",
+                                    borderRadius: "5px",
+                                    fontSize: "13px"
                                 }}>
-                                    <thead>
-                                        <tr style={{ background: "#e3e8ee", color: "#1a3b6e" }}>
-                                            <th style={{ borderRight: "1px solid #bfc9d1", padding: "6px" }}>Angebotsnummer</th>
-                                            <th style={{ borderRight: "1px solid #bfc9d1", padding: "6px" }}>Kundenname</th>
-                                            <th style={{ borderRight: "1px solid #bfc9d1", padding: "6px" }}>Menge</th>
-                                            <th style={{ borderRight: "1px solid #bfc9d1", padding: "6px" }}>Paletten</th>
-                                            <th style={{ borderRight: "1px solid #bfc9d1", padding: "6px" }}>EK je PE</th>
-                                            <th style={{ borderRight: "1px solid #bfc9d1", padding: "6px" }}>Einkaufssumme</th>
-                                            <th style={{ borderRight: "1px solid #bfc9d1", padding: "6px" }}>Verkaufssumme</th>
-                                            <th style={{ borderRight: "1px solid #bfc9d1", padding: "6px", background: "#e3e8ee", color: "#1a3b6e", fontWeight: "bold", fontSize: "1.05em", boxShadow: "0 0 0 2px #388e3c33 inset" }}>VK je PE</th>
-                                            <th style={{ borderRight: "1px solid #bfc9d1", padding: "6px" }}>Aufschlag %</th>
-                                            <th style={{ borderRight: "1px solid #bfc9d1", padding: "6px" }}>anteilige Fracht</th>
-                                            <th style={{ padding: "6px" }}>DB gesamt</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {(sendungsVersandkosten > 0 ? artikelMitFracht : artikelListe).map((a, i) => (
-                                            <tr key={i} style={{
-                                                background: i % 2 === 0 ? "#f7fafc" : "#fff",
-                                                borderBottom: "1px solid #bfc9d1"
-                                            }}>
-                                                <td style={{ borderRight: "1px solid #e3eefd", padding: "5px 6px" }}>{a.interneNummer}</td>
-                                                <td style={{ borderRight: "1px solid #e3eefd", padding: "5px 6px" }}>{a.kundenname}</td>
-                                                <td style={{ borderRight: "1px solid #e3eefd", padding: "5px 6px", textAlign: "right" }}>{a.mengeNum}</td>
-                                                <td style={{ borderRight: "1px solid #e3eefd", padding: "5px 6px", textAlign: "right" }}>{a.anzahlPaletten}</td>
-                                                <td style={{ borderRight: "1px solid #e3eefd", padding: "5px 6px", textAlign: "right" }}>€{formatDE(a.ekJePreiseinheit)}</td>
-                                                <td style={{ borderRight: "1px solid #e3eefd", padding: "5px 6px", textAlign: "right" }}>€{formatDE((a.ekJePreiseinheit || 0) * (a.mengeNum / (a.einheit || 1)))}</td>
-                                                <td style={{ borderRight: "1px solid #e3eefd", padding: "5px 6px", textAlign: "right" }}>€{formatDE((() => {
-                                                    const ek = a.ekJePreiseinheit || 0;
-                                                    const aufschlag = a.aufschlagProzent || 0;
-                                                    const anteiligeFracht = a.anteiligeFracht || 0;
-                                                    const mengeNum = a.mengeNum || 1;
-                                                    const einheit = a.einheit || 1;
-                                                    const neueVkJePE = ek * (1 + aufschlag / 100);
-                                                    const vkJePEInklFracht = neueVkJePE + (anteiligeFracht / (mengeNum / einheit));
-                                                    return vkJePEInklFracht * (mengeNum / einheit);
-                                                })())}</td>
-                                                <td style={{ borderRight: "1px solid #e3eefd", padding: "5px 6px", textAlign: "right", background: "#e3e8ee", color: "#1a3b6e", fontWeight: "bold", fontSize: "1.08em", boxShadow: "0 0 0 2px #388e3c22 inset" }}>€{formatDE((() => {
-                                                    const ek = a.ekJePreiseinheit || 0;
-                                                    const aufschlag = a.aufschlagProzent || 0;
-                                                    const anteiligeFracht = a.anteiligeFracht || 0;
-                                                    const mengeNum = a.mengeNum || 1;
-                                                    const einheit = a.einheit || 1;
-                                                    const neueVkJePE = ek * (1 + aufschlag / 100);
-                                                    // Lagerkosten pro Einheit berücksichtigen
-                                                    return neueVkJePE + (anteiligeFracht / (mengeNum / einheit)) + (a.lagerkostenProEinheit || 0);
-                                                })())}</td>
-                                                <td style={{ borderRight: "1px solid #e3eefd", padding: "5px 6px", textAlign: "right" }}>
-                                                    <input type="number" className="input-aufschlag-prozent" value={a.aufschlagProzent !== undefined ? a.aufschlagProzent : ''} min="0" max="100" step="0.01"
-                                                        style={{ width: '60px', fontSize: '1em', textAlign: 'right', border: '1px solid #bfc9d1', borderRadius: '4px', color: '#1a3b6e', background: '#f7fafc' }}
-                                                        onFocus={e => e.target.select()}
-                                                        onMouseUp={e => { e.preventDefault(); e.target.select(); }}
-                                                        onChange={e => {
-                                                            const newValue = parseFloat(e.target.value) || 0;
-                                                            setArtikelListe(prev => prev.map((art, idx2) => {
-                                                                if (i === idx2) {
-                                                                    return {
-                                                                        ...art,
-                                                                        aufschlagProzent: newValue
-                                                                    };
-                                                                }
-                                                                return art;
-                                                            }));
-                                                            // Trigger ein Re-Render der gesamten Tabelle, indem ein Dummy-State geändert wird
-                                                            setDummyState(s => s + 1);
-                                                        }}
-                                                    />
-                                                </td>
-                                                <td style={{ borderRight: "1px solid #e3eefd", padding: "5px 6px", textAlign: "right" }}>{a.anteiligeFracht > 0 ? "€" + formatDE(a.anteiligeFracht) : "-"}</td>
-                                                <td style={{ fontWeight: "bold", color: "#1a3b6e", background: "#e3e8ee", padding: "5px 6px", textAlign: "right" }}>€{formatDE((() => {
-                                                    const ek = a.ekJePreiseinheit || 0;
-                                                    const aufschlag = a.aufschlagProzent || 0;
-                                                    const mengeNum = a.mengeNum || 0;
-                                                    const einheit = a.einheit || 1;
-                                                    const neueVkJePE = ek * (1 + aufschlag / 100);
-                                                    const dbJePE = neueVkJePE - ek;
-                                                    return dbJePE * (mengeNum / einheit);
-                                                })())}</td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
+                                    <div style={{ 
+                                        color: "#1a3b6e", 
+                                        fontWeight: "600",
+                                        marginBottom: "5px",
+                                        borderBottom: "1px solid #e3e8ee",
+                                        paddingBottom: "5px"
+                                    }}>
+                                        Frachtkosten
+                                    </div>
+                                    {versandart === "stueckgut" && frachtkosten.stueckgutHinweis && (
+                                        <div style={{ color: "#b91c1c", fontWeight: "bold", marginBottom: "8px" }}>
+                                            {frachtkosten.stueckgutHinweis}
+                                        </div>
+                                    )}
+                                    <div style={{ textAlign: "right" }}>
+                                        <strong>Gesamt:</strong> €{formatDE(frachtkosten.gesamt)}
+                                    </div>
+                                    {versandart === "stueckgut" && frachtkosten.basis > 0 && (
+                                        <>
+                                            <div style={{ textAlign: "right", fontSize: "12px", color: "#666" }}>
+                                                Basis: €{formatDE(frachtkosten.basis)}
+                                            </div>
+                                            <div style={{ textAlign: "right", fontSize: "12px", color: "#666" }}>
+                                                Dieselzuschlag (15,26%): €{formatDE(frachtkosten.dieselzuschlag)}
+                                            </div>
+                                            <div style={{ textAlign: "right", fontSize: "12px", color: "#666" }}>
+                                                Palettentausch: €{formatDE(frachtkosten.palettentausch)}
+                                            </div>
+                                            <div style={{ textAlign: "right", fontSize: "12px", color: "#666" }}>
+                                                Versicherung: €{formatDE(frachtkosten.versicherung)}
+                                            </div>
+                                            <div style={{ textAlign: "right", fontSize: "12px", color: "#666" }}>
+                                                Preiserhöhung (5,59%): €{formatDE(frachtkosten.preiserhoehung)}
+                                            </div>
+                                            <div style={{ textAlign: "right", fontSize: "12px", color: "#666" }}>
+                                                gesetzl. Maut (7,94%): €{formatDE(frachtkosten.maut)}
+                                            </div>
+                                        </>
+                                    )}
+                                    {versandart === "lkw" && (
+                                        <>
+                                            <div style={{ textAlign: "right", fontSize: "12px", color: "#666" }}>
+                                                Preis pro km: €1,20
+                                            </div>
+                                            <div style={{ textAlign: "right", fontSize: "12px", color: "#666" }}>
+                                                Hin- und Rückfahrt: {parseFloat(strecke) || 0} km × 2
+                                            </div>
+                                        </>
+                                    )}
+                                    {versandart === "lkwZug" && (
+                                        <>
+                                            <div style={{ textAlign: "right", fontSize: "12px", color: "#666" }}>
+                                                Preis pro km: €1,60
+                                            </div>
+                                            <div style={{ textAlign: "right", fontSize: "12px", color: "#666" }}>
+                                                Hin- und Rückfahrt: {parseFloat(strecke) || 0} km × 2
+                                            </div>
+                                        </>
+                                    )}
+                                    {versandart === "bus" && (
+                                        <>
+                                            <div style={{ textAlign: "right", fontSize: "12px", color: "#666" }}>
+                                                Preis pro km: €0,80
+                                            </div>
+                                            <div style={{ textAlign: "right", fontSize: "12px", color: "#666" }}>
+                                                Hin- und Rückfahrt: {parseFloat(strecke) || 0} km × 2
+                                            </div>
+                                        </>
+                                    )}
+                                    {frachtkosten.paletten > 0 && (
+                                        <div style={{ textAlign: "right", fontSize: "12px", color: "#666", marginTop: "5px" }}>
+                                            Paletten: {frachtkosten.paletten}
+                                        </div>
+                                    )}
+                                    {artikelListe.length > 0 && (
+                                        <button
+                                            type="button"
+                                            onClick={berechneSendungsVersandkosten}
+                                            style={{
+                                                width: "100%",
+                                                marginTop: "10px",
+                                                fontWeight: "bold",
+                                                background: "linear-gradient(90deg, #1a3b6e 60%, #2c5282 100%)",
+                                                color: "#fff",
+                                                border: "none",
+                                                borderRadius: "7px",
+                                                padding: "8px 18px",
+                                                cursor: "pointer",
+                                                fontSize: "13px"
+                                            }}
+                                        >
+                                            Fracht berechnen
+                                        </button>
+                                    )}
+                                </div>
+                                {!versandAktiv && (
+                                    <div style={{
+                                        position: 'absolute',
+                                        top: 0, left: 0, right: 0, bottom: 0,
+                                        background: 'rgba(240,240,240,0.5)',
+                                        zIndex: 2,
+                                        pointerEvents: 'none',
+                                        borderRadius: '8px'
+                                    }} />
+                                )}
+                            </fieldset>
+                            <fieldset className="form-section" style={{ minWidth: '140px', flex: '0.6 1 0' }}>
+                                <legend>Lagerung</legend>
+                                <label>Anzahl Paletten:
+                                    <input type="number" value={aktuellesErgebnis.anzahlPaletten || 0} readOnly />
+                                </label>
+                                <label>Lagerdauer (Monate):
+                                    <input type="number" value={lagerDauer} onChange={e => setLagerDauer(e.target.value)} />
+                                </label>
+                                <label>Lagergebühr je Palette/Monat (€):
+                                    <input type="number" value={5.5} readOnly step="0.01" />
+                                </label>
+                                <div style={{ marginTop: 10, fontSize: 13, color: '#1a3b6e' }}>
+                                    Gesamte Lagerkosten: <strong>€{formatDE(lagerkosten.gesamt)}</strong><br />
+                                    Lagerkosten je Preiseinheit: <strong>€{formatDE(lagerkosten.proEinheit)}</strong>
+                                </div>
+                            </fieldset>
                         </div>
-                    )}
-                </form>
+
+                        {/* Artikelliste und Frachtverteilung */}
+                        {artikelListe.length > 0 && (
+                            <div style={{ marginTop: "30px" }} id="artikel-tabelle">
+                                <div style={{ marginBottom: "10px", color: "#1a3b6e", fontWeight: "bold" }}>
+                                    Artikel in der Sendung: {artikelListe.length}
+                                </div>
+                                <div style={{
+                                    overflowX: "auto",
+                                    background: "#f5f7fa",
+                                    border: "1px solid #bfc9d1",
+                                    borderRadius: "8px",
+                                    boxShadow: "0 1px 2px 0 rgba(30,60,90,0.03)",
+                                    padding: "8px",
+                                    maxWidth: "1400px",
+                                    margin: "0 auto"
+                                }}>
+                                    <table style={{
+                                        borderCollapse: "collapse",
+                                        width: "100%",
+                                        fontSize: "0.90em",
+                                        background: "#fff",
+                                        borderRadius: "8px",
+                                        overflow: "hidden"
+                                    }}>
+                                        <thead>
+                                            <tr style={{ background: "#e3e8ee", color: "#1a3b6e" }}>
+                                                <th style={{ borderRight: "1px solid #bfc9d1", padding: "6px" }}>Angebotsnummer</th>
+                                                <th style={{ borderRight: "1px solid #bfc9d1", padding: "6px" }}>Kundenname</th>
+                                                <th style={{ borderRight: "1px solid #bfc9d1", padding: "6px" }}>Menge</th>
+                                                <th style={{ borderRight: "1px solid #bfc9d1", padding: "6px" }}>Paletten</th>
+                                                <th style={{ borderRight: "1px solid #bfc9d1", padding: "6px" }}>EK je PE</th>
+                                                <th style={{ borderRight: "1px solid #bfc9d1", padding: "6px" }}>Einkaufssumme</th>
+                                                <th style={{ borderRight: "1px solid #bfc9d1", padding: "6px" }}>Verkaufssumme</th>
+                                                <th style={{ borderRight: "1px solid #bfc9d1", padding: "6px" }}>VK je PE</th>
+                                                <th style={{ borderRight: "1px solid #bfc9d1", padding: "6px" }}>Aufschlag %</th>
+                                                <th style={{ borderRight: "1px solid #bfc9d1", padding: "6px" }}>anteilige Fracht</th>
+                                                <th style={{ padding: "6px" }}>DB gesamt</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {artikelMitFracht.map((a, i) => (
+                                                <tr key={i} style={{
+                                                    background: i % 2 === 0 ? "#f7fafc" : "#fff",
+                                                    borderBottom: "1px solid #bfc9d1"
+                                                }}>
+                                                    <td style={{ borderRight: "1px solid #e3eefd", padding: "5px 6px" }}>{a.interneNummer}</td>
+                                                    <td style={{ borderRight: "1px solid #e3eefd", padding: "5px 6px" }}>{a.kundenname}</td>
+                                                    <td style={{ borderRight: "1px solid #e3eefd", padding: "5px 6px", textAlign: "right" }}>{a.mengeNum}</td>
+                                                    <td style={{ borderRight: "1px solid #e3eefd", padding: "5px 6px", textAlign: "right" }}>{a.anzahlPaletten}</td>
+                                                    <td style={{ borderRight: "1px solid #e3eefd", padding: "5px 6px", textAlign: "right" }}>€{formatDE(a.ekJePreiseinheit)}</td>
+                                                    <td style={{ borderRight: "1px solid #e3eefd", padding: "5px 6px", textAlign: "right" }}>€{formatDE((a.ekJePreiseinheit || 0) * (a.mengeNum / (a.einheit || 1)))}</td>
+                                                    <td style={{ borderRight: "1px solid #e3eefd", padding: "5px 6px", textAlign: "right" }}>€{formatDE((() => {
+                                                        const ek = a.ekJePreiseinheit || 0;
+                                                        const aufschlag = a.aufschlagProzent || 0;
+                                                        const anteiligeFracht = a.anteiligeFracht || 0;
+                                                        const mengeNum = a.mengeNum || 1;
+                                                        const einheit = a.einheit || 1;
+                                                        const neueVkJePE = ek * (1 + aufschlag / 100);
+                                                        const vkJePEInklFracht = neueVkJePE + (anteiligeFracht / (mengeNum / einheit));
+                                                        return vkJePEInklFracht * (mengeNum / einheit);
+                                                    })())}</td>
+                                                    <td style={{ borderRight: "1px solid #e3eefd", padding: "5px 6px", textAlign: "right", background: "#e3e8ee", color: "#1a3b6e", fontWeight: "bold", fontSize: "1.08em", boxShadow: "0 0 0 2px #388e3c22 inset" }}>€{formatDE((() => {
+                                                        const ek = a.ekJePreiseinheit || 0;
+                                                        const aufschlag = a.aufschlagProzent || 0;
+                                                        const anteiligeFracht = a.anteiligeFracht || 0;
+                                                        const mengeNum = a.mengeNum || 1;
+                                                        const einheit = a.einheit || 1;
+                                                        const neueVkJePE = ek * (1 + aufschlag / 100);
+                                                        // Lagerkosten pro Einheit berücksichtigen
+                                                        return neueVkJePE + (anteiligeFracht / (mengeNum / einheit)) + (a.lagerkostenProEinheit || 0);
+                                                    })())}</td>
+                                                    <td style={{ borderRight: "1px solid #e3eefd", padding: "5px 6px", textAlign: "right" }}>
+                                                        <input type="number" className="input-aufschlag-prozent" value={a.aufschlagProzent !== undefined ? a.aufschlagProzent : ''} min="0" max="100" step="0.01"
+                                                            style={{ width: '60px', fontSize: '1em', textAlign: 'right', border: '1px solid #bfc9d1', borderRadius: '4px', color: '#1a3b6e', background: '#f7fafc' }}
+                                                            onFocus={e => e.target.select()}
+                                                            onMouseUp={e => { e.preventDefault(); e.target.select(); }}
+                                                            onChange={e => {
+                                                                const newValue = parseFloat(e.target.value) || 0;
+                                                                setArtikelListe(prev => prev.map((art, idx2) => {
+                                                                    if (i === idx2) {
+                                                                        return {
+                                                                            ...art,
+                                                                            aufschlagProzent: newValue
+                                                                        };
+                                                                    }
+                                                                    return art;
+                                                                }));
+                                                                // Trigger ein Re-Render der gesamten Tabelle, indem ein Dummy-State geändert wird
+                                                                setDummyState(s => s + 1);
+                                                            }}
+                                                        />
+                                                    </td>
+                                                    <td style={{ borderRight: "1px solid #e3eefd", padding: "5px 6px", textAlign: "right" }}>{a.anteiligeFracht > 0 ? "€" + formatDE(a.anteiligeFracht) : "-"}</td>
+                                                    <td style={{ fontWeight: "bold", color: "#1a3b6e", background: "#e3e8ee", padding: "5px 6px", textAlign: "right" }}>€{formatDE((() => {
+                                                        const ek = a.ekJePreiseinheit || 0;
+                                                        const aufschlag = a.aufschlagProzent || 0;
+                                                        const mengeNum = a.mengeNum || 0;
+                                                        const einheit = a.einheit || 1;
+                                                        const neueVkJePE = ek * (1 + aufschlag / 100);
+                                                        const dbJePE = neueVkJePE - ek;
+                                                        return dbJePE * (mengeNum / einheit);
+                                                    })())}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        )}
+                        <div className="button-row">
+                            <button type="button" onClick={saveKalkulation}>Kalkulation speichern</button>
+                            <button type="button" onClick={async () => {
+                                if (!showDatabase) {
+                                    await loadKalkulationen();
+                                    setShowDatabase(true);
+                                } else {
+                                    setSavedCalculations([]);
+                                    setShowDatabase(false);
+                                }
+                            }} style={{marginLeft:10}}>
+                                {showDatabase ? 'Datenbank ausblenden' : 'Datenbank anzeigen'}
+                            </button>
+                        </div>
+                        {showDatabase && <DatabaseTable />}
+                    </form>
+                </div>
             );
         }
 
         const root = ReactDOM.createRoot(document.getElementById("root"));
         root.render(<App />);
     </script>
-    <div class="version">Version 1.0.6</div>
+    <div class="version">Version 1.0.7</div>
 </body>
 </html> 

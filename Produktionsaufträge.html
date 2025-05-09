@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produktionsaufträge</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #003366;
+            --secondary-color: #009999;
+            --accent-color: #FFB900;
+            --background-color: #f8f9fa;
+            --text-color: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+
+        .navbar {
+            background-color: var(--primary-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .search-bar {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .action-button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: background-color 0.2s;
+        }
+
+        .action-button:hover {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-new { background-color: #e3f2fd; color: #1976d2; }
+        .status-in-progress { background-color: #fff3e0; color: #f57c00; }
+        .status-completed { background-color: #e8f5e9; color: #388e3c; }
+        .status-delayed { background-color: #ffebee; color: #d32f2f; }
+        .status-in_production { background-color: #fff3e0; color: #f57c00; }
+
+        .table {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .table thead th {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+        }
+
+        .table tbody tr:hover {
+            background-color: rgba(0,0,0,0.02);
+        }
+
+        .modal-content {
+            border-radius: 12px;
+            border: none;
+        }
+
+        .modal-header {
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 12px 12px 0 0;
+        }
+
+        .file-link {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .file-link:hover {
+            color: var(--secondary-color);
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="bi bi-clipboard-data me-2"></i>
+                Produktionsaufträge
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="mb://192.168.1.20/Gemeinsame Daten/Produktion/Zeichnung" target="_blank">
+                            <i class="bi bi-folder2-open me-1"></i>Produktionsordner
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="tabAktiv" onclick="zeigeTab('aktiv')">
+                            <i class="bi bi-list-task me-1"></i>Aktive/Laufende
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="tabArchiv" onclick="zeigeTab('archiv')">
+                            <i class="bi bi-archive me-1"></i>Archiv
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#newEntryModal">
+                            <i class="bi bi-plus-circle me-1"></i>Neuer Eintrag
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <!-- Zurück-Button unterhalb der Navbar -->
+    <div style="padding: 0 0 16px 16px;">
+        <a href="index.html" style="background: #1a3b6e; color: #fff; padding: 8px 18px; border-radius: 6px; text-decoration: none; font-weight: 600; box-shadow: 0 2px 4px rgba(0,0,0,0.08);">&larr; Zurück zur Startseite</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div id="bereichAktiv">
+            <!-- Search and Filter Bar -->
+            <div class="search-bar">
+                <div class="row align-items-center">
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-search"></i></span>
+                            <input type="text" class="form-control" id="searchInput" placeholder="Suchen...">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <select class="form-select" id="statusFilter" onchange="filterData()">
+                            <option value="all">Alle Einträge</option>
+                            <option value="new">Neu</option>
+                            <option value="in_production">In Produktion</option>
+                            <option value="completed">Abgeschlossen</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <button class="btn btn-primary w-100" onclick="exportToExcel()">
+                            <i class="bi bi-file-excel me-2"></i>Export Excel
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Table -->
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Bezeichnung</th>
+                            <th>Status</th>
+                            <th>Maschine</th>
+                            <th>Datum</th>
+                            <th>Datei</th>
+                            <th>Aktionen</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dataTableBody">
+                        <!-- Data will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div id="bereichArchiv" style="display:none;">
+            <div class="search-bar mb-3">
+                <h5><i class="bi bi-archive me-2"></i>Archivierte/Abgeschlossene Aufträge</h5>
+                <div id="archivStatistik" class="mt-2 mb-2"></div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <canvas id="auftraegeProMonatChart" height="120"></canvas>
+                    </div>
+                    <div class="col-md-6">
+                        <canvas id="durchschnittLaufzeitChart" height="120"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Bezeichnung</th>
+                            <th>Bearbeiter</th>
+                            <th>Start</th>
+                            <th>Ende</th>
+                            <th>Laufzeit</th>
+                            <th>Ist-Menge</th>
+                            <th>Datei</th>
+                        </tr>
+                    </thead>
+                    <tbody id="archivTableBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Entry Modal -->
+    <div class="modal fade" id="newEntryModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Neuer Eintrag</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="newEntryForm">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Bezeichnung</label>
+                                <input type="text" id="bezeichnung" class="form-control" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Status</label>
+                                <select id="status" class="form-select">
+                                    <option value="new">Neu</option>
+                                    <option value="in_production">In Produktion</option>
+                                    <option value="completed">Abgeschlossen</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Bearbeiter</label>
+                                <input type="text" id="bearbeiter" class="form-control" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Zu produzierende Menge</label>
+                                <input type="number" id="sollMenge" class="form-control" min="1" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Artikelnummer</label>
+                                <input type="text" id="artikelnummer" class="form-control">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Artikelbezeichnung</label>
+                                <input type="text" id="artikelbezeichnung" class="form-control">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Maschine</label>
+                                <select id="maschine" class="form-select" required>
+                                    <option value="">Bitte wählen...</option>
+                                    <option value="Plotter">Plotter</option>
+                                    <option value="Drucker">Drucker</option>
+                                    <option value="EPS Schneiden">EPS Schneiden</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Beschreibung</label>
+                            <textarea id="beschreibung" class="form-control" rows="3"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Zugeordnete Datei</label>
+                            <div class="input-group">
+                                <input type="text" id="netzwerkDatei" class="form-control" placeholder="Pfad zur Datei im Netzwerkordner" readonly>
+                                <button class="btn btn-outline-secondary" type="button" onclick="openFileSelector()">
+                                    <i class="bi bi-folder2-open"></i> Auswählen
+                                </button>
+                            </div>
+                            <small class="form-text text-muted">Wähle eine Datei aus dem Produktionsordner aus</small>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                    <button type="button" class="btn btn-primary" onclick="saveNewEntry()">Speichern</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rückmelde-Modal -->
+    <div class="modal fade" id="rueckmeldungModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Rückmeldung Produktionsabschluss</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="rueckmeldungForm">
+                        <div class="mb-3">
+                            <label class="form-label">Tatsächlich produzierte Menge</label>
+                            <input type="number" id="istMenge" class="form-control" min="0" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Produktionsabschluss-Datum</label>
+                            <input type="date" id="abschlussDatum" class="form-control" required>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="datenErfasst">
+                            <label class="form-check-label" for="datenErfasst">Alle relevanten Daten erfasst</label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="idrEingelagert">
+                            <label class="form-check-label" for="idrEingelagert">In IDR eingelagert</label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="sageErfasst">
+                            <label class="form-check-label" for="sageErfasst">In SAGE erfasst</label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                    <button type="button" class="btn btn-primary" onclick="speichereRueckmeldung()">Speichern</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Globale Variable für die Daten
+        let entries = [];
+        let currentEntryId = null;
+
+        // Automatische Aktualisierung der Laufzeit für laufende Aufträge
+        let laufzeitInterval = null;
+        function startLaufzeitTimer() {
+            if (laufzeitInterval) clearInterval(laufzeitInterval);
+            laufzeitInterval = setInterval(() => {
+                if (document.getElementById('bereichAktiv').style.display !== 'none') {
+                    filterData();
+                }
+            }, 1000);
+        }
+        function stopLaufzeitTimer() {
+            if (laufzeitInterval) clearInterval(laufzeitInterval);
+        }
+
+        // Aktualisierungsfunktion
+        function refreshData() {
+            loadData();
+            filterData();
+        }
+
+        // Daten laden
+        function loadData() {
+            const savedData = localStorage.getItem('produktionsDaten');
+            if (savedData) {
+                entries = JSON.parse(savedData);
+            } else {
+                entries = [];
+            }
+        }
+
+        // Dateiauswahl öffnen
+        function openFileSelector() {
+            window.open('file://///192.168.1.20/GemeinsameDaten/Produktion', '_blank');
+            const pfad = prompt('Bitte geben Sie den relativen Pfad zur Datei ein (z.B. Zeichnungen/Projekt1.dwg):');
+            if (pfad) {
+                document.getElementById('netzwerkDatei').value = pfad;
+            }
+        }
+
+        // Stadien für Zeiterfassung
+        const STADIEN = ['vorbereitung', 'produktion', 'verpacken'];
+        const STADIEN_LABELS = { vorbereitung: 'Vorbereitung', produktion: 'Produktion', verpacken: 'Verpacken' };
+
+        // Hilfsfunktion: Stadium starten
+        function stadiumWechseln(id, stadium) {
+            const entryIndex = entries.findIndex(e => e.id === id);
+            if (entryIndex === -1) return;
+            const now = new Date().toISOString();
+            // Beende vorheriges Stadium
+            if (!entries[entryIndex].stadien) entries[entryIndex].stadien = {};
+            STADIEN.forEach(s => {
+                if (entries[entryIndex].stadien[s] && entries[entryIndex].stadien[s].start && !entries[entryIndex].stadien[s].end) {
+                    entries[entryIndex].stadien[s].end = now;
+                }
+            });
+            // Starte neues Stadium
+            if (!entries[entryIndex].stadien[stadium]) entries[entryIndex].stadien[stadium] = {start: now, end: null};
+            else entries[entryIndex].stadien[stadium].start = now, entries[entryIndex].stadien[stadium].end = null;
+            localStorage.setItem('produktionsDaten', JSON.stringify(entries));
+            refreshData();
+        }
+
+        // Daten filtern
+        function filterData() {
+            const filter = document.getElementById('statusFilter').value;
+            const searchText = document.getElementById('searchInput').value.toLowerCase();
+            const tableBody = document.getElementById('dataTableBody');
+            tableBody.innerHTML = '';
+            let filteredEntries = entries.filter(e => e.status === 'new' || e.status === 'in_production');
+            if (filter !== 'all') {
+                filteredEntries = filteredEntries.filter(e => e.status === filter);
+            }
+            filteredEntries = filteredEntries.filter(e => 
+                e.bezeichnung.toLowerCase().includes(searchText) ||
+                e.beschreibung.toLowerCase().includes(searchText) ||
+                (e.netzwerkDatei && e.netzwerkDatei.toLowerCase().includes(searchText))
+            );
+            filteredEntries.forEach(entry => {
+                const rueck = entry.rueckmeldung;
+                const rueckInfo = (entry.status === 'completed' && rueck) ?
+                    `<div><b>Ist-Menge:</b> ${rueck.istMenge}<br><b>Abschluss:</b> ${rueck.abschlussDatum}<br>
+                    <span class='badge bg-${rueck.datenErfasst ? 'success' : 'secondary'}'>Daten</span>
+                    <span class='badge bg-${rueck.idrEingelagert ? 'success' : 'secondary'}'>IDR</span>
+                    <span class='badge bg-${rueck.sageErfasst ? 'success' : 'secondary'}'>SAGE</span></div>` : '';
+                // Pausenzeit berechnen
+                let pausenMs = 0;
+                if (entry.pausen && entry.pausen.length) {
+                    entry.pausen.forEach(p => {
+                        if (p.start && p.end) {
+                            pausenMs += (new Date(p.end) - new Date(p.start));
+                        } else if (p.start && !p.end) {
+                            pausenMs += (new Date() - new Date(p.start));
+                        }
+                    });
+                }
+                // Zeiterfassung anzeigen
+                let laufzeit = '';
+                if (entry.startZeit && entry.endZeit) {
+                    const start = new Date(entry.startZeit);
+                    const end = new Date(entry.endZeit);
+                    const diffMs = end - start - pausenMs;
+                    const diffH = Math.floor(diffMs / 1000 / 60 / 60);
+                    const diffMin = Math.floor((diffMs / 1000 / 60) % 60);
+                    laufzeit = `<div><b>Laufzeit:</b> ${diffH}h ${diffMin}min` + (pausenMs > 0 ? ` <span class='badge bg-warning text-dark'>Pause: ${Math.floor(pausenMs/1000/60)}min</span>` : '') + `</div>`;
+                } else if (entry.startZeit && entry.status === 'in_production') {
+                    // Laufende Produktion
+                    const start = new Date(entry.startZeit);
+                    const now = new Date();
+                    const diffMs = now - start - pausenMs;
+                    const diffH = Math.floor(diffMs / 1000 / 60 / 60);
+                    const diffMin = Math.floor((diffMs / 1000 / 60) % 60);
+                    laufzeit = `<div><b>Laufzeit:</b> ${diffH}h ${diffMin}min` + (pausenMs > 0 ? ` <span class='badge bg-warning text-dark'>Pause: ${Math.floor(pausenMs/1000/60)}min</span>` : '') + `</div>`;
+                    // Pause/Weiter Button
+                    if (!entry.pausen || !entry.pausen.length || entry.pausen[entry.pausen.length-1].end) {
+                        laufzeit += `<button class='btn btn-sm btn-warning ms-2' onclick='pauseEntry(${entry.id})'><i class='bi bi-pause'></i> Pause</button>`;
+                    } else {
+                        laufzeit += `<button class='btn btn-sm btn-success ms-2' onclick='resumeEntry(${entry.id})'><i class='bi bi-play'></i> Weiter</button>`;
+                    }
+                }
+                // Stadien-Zeiten berechnen
+                let stadienInfo = '';
+                if (entry.stadien) {
+                    stadienInfo = '<div class="mt-1">';
+                    STADIEN.forEach(s => {
+                        const st = entry.stadien[s];
+                        let min = 0;
+                        if (st && st.start && st.end) {
+                            min = Math.round((new Date(st.end)-new Date(st.start))/1000/60);
+                        } else if (st && st.start && !st.end) {
+                            min = Math.round((new Date()-new Date(st.start))/1000/60);
+                        }
+                        stadienInfo += `<span class='badge bg-info text-dark me-1'>${STADIEN_LABELS[s]}: ${min}min</span>`;
+                    });
+                    stadienInfo += '</div>';
+                }
+                // Buttons zum Stadium-Wechsel (nur bei in_production)
+                let stadiumBtns = '';
+                if (entry.status === 'in_production') {
+                    stadiumBtns = '<div class="mt-1">';
+                    STADIEN.forEach(s => {
+                        const st = entry.stadien && entry.stadien[s];
+                        const isActive = st && st.start && !st.end;
+                        stadiumBtns += `<button class='btn btn-sm ${isActive ? 'btn-primary' : 'btn-outline-primary'} me-1' onclick='stadiumWechseln(${entry.id},"${s}")'>${STADIEN_LABELS[s]}</button>`;
+                    });
+                    stadiumBtns += '</div>';
+                }
+                const row = `
+                    <tr>
+                        <td>${entry.id}</td>
+                        <td>${entry.bezeichnung}</td>
+                        <td><span class="status-badge status-${entry.status}">${getStatusText(entry.status)}</span></td>
+                        <td>${entry.maschine || ''}</td>
+                        <td>${formatDate(entry.datum)}</td>
+                        <td>
+                            ${entry.netzwerkDatei ? 
+                                `<a href="file://///192.168.1.20/GemeinsameDaten/Produktion/${entry.netzwerkDatei}" target="_blank" class="file-link">
+                                    <i class="bi bi-file-earmark me-1"></i>${entry.netzwerkDatei}
+                                </a>` : 
+                                '<span class="text-muted">Keine Datei</span>'
+                            }
+                        </td>
+                        <td>
+                            <button class="action-button me-2" onclick="viewEntry(${entry.id})">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                            <button class="action-button me-2" onclick="editEntry(${entry.id})">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button class="action-button" onclick="deleteEntry(${entry.id})">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                            <div class="mt-2 mb-1">
+                                <span style="font-weight:bold;">Laufzeit:</span> ${laufzeit.replace(/<div>|<\/div>/g, '')}
+                            </div>
+                            <div class="mb-1">
+                                ${stadienInfo}
+                            </div>
+                            <div>
+                                ${stadiumBtns}
+                            </div>
+                            ${rueckInfo}
+                        </td>
+                    </tr>
+                `;
+                tableBody.innerHTML += row;
+            });
+        }
+
+        // Neuen Eintrag speichern
+        function saveNewEntry() {
+            // Eindeutige ID mit Date.now() erzeugen
+            const newId = Date.now();
+
+            const newEntry = {
+                id: newId,
+                bezeichnung: document.getElementById('bezeichnung').value,
+                status: document.getElementById('status').value,
+                beschreibung: document.getElementById('beschreibung').value,
+                netzwerkDatei: document.getElementById('netzwerkDatei').value,
+                bearbeiter: document.getElementById('bearbeiter').value,
+                sollMenge: parseInt(document.getElementById('sollMenge').value),
+                artikelnummer: document.getElementById('artikelnummer').value,
+                artikelbezeichnung: document.getElementById('artikelbezeichnung').value,
+                maschine: document.getElementById('maschine').value,
+                datum: new Date().toISOString(),
+                rueckmeldung: null,
+                startZeit: null,
+                endZeit: null,
+                pausen: [],
+                stadien: {
+                    vorbereitung: null,
+                    produktion: null,
+                    verpacken: null
+                }
+            };
+            entries.push(newEntry);
+            localStorage.setItem('produktionsDaten', JSON.stringify(entries));
+            refreshData();
+            const modal = bootstrap.Modal.getInstance(document.getElementById('newEntryModal'));
+            modal.hide();
+            document.getElementById('newEntryForm').reset();
+        }
+
+        // Eintrag bearbeiten
+        function editEntry(id) {
+            const entry = entries.find(e => e.id === id);
+            if (!entry) return;
+            document.getElementById('bezeichnung').value = entry.bezeichnung;
+            document.getElementById('status').value = entry.status;
+            document.getElementById('beschreibung').value = entry.beschreibung;
+            document.getElementById('netzwerkDatei').value = entry.netzwerkDatei || '';
+            document.getElementById('bearbeiter').value = entry.bearbeiter || '';
+            document.getElementById('sollMenge').value = entry.sollMenge || '';
+            document.getElementById('artikelnummer').value = entry.artikelnummer || '';
+            document.getElementById('artikelbezeichnung').value = entry.artikelbezeichnung || '';
+            document.getElementById('maschine').value = entry.maschine || '';
+            const modal = new bootstrap.Modal(document.getElementById('newEntryModal'));
+            modal.show();
+            const saveButton = document.querySelector('#newEntryModal .btn-primary');
+            saveButton.onclick = () => {
+                // Prüfe Statuswechsel auf abgeschlossen
+                const alterStatus = entry.status;
+                const neuerStatus = document.getElementById('status').value;
+                if (alterStatus !== 'completed' && neuerStatus === 'completed') {
+                    currentEntryId = id;
+                    modal.hide();
+                    zeigeRueckmeldungDialog(entry);
+                } else {
+                    updateEntry(id);
+                }
+            };
+        }
+
+        function zeigeRueckmeldungDialog(entry) {
+            // Setze Defaultwerte
+            document.getElementById('istMenge').value = entry.sollMenge || '';
+            document.getElementById('abschlussDatum').value = new Date().toISOString().slice(0,10);
+            document.getElementById('datenErfasst').checked = false;
+            document.getElementById('idrEingelagert').checked = false;
+            document.getElementById('sageErfasst').checked = false;
+            const rueckmeldungModal = new bootstrap.Modal(document.getElementById('rueckmeldungModal'));
+            rueckmeldungModal.show();
+        }
+
+        function speichereRueckmeldung() {
+            const id = currentEntryId;
+            const entryIndex = entries.findIndex(e => e.id === id);
+            if (entryIndex === -1) return;
+            // Rückmeldedaten sammeln
+            const rueckmeldung = {
+                istMenge: parseInt(document.getElementById('istMenge').value),
+                abschlussDatum: document.getElementById('abschlussDatum').value,
+                datenErfasst: document.getElementById('datenErfasst').checked,
+                idrEingelagert: document.getElementById('idrEingelagert').checked,
+                sageErfasst: document.getElementById('sageErfasst').checked
+            };
+            // Endzeit setzen, falls noch nicht gesetzt
+            let endZeit = entries[entryIndex].endZeit;
+            if (!endZeit) endZeit = new Date().toISOString();
+            // Speichern
+            entries[entryIndex] = {
+                ...entries[entryIndex],
+                status: 'completed',
+                rueckmeldung,
+                endZeit
+            };
+            localStorage.setItem('produktionsDaten', JSON.stringify(entries));
+            refreshData();
+            const rueckmeldungModal = bootstrap.Modal.getInstance(document.getElementById('rueckmeldungModal'));
+            rueckmeldungModal.hide();
+        }
+
+        // Eintrag aktualisieren
+        function updateEntry(id) {
+            const entryIndex = entries.findIndex(e => e.id === id);
+            if (entryIndex === -1) return;
+            const alterStatus = entries[entryIndex].status;
+            const neuerStatus = document.getElementById('status').value;
+            let startZeit = entries[entryIndex].startZeit;
+            let endZeit = entries[entryIndex].endZeit;
+            // Zeiterfassung: Startzeit setzen, wenn Status auf in_production wechselt
+            if (alterStatus !== 'in_production' && neuerStatus === 'in_production') {
+                startZeit = new Date().toISOString();
+            }
+            // Zeiterfassung: Endzeit setzen, wenn Status auf completed wechselt
+            if (alterStatus !== 'completed' && neuerStatus === 'completed') {
+                endZeit = new Date().toISOString();
+            }
+            entries[entryIndex] = {
+                ...entries[entryIndex],
+                bezeichnung: document.getElementById('bezeichnung').value,
+                status: neuerStatus,
+                beschreibung: document.getElementById('beschreibung').value,
+                netzwerkDatei: document.getElementById('netzwerkDatei').value,
+                bearbeiter: document.getElementById('bearbeiter').value,
+                sollMenge: parseInt(document.getElementById('sollMenge').value),
+                artikelnummer: document.getElementById('artikelnummer').value,
+                artikelbezeichnung: document.getElementById('artikelbezeichnung').value,
+                maschine: document.getElementById('maschine').value,
+                startZeit,
+                endZeit,
+                pausen: entries[entryIndex].pausen || [],
+                stadien: entries[entryIndex].stadien || { vorbereitung: null, produktion: null, verpacken: null }
+            };
+            localStorage.setItem('produktionsDaten', JSON.stringify(entries));
+            refreshData();
+            const modal = bootstrap.Modal.getInstance(document.getElementById('newEntryModal'));
+            modal.hide();
+            document.getElementById('newEntryForm').reset();
+        }
+
+        // Eintrag löschen
+        function deleteEntry(id) {
+            if (confirm('Möchten Sie diesen Eintrag wirklich löschen?')) {
+                entries = entries.filter(e => e.id !== id);
+                localStorage.setItem('produktionsDaten', JSON.stringify(entries));
+                refreshData();
+            }
+        }
+
+        // Eintrag anzeigen
+        function viewEntry(id) {
+            const entry = entries.find(e => e.id === id);
+            if (!entry) return;
+
+            alert(`
+                ID: ${entry.id}
+                Bezeichnung: ${entry.bezeichnung}
+                Status: ${getStatusText(entry.status)}
+                Datum: ${formatDate(entry.datum)}
+                Beschreibung: ${entry.beschreibung}
+                Datei: ${entry.netzwerkDatei || 'Keine Datei zugeordnet'}
+            `);
+        }
+
+        // Excel Export
+        function exportToExcel() {
+            alert('Excel-Export wird vorbereitet...');
+        }
+
+        // Hilfsfunktionen
+        function getStatusText(status) {
+            const statusMap = {
+                'new': 'Neu',
+                'in_production': 'In Produktion',
+                'completed': 'Abgeschlossen'
+            };
+            return statusMap[status] || status;
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('de-DE');
+        }
+
+        // Event Listener
+        document.getElementById('searchInput').addEventListener('input', filterData);
+
+        // Beim Laden der Seite Standard-Tab aktiv
+        document.addEventListener('DOMContentLoaded', () => {
+            refreshData();
+            zeigeTab('aktiv');
+            startLaufzeitTimer();
+        });
+
+        // Timer stoppen, wenn auf Archiv gewechselt wird
+        function zeigeTab(tab) {
+            document.getElementById('bereichAktiv').style.display = (tab === 'aktiv') ? '' : 'none';
+            document.getElementById('bereichArchiv').style.display = (tab === 'archiv') ? '' : 'none';
+            document.getElementById('tabAktiv').classList.toggle('active', tab === 'aktiv');
+            document.getElementById('tabArchiv').classList.toggle('active', tab === 'archiv');
+            if(tab === 'archiv') {
+                filterArchiv();
+                stopLaufzeitTimer();
+            } else {
+                startLaufzeitTimer();
+            }
+        }
+        // Archiv-Filter und Statistik
+        function filterArchiv() {
+            const archivBody = document.getElementById('archivTableBody');
+            archivBody.innerHTML = '';
+            const archivEintraege = entries.filter(e => e.status === 'completed');
+            let sumLaufzeit = 0;
+            let countLaufzeit = 0;
+            archivEintraege.forEach(entry => {
+                // Laufzeit berechnen (ohne Pausen)
+                let pausenMs = 0;
+                if (entry.pausen && entry.pausen.length) {
+                    entry.pausen.forEach(p => {
+                        if (p.start && p.end) pausenMs += (new Date(p.end) - new Date(p.start));
+                    });
+                }
+                let laufzeitStr = '';
+                let laufzeitMin = 0;
+                if (entry.startZeit && entry.endZeit) {
+                    const start = new Date(entry.startZeit);
+                    const end = new Date(entry.endZeit);
+                    const diffMs = end - start - pausenMs;
+                    laufzeitMin = Math.round(diffMs/1000/60);
+                    const diffH = Math.floor(laufzeitMin/60);
+                    const diffMin = laufzeitMin%60;
+                    laufzeitStr = `${diffH}h ${diffMin}min`;
+                    sumLaufzeit += laufzeitMin;
+                    countLaufzeit++;
+                }
+                // Stadien-Zeiten berechnen
+                let stadienInfoArchiv = '';
+                if (entry.stadien) {
+                    stadienInfoArchiv = '<div class="mt-1">';
+                    STADIEN.forEach(s => {
+                        const st = entry.stadien[s];
+                        let min = 0;
+                        if (st && st.start && st.end) {
+                            min = Math.round((new Date(st.end)-new Date(st.start))/1000/60);
+                        }
+                        stadienInfoArchiv += `<span class='badge bg-info text-dark me-1'>${STADIEN_LABELS[s]}: ${min}min</span>`;
+                    });
+                    stadienInfoArchiv += '</div>';
+                }
+                archivBody.innerHTML += `
+                    <tr>
+                        <td>${entry.id}</td>
+                        <td>${entry.bezeichnung}</td>
+                        <td>${entry.bearbeiter||''}</td>
+                        <td>${entry.startZeit ? formatDate(entry.startZeit,true) : ''}</td>
+                        <td>${entry.endZeit ? formatDate(entry.endZeit,true) : ''}</td>
+                        <td>${laufzeitStr}${stadienInfoArchiv}</td>
+                        <td>${entry.rueckmeldung ? entry.rueckmeldung.istMenge : ''}</td>
+                        <td>${entry.netzwerkDatei ? `<a href="file://///192.168.1.20/GemeinsameDaten/Produktion/${entry.netzwerkDatei}" target="_blank" class="file-link"><i class="bi bi-file-earmark me-1"></i>${entry.netzwerkDatei}</a>` : '<span class="text-muted">Keine Datei</span>'}
+                            <button class="btn btn-sm btn-danger ms-2" onclick="deleteArchivEntry(${entry.id})"><i class="bi bi-trash"></i> Löschen</button>
+                        </td>
+                    </tr>
+                `;
+            });
+            // Statistik
+            const statDiv = document.getElementById('archivStatistik');
+            statDiv.innerHTML = `<b>Anzahl Aufträge:</b> ${archivEintraege.length} &nbsp; <b>Gesamtlaufzeit:</b> ${Math.floor(sumLaufzeit/60)}h ${sumLaufzeit%60}min &nbsp; <b>Ø Laufzeit:</b> ${countLaufzeit ? Math.floor(sumLaufzeit/countLaufzeit/60)+'h '+(Math.round(sumLaufzeit/countLaufzeit)%60)+'min' : '-'} `;
+            // Erweiterte Auswertung: Diagramme
+            auswertungArchiv(archivEintraege);
+        }
+        // Erweiterte Auswertung mit Chart.js
+        let chartAuftraege = null;
+        let chartLaufzeit = null;
+        function auswertungArchiv(archivEintraege) {
+            // 1. Aufträge pro Monat
+            const monatMap = {};
+            archivEintraege.forEach(e => {
+                if(!e.endZeit) return;
+                const monat = new Date(e.endZeit).toLocaleString('de-DE', {month:'2-digit', year:'2-digit'});
+                monatMap[monat] = (monatMap[monat]||0)+1;
+            });
+            const monate = Object.keys(monatMap).sort();
+            const werte = monate.map(m=>monatMap[m]);
+            if(chartAuftraege) chartAuftraege.destroy();
+            chartAuftraege = new Chart(document.getElementById('auftraegeProMonatChart').getContext('2d'), {
+                type: 'bar',
+                data: { labels: monate, datasets: [{ label: 'Abgeschlossene Aufträge', data: werte, backgroundColor: '#003366' }] },
+                options: { plugins: { legend: { display: false } } }
+            });
+            // 2. Durchschnittliche Laufzeit pro Monat
+            const laufzeitMap = {};
+            archivEintraege.forEach(e => {
+                if(!e.startZeit || !e.endZeit) return;
+                const monat = new Date(e.endZeit).toLocaleString('de-DE', {month:'2-digit', year:'2-digit'});
+                let pausenMs = 0;
+                if(e.pausen && e.pausen.length) {
+                    e.pausen.forEach(p => { if(p.start && p.end) pausenMs += (new Date(p.end)-new Date(p.start)); });
+                }
+                const laufzeitMin = Math.round((new Date(e.endZeit)-new Date(e.startZeit)-pausenMs)/1000/60);
+                laufzeitMap[monat] = laufzeitMap[monat]||[];
+                laufzeitMap[monat].push(laufzeitMin);
+            });
+            const avgLaufzeit = monate.map(m=>laufzeitMap[m]?Math.round(laufzeitMap[m].reduce((a,b)=>a+b,0)/laufzeitMap[m].length):0);
+            if(chartLaufzeit) chartLaufzeit.destroy();
+            chartLaufzeit = new Chart(document.getElementById('durchschnittLaufzeitChart').getContext('2d'), {
+                type: 'line',
+                data: { labels: monate, datasets: [{ label: 'Ø Laufzeit (min)', data: avgLaufzeit, borderColor: '#009999', backgroundColor: '#00999922', fill: true }] },
+                options: { plugins: { legend: { display: false } } }
+            });
+            // Füge im Archiv-Tab unter den bisherigen Diagrammen für jeden Schritt ein Canvas-Element ein:
+            // <canvas id="laufzeit_vorbereitung_chart" height="80"></canvas>
+            // <canvas id="laufzeit_produktion_chart" height="80"></canvas>
+            // <canvas id="laufzeit_verpacken_chart" height="80"></canvas>
+            // ... existing code ...
+            // Nach der bisherigen Auswertung für laufzeitMap:
+            const schrittLaufzeitMap = { vorbereitung: {}, produktion: {}, verpacken: {} };
+            archivEintraege.forEach(e => {
+                if (!e.stadien) return;
+                STADIEN.forEach(s => {
+                    const st = e.stadien[s];
+                    if (st && st.start && st.end) {
+                        const monat = new Date(e.endZeit).toLocaleString('de-DE', {month:'2-digit', year:'2-digit'});
+                        if (!schrittLaufzeitMap[s][monat]) schrittLaufzeitMap[s][monat] = [];
+                        schrittLaufzeitMap[s][monat].push(Math.round((new Date(st.end)-new Date(st.start))/1000/60));
+                    }
+                });
+            });
+            // Für jeden Schritt ein Diagramm erzeugen (Chart.js)
+            STADIEN.forEach(s => {
+                const avgSchritt = monate.map(m => schrittLaufzeitMap[s][m] ? Math.round(schrittLaufzeitMap[s][m].reduce((a,b)=>a+b,0)/schrittLaufzeitMap[s][m].length) : 0);
+                const canvasId = `laufzeit_${s}_chart`;
+                let chart = window[canvasId];
+                if (chart) chart.destroy();
+                const canvasElem = document.getElementById(canvasId);
+                if (canvasElem) {
+                    window[canvasId] = new Chart(canvasElem.getContext('2d'), {
+                        type: 'line',
+                        data: { labels: monate, datasets: [{ label: `Ø ${STADIEN_LABELS[s]} (min)`, data: avgSchritt, borderColor: '#009999', backgroundColor: '#00999922', fill: true }] },
+                        options: { plugins: { legend: { display: false } } }
+                    });
+                }
+            });
+        }
+        // Format mit Uhrzeit für Archiv
+        function formatDate(dateString, mitZeit) {
+            const date = new Date(dateString);
+            if(mitZeit) return date.toLocaleString('de-DE');
+            return date.toLocaleDateString('de-DE');
+        }
+
+        // Pausenfunktion: Pausen-Array pro Auftrag
+        function pauseEntry(id) {
+            const entryIndex = entries.findIndex(e => e.id === id);
+            if (entryIndex === -1) return;
+            if (!entries[entryIndex].pausen) entries[entryIndex].pausen = [];
+            // Wenn keine laufende Pause, starte eine neue
+            if (!entries[entryIndex].pausen.length || entries[entryIndex].pausen[entries[entryIndex].pausen.length-1].end) {
+                entries[entryIndex].pausen.push({start: new Date().toISOString(), end: null});
+            }
+            localStorage.setItem('produktionsDaten', JSON.stringify(entries));
+            refreshData();
+        }
+        function resumeEntry(id) {
+            const entryIndex = entries.findIndex(e => e.id === id);
+            if (entryIndex === -1) return;
+            if (entries[entryIndex].pausen && entries[entryIndex].pausen.length && !entries[entryIndex].pausen[entries[entryIndex].pausen.length-1].end) {
+                entries[entryIndex].pausen[entries[entryIndex].pausen.length-1].end = new Date().toISOString();
+            }
+            localStorage.setItem('produktionsDaten', JSON.stringify(entries));
+            refreshData();
+        }
+
+        // Neue Funktion zum Löschen eines Archiv-Eintrags
+        function deleteArchivEntry(id) {
+            if (confirm('Möchten Sie diesen Archiv-Eintrag wirklich löschen?')) {
+                entries = entries.filter(e => e.id !== id);
+                localStorage.setItem('produktionsDaten', JSON.stringify(entries));
+                filterArchiv();
+            }
+        }
+    </script>
+</body>
+<!-- Versionsnummer unten rechts -->
+<div style="position: fixed; bottom: 10px; right: 10px; font-size: 12px; color: #718096; background: rgba(255,255,255,0.8); padding: 4px 8px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); z-index: 9999;">Version 1.0.0</div>
+</html> 
