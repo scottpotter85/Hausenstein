@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produktionsaufträge</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #003366;
+            --secondary-color: #009999;
+            --accent-color: #FFB900;
+            --background-color: #f8f9fa;
+            --text-color: #333;
+        }
+
+        body, nav.navbar {
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+
+        .navbar {
+            background-color: var(--primary-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            min-height: 64px;
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+        }
+
+        .search-bar {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .action-button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: background-color 0.2s;
+        }
+
+        .action-button:hover {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-new { background-color: #e3f2fd; color: #1976d2; }
+        .status-in-progress { background-color: #fff3e0; color: #f57c00; }
+        .status-completed { background-color: #e8f5e9; color: #388e3c; }
+        .status-delayed { background-color: #ffebee; color: #d32f2f; }
+        .status-in_production { background-color: #fff3e0; color: #f57c00; }
+
+        .table {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .table thead th {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+        }
+
+        .table tbody tr:hover {
+            background-color: rgba(0,0,0,0.02);
+        }
+
+        .modal-content {
+            border-radius: 12px;
+            border: none;
+        }
+
+        .modal-header {
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 12px 12px 0 0;
+        }
+
+        .file-link {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .file-link:hover {
+            color: var(--secondary-color);
+            text-decoration: underline;
+        }
+
+        .nav-tabs .nav-link.active {
+            background-color: var(--primary-color);
+            color: #fff;
+            border: none;
+            border-radius: 8px 8px 0 0;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+            height: 40px;
+            font-size: 1rem;
+            font-family: '72', 'Segoe UI', Arial, sans-serif;
+        }
+        .nav-tabs .nav-link {
+            color: var(--primary-color);
+            background: none;
+            border: none;
+            border-radius: 8px 8px 0 0;
+            margin-right: 8px;
+            font-weight: 500;
+            padding: 7px 18px 7px 14px;
+            transition: background 0.15s, color 0.15s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            height: 40px;
+            font-size: 1rem;
+            font-family: '72', 'Segoe UI', Arial, sans-serif;
+        }
+        .nav-tabs .nav-link i {
+            font-size: 1.18em;
+            vertical-align: middle;
+        }
+        .nav-tabs .nav-link:not(.active):hover {
+            background: #eaf3fc;
+            color: var(--primary-color);
+        }
+        .nav-tabs {
+            border-bottom: 1.5px solid #e5eaf3;
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+            padding-left: 0.5rem;
+        }
+        @media (max-width: 600px) {
+            .nav-tabs .nav-link,
+            .nav-tabs .nav-link.active {
+                font-size: 0.92rem;
+                padding: 5px 8px 5px 7px;
+                height: 32px;
+            }
+        }
+        .navbar-brand img {
+            height: 40px;
+            margin-right: 12px;
+        }
+        .container-box {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+            padding: 2rem 2rem 1.5rem 2rem;
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+        }
+        .tab-content {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            padding: 24px;
+            margin-top: 16px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <img src="LOGO.svg" alt="Logo" />
+                <span>Produktionsaufträge</span>
+            </a>
+            <div class="d-flex align-items-center" id="userInfo" style="gap:10px; margin-left:32px;">
+                <img id="userAvatar" src="https://randomuser.me/api/portraits/men/1.jpg" alt="User" style="width:32px; height:32px; border-radius:50%; object-fit:cover; border:2px solid #fff; box-shadow:0 1px 4px rgba(0,0,0,0.08);">
+                <span id="userName" style="font-weight:500; color:#fff;">Benutzer</span>
+            </div>
+        </div>
+    </nav>
+    <div class="container mt-3 mb-2">
+        <a href="index.html" class="btn btn-outline-primary"><i class="bi bi-arrow-left"></i> Zurück zur Startseite</a>
+    </div>
+    <div class="container container-box">
+        <!-- Tabs -->
+        <ul class="nav nav-tabs mb-4" id="prodTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="aktiv-tab" data-bs-toggle="tab" data-bs-target="#bereichAktivTab" type="button" role="tab">
+                    <i class="bi bi-list-task me-1"></i>Aktive/Laufende
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="archiv-tab" data-bs-toggle="tab" data-bs-target="#bereichArchivTab" type="button" role="tab">
+                    <i class="bi bi-archive me-1"></i>Archiv
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="neu-tab" data-bs-toggle="tab" data-bs-target="#bereichNeuTab" type="button" role="tab">
+                    <i class="bi bi-plus-circle me-1"></i>Neuer Eintrag
+                </button>
+            </li>
+        </ul>
+        <div class="tab-content" id="prodTabsContent">
+            <div class="tab-pane fade show active" id="bereichAktivTab" role="tabpanel">
+                <div id="bereichAktiv">
+                    <!-- Search and Filter Bar -->
+                    <div class="search-bar">
+                        <div class="row align-items-center">
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                    <input type="text" class="form-control" id="searchInput" placeholder="Suchen...">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <select class="form-select" id="statusFilter" onchange="filterData()">
+                                    <option value="all">Alle Einträge</option>
+                                    <option value="new">Neu</option>
+                                    <option value="in_production">In Produktion</option>
+                                    <option value="completed">Abgeschlossen</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <button class="btn btn-primary w-100" onclick="exportToExcel()">
+                                    <i class="bi bi-file-excel me-2"></i>Export Excel
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Data Table -->
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Bezeichnung</th>
+                                    <th>Status</th>
+                                    <th>Maschine</th>
+                                    <th>Datum</th>
+                                    <th>Datei</th>
+                                    <th>Kunde</th>
+                                    <th>Zu erledigen bis</th>
+                                    <th>Aktionen</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dataTableBody">
+                                <!-- Data will be inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="bereichArchivTab" role="tabpanel">
+                <div id="bereichArchiv">
+                    <div class="search-bar mb-3">
+                        <h5><i class="bi bi-archive me-2"></i>Archivierte/Abgeschlossene Aufträge</h5>
+                        <div id="archivStatistik" class="mt-2 mb-2"></div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <canvas id="auftraegeProMonatChart" height="120"></canvas>
+                            </div>
+                            <div class="col-md-6">
+                                <canvas id="durchschnittLaufzeitChart" height="120"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Auftrags-ID</th>
+                                    <th>Bezeichnung</th>
+                                    <th>Bearbeiter</th>
+                                    <th>Start</th>
+                                    <th>Ende</th>
+                                    <th>Laufzeit</th>
+                                    <th>Vorbereitung</th>
+                                    <th>Produktion</th>
+                                    <th>Verpacken</th>
+                                    <th>Ist-Menge</th>
+                                    <th>Datei</th>
+                                    <th>Kunde</th>
+                                    <th>Zu erledigen bis</th>
+                                    <th>Aktionen</th>
+                                </tr>
+                            </thead>
+                            <tbody id="archivTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="bereichNeuTab" role="tabpanel">
+                <div class="mt-4">
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newEntryModal" onclick="prepareNewEntryModal()">
+                        <i class="bi bi-plus-circle me-1"></i>Neuen Auftrag anlegen
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Entry Modal -->
+    <div class="modal fade" id="newEntryModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Neuer Eintrag</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="newEntryForm">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Bezeichnung</label>
+                                <input type="text" id="bezeichnung" class="form-control" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Status</label>
+                                <select id="status" class="form-select">
+                                    <option value="new">Neu</option>
+                                    <option value="in_production">In Produktion</option>
+                                    <option value="completed">Abgeschlossen</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Bearbeiter</label>
+                                <input type="text" id="bearbeiter" class="form-control" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Zu produzierende Menge</label>
+                                <input type="number" id="sollMenge" class="form-control" min="1" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Artikelnummer</label>
+                                <input type="text" id="artikelnummer" class="form-control">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Artikelbezeichnung</label>
+                                <input type="text" id="artikelbezeichnung" class="form-control">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Maschine</label>
+                                <select id="maschine" class="form-select" required>
+                                    <option value="">Bitte wählen...</option>
+                                    <option value="Plotter">Plotter</option>
+                                    <option value="Drucker">Drucker</option>
+                                    <option value="EPS Schneiden">EPS Schneiden</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Kundenname</label>
+                                <input type="text" id="kundenname" class="form-control">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Zu erledigen bis</label>
+                                <input type="date" id="due" class="form-control">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Beschreibung</label>
+                            <textarea id="beschreibung" class="form-control" rows="3"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Zugeordnete Datei</label>
+                            <div class="input-group">
+                                <input type="text" id="netzwerkDatei" class="form-control" placeholder="Pfad zur Datei im Netzwerkordner" readonly>
+                                <button class="btn btn-outline-secondary" type="button" onclick="openFileSelector()">
+                                    <i class="bi bi-folder2-open"></i> Auswählen
+                                </button>
+                            </div>
+                            <small class="form-text text-muted">Wähle eine Datei aus dem Produktionsordner aus</small>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                    <button type="button" class="btn btn-primary" onclick="saveNewEntry()">Speichern</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal für Ist-Menge -->
+    <div class="modal fade" id="istMengeModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Tatsächlich produzierte Menge</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <label for="istMengeInput" class="form-label">Bitte geben Sie die tatsächlich produzierte Stückzahl ein:</label>
+                    <input type="number" id="istMengeInput" class="form-control mb-3" min="0" required>
+                    <label for="abschlussDatumInput" class="form-label">Produktionsabschluss-Datum:</label>
+                    <input type="date" id="abschlussDatumInput" class="form-control mb-3" required>
+                    <div class="mb-3">
+                        <label class="form-label">Produktionsdauer:</label>
+                        <div id="produktionsdauerInfo" class="form-control-plaintext"></div>
+                        <input type="number" id="vorbereitungManuell" class="form-control mt-2" min="1" placeholder="Vorbereitung (min)" style="display:none;">
+                        <input type="number" id="produktionManuell" class="form-control mt-2" min="1" placeholder="Produktion (min)" style="display:none;">
+                        <input type="number" id="verpackenManuell" class="form-control mt-2" min="1" placeholder="Verpacken (min)" style="display:none;">
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="datenErfasstInput">
+                        <label class="form-check-label" for="datenErfasstInput">Alle relevanten Daten erfasst</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                    <button type="button" class="btn btn-primary" id="istMengeSpeichernBtn">Speichern & Archivieren</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+console.log('SCRIPT WIRD AUSGEFÜHRT');
+// === API-URL wie in Aufgabe.html ===
+const API_URL = 'http://192.168.1.20:5050/api'; // IP und Port wie in Aufgabe.html
+
+// Globale Variable für die Daten
+let entries = [];
+let archivEntries = [];
+let currentEntryId = null;
+
+// Automatische Aktualisierung der Laufzeit für laufende Aufträge
+let laufzeitInterval = null;
+function startLaufzeitTimer() {
+    if (laufzeitInterval) clearInterval(laufzeitInterval);
+    laufzeitInterval = setInterval(() => {
+        if (document.getElementById('bereichAktiv').style.display !== 'none') {
+            filterData();
+        }
+    }, 1000);
+}
+function stopLaufzeitTimer() {
+    if (laufzeitInterval) clearInterval(laufzeitInterval);
+}
+
+// Hilfsfunktion: Felder aus der Datenbank parsen
+function parseEntryFields(entry) {
+    if (typeof entry.pausen === 'string') {
+        try { entry.pausen = entry.pausen && entry.pausen !== 'null' ? JSON.parse(entry.pausen) : []; } catch { entry.pausen = []; }
+    }
+    if (typeof entry.stadien === 'string') {
+        try { entry.stadien = entry.stadien && entry.stadien !== 'null' ? JSON.parse(entry.stadien) : {}; } catch { entry.stadien = {}; }
+    }
+    if (typeof entry.rueckmeldung === 'string') {
+        try { entry.rueckmeldung = entry.rueckmeldung && entry.rueckmeldung !== 'null' ? JSON.parse(entry.rueckmeldung) : null; } catch { entry.rueckmeldung = null; }
+    }
+    return entry;
+}
+
+// === Daten von API laden ===
+async function loadData() {
+    // Aktive Aufträge
+    const res = await fetch(`${API_URL}/prod-auftraege`);
+    entries = await res.json();
+    entries = entries.map(parseEntryFields);
+    // Archivierte Aufträge
+    const resArchiv = await fetch(`${API_URL}/prod-archiv`);
+    archivEntries = await resArchiv.json();
+    archivEntries = archivEntries.map(parseEntryFields);
+}
+
+// Aktualisierungsfunktion
+async function refreshData() {
+    await loadData();
+    filterData();
+}
+
+// Dateiauswahl öffnen
+function openFileSelector() {
+    window.open('file://///192.168.1.20/GemeinsameDaten/Produktion', '_blank');
+    const pfad = prompt('Bitte geben Sie den relativen Pfad zur Datei ein (z.B. Zeichnungen/Projekt1.dwg):');
+    if (pfad) {
+        document.getElementById('netzwerkDatei').value = pfad;
+    }
+}
+
+// Stadien für Zeiterfassung
+const STADIEN = ['vorbereitung', 'produktion', 'verpacken'];
+const STADIEN_LABELS = { vorbereitung: 'Vorbereitung', produktion: 'Produktion', verpacken: 'Verpacken' };
+
+// Hilfsfunktion: Stadium starten
+async function stadiumWechseln(id, stadium) {
+    const entryIndex = entries.findIndex(e => e.id === id);
+    if (entryIndex === -1) return;
+    const now = new Date().toISOString();
+    let entry = {...entries[entryIndex]};
+    if (!entry.stadien) entry.stadien = {};
+    // Initialisiere Arrays für alle Stadien
+    STADIEN.forEach(s => {
+        if (!Array.isArray(entry.stadien[s])) entry.stadien[s] = [];
+    });
+    // Beende alle offenen Intervalle in allen Stadien
+    STADIEN.forEach(s => {
+        const arr = entry.stadien[s];
+        if (arr.length && arr[arr.length-1].start && !arr[arr.length-1].end) {
+            arr[arr.length-1].end = now;
+        }
+    });
+    // Starte neues Intervall im gewählten Stadium
+    entry.stadien[stadium].push({start: now, end: null});
+    await fetch(`${API_URL}/prod-auftraege/${id}`, {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(entry)
+    });
+    await refreshData();
+}
+
+// Daten filtern
+function filterData() {
+    const filter = document.getElementById('statusFilter').value;
+    const searchText = document.getElementById('searchInput').value.toLowerCase();
+    const tableBody = document.getElementById('dataTableBody');
+    tableBody.innerHTML = '';
+    let filteredEntries = entries.filter(e => e.status === 'new' || e.status === 'in_production');
+    if (filter !== 'all') {
+        filteredEntries = filteredEntries.filter(e => e.status === filter);
+    }
+    filteredEntries = filteredEntries.filter(e => 
+        e.bezeichnung.toLowerCase().includes(searchText) ||
+        e.beschreibung.toLowerCase().includes(searchText) ||
+        (e.netzwerkDatei && e.netzwerkDatei.toLowerCase().includes(searchText))
+    );
+    filteredEntries.forEach(entry => {
+        const rueck = entry.rueckmeldung;
+        const rueckInfo = (entry.status === 'completed' && rueck) ?
+            `<div><b>Ist-Menge:</b> ${rueck.istMenge}<br><b>Abschluss:</b> ${rueck.abschlussDatum}<br>
+            <span class='badge bg-${rueck.datenErfasst ? 'success' : 'secondary'}'>Daten</span></div>` : '';
+        // Pausenzeit berechnen
+        let pausenMs = 0;
+        if (entry.pausen && entry.pausen.length) {
+            entry.pausen.forEach(p => {
+                if (p.start && p.end) {
+                    pausenMs += (new Date(p.end) - new Date(p.start));
+                } else if (p.start && !p.end) {
+                    pausenMs += (new Date() - new Date(p.start));
+                }
+            });
+        }
+        // Gesamtlaufzeit (Summe aller beendeten Stadien)
+        let laufzeitMin = 0;
+        if (entry.stadien) {
+            STADIEN.forEach(s => {
+                if (Array.isArray(entry.stadien[s])) {
+                    entry.stadien[s].forEach(st => {
+                        if (st && st.start) {
+                            let end = st.end;
+                            if (!end) end = new Date().toISOString();
+                            if (!isNaN(Date.parse(st.start)) && !isNaN(Date.parse(end))) {
+                                laufzeitMin += Math.round((new Date(end)-new Date(st.start))/1000/60);
+                            }
+                        }
+                    });
+                }
+            });
+        }
+        const laufzeitH = Math.floor(laufzeitMin/60);
+        const laufzeitRestMin = laufzeitMin%60;
+        // Anzeige
+        let laufzeit = `<b>Laufzeit:</b> ${laufzeitH}h ${laufzeitRestMin}min`;
+        if (pausenMs > 0) {
+            laufzeit += ` <span class='badge bg-warning text-dark'>Pause: ${Math.floor(pausenMs/1000/60)}min</span>`;
+        }
+        // Buttons zum Stadium-Wechsel (nur bei in_production)
+        let stadiumBtns = '';
+        let zeitenBadges = '';
+        if (entry.status === 'in_production') {
+            stadiumBtns = '<div class="mt-1">';
+            STADIEN.forEach(s => {
+                const st = entry.stadien && entry.stadien[s];
+                const isActive = Array.isArray(st) && st.length && st[st.length-1].start && !st[st.length-1].end;
+                stadiumBtns += `<button class='btn btn-sm ${isActive ? 'btn-primary' : 'btn-outline-primary'} me-1' onclick='stadiumWechseln(${entry.id},"${s}")'>${STADIEN_LABELS[s]}</button>`;
+            });
+            stadiumBtns += '</div>';
+            // Dezente Zeit-Badges
+            zeitenBadges = '<div class="mb-1" style="font-size:0.85em; color:#888;">';
+            STADIEN.forEach(s => {
+                const min = summeStadien(entry.stadien, s) || '0 min';
+                zeitenBadges += `<span class="badge bg-light text-dark me-1" style="font-weight:400;">${STADIEN_LABELS[s]}: ${min}</span>`;
+            });
+            zeitenBadges += '</div>';
+        }
+        const row = `
+            <tr>
+                <td>${entry.id}</td>
+                <td>${entry.bezeichnung}</td>
+                <td><span class="status-badge status-${entry.status}">${getStatusText(entry.status)}</span></td>
+                <td>${entry.maschine || ''}</td>
+                <td>${formatDate(entry.datum)}</td>
+                <td>
+                    ${entry.netzwerkDatei ? 
+                        `<a href="file://///192.168.1.20/GemeinsameDaten/Produktion/${entry.netzwerkDatei}" target="_blank" class="file-link">
+                            <i class="bi bi-file-earmark me-1"></i>${entry.netzwerkDatei}
+                        </a>` : 
+                        '<span class="text-muted">Keine Datei</span>'
+                    }
+                </td>
+                <td>${entry.kundenname || ''}</td>
+                <td>${entry.due ? formatDate(entry.due) : ''}</td>
+                <td>
+                    <button class="action-button me-2" onclick="viewEntry(${entry.id})">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                    <button class="action-button me-2" onclick="editEntry(${entry.id})">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="action-button" onclick="deleteEntry(${entry.id})">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                    <button class="action-button me-2" onclick="archiveEntry(${entry.id})">
+                        <i class="bi bi-archive"></i>
+                    </button>
+                    <div class="mt-2 mb-1">
+                        ${laufzeit}
+                    </div>
+                    <div>
+                        ${zeitenBadges}
+                        ${stadiumBtns}
+                    </div>
+                    ${rueckInfo}
+                </td>
+            </tr>
+        `;
+        tableBody.innerHTML += row;
+    });
+}
+
+// Neuen Eintrag speichern
+async function saveNewEntry() {
+    const newEntry = {
+        bezeichnung: document.getElementById('bezeichnung').value,
+        status: document.getElementById('status').value,
+        beschreibung: document.getElementById('beschreibung').value,
+        netzwerkDatei: document.getElementById('netzwerkDatei').value,
+        bearbeiter: document.getElementById('bearbeiter').value,
+        sollMenge: parseInt(document.getElementById('sollMenge').value),
+        artikelnummer: document.getElementById('artikelnummer').value,
+        artikelbezeichnung: document.getElementById('artikelbezeichnung').value,
+        maschine: document.getElementById('maschine').value,
+        kundenname: document.getElementById('kundenname').value,
+        due: document.getElementById('due').value,
+        datum: new Date().toISOString(),
+        rueckmeldung: null,
+        startZeit: null,
+        endZeit: null,
+        pausen: [],
+        stadien: {
+            vorbereitung: null,
+            produktion: null,
+            verpacken: null
+        }
+    };
+    try {
+        const response = await fetch(`${API_URL}/prod-auftraege`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(newEntry)
+        });
+        const result = await response.json();
+        if (!response.ok || result.status === 'error') {
+            throw new Error(result.message || 'Unbekannter Fehler beim Speichern!');
+        }
+        await refreshData();
+        const modal = bootstrap.Modal.getInstance(document.getElementById('newEntryModal'));
+        modal.hide();
+        document.getElementById('newEntryForm').reset();
+    } catch (err) {
+        alert('Fehler beim Speichern des Auftrags: ' + err.message);
+    }
+}
+
+// Eintrag bearbeiten
+function editEntry(id) {
+    const entry = entries.find(e => e.id === id);
+    if (!entry) return;
+    document.getElementById('bezeichnung').value = entry.bezeichnung;
+    document.getElementById('status').value = entry.status;
+    document.getElementById('beschreibung').value = entry.beschreibung;
+    document.getElementById('netzwerkDatei').value = entry.netzwerkDatei || '';
+    document.getElementById('bearbeiter').value = entry.bearbeiter || '';
+    document.getElementById('sollMenge').value = entry.sollMenge || '';
+    document.getElementById('artikelnummer').value = entry.artikelnummer || '';
+    document.getElementById('artikelbezeichnung').value = entry.artikelbezeichnung || '';
+    document.getElementById('maschine').value = entry.maschine || '';
+    document.getElementById('kundenname').value = entry.kundenname || '';
+    document.getElementById('due').value = entry.due || '';
+    currentEntryId = id;
+    const modal = new bootstrap.Modal(document.getElementById('newEntryModal'));
+    modal.show();
+    // In editEntry: Button-Handler setzen, damit Modal nicht automatisch schließt
+    const saveButton = document.querySelector('#newEntryModal .btn-primary');
+    saveButton.replaceWith(saveButton.cloneNode(true));
+    const newSaveButton = document.querySelector('#newEntryModal .btn-primary');
+    newSaveButton.onclick = async () => {
+        await updateEntry(id);
+    };
+}
+
+function zeigeRueckmeldungDialog(entry) {
+    // Debug-Ausgaben
+    console.log('currentEntryId beim Öffnen:', entry.id);
+    console.log('entries beim Öffnen:', entries);
+    console.log('IDs beim Öffnen:', entries.map(e => e.id));
+    // Setze die aktuelle Entry-ID für die Rückmeldung
+    currentEntryId = entry.id;
+    console.log('zeigeRueckmeldungDialog: currentEntryId gesetzt auf', currentEntryId);
+    // Setze Defaultwerte
+    document.getElementById('istMenge').value = entry.sollMenge || '';
+    document.getElementById('abschlussDatum').value = new Date().toISOString().slice(0,10);
+    document.getElementById('datenErfasst').checked = false;
+    // Nur Info-Anzeige für automatisch erfasste Zeiten
+    let zeitenHtml = '';
+    STADIEN.forEach(s => {
+        const st = entry.stadien && entry.stadien[s];
+        const isValidDate = d => d && d !== 'null' && d !== null && d !== '' && !isNaN(Date.parse(d));
+        if (st && isValidDate(st.start) && isValidDate(st.end)) {
+            const min = Math.round((new Date(st.end) - new Date(st.start)) / 1000 / 60);
+            zeitenHtml += `<div class='mb-2'><b>${STADIEN_LABELS[s]}:</b> ${min} min (automatisch erfasst)</div>`;
+        }
+    });
+    let zeitenDiv = document.getElementById('manuelleZeitenDiv');
+    if (!zeitenDiv) {
+        zeitenDiv = document.createElement('div');
+        zeitenDiv.id = 'manuelleZeitenDiv';
+        document.getElementById('rueckmeldungForm').appendChild(zeitenDiv);
+    }
+    zeitenDiv.innerHTML = zeitenHtml;
+    const rueckmeldungModal = new bootstrap.Modal(document.getElementById('rueckmeldungModal'));
+    rueckmeldungModal.show();
+}
+
+// Modal initialisieren: Felder vorbelegen und Produktionsdauer berechnen
+function openIstMengeModal(entry) {
+    document.getElementById('istMengeInput').value = entry.sollMenge || '';
+    document.getElementById('abschlussDatumInput').value = new Date().toISOString().slice(0,10);
+    document.getElementById('datenErfasstInput').checked = false;
+    // Produktionsdauer berechnen (Summe aller Stadien-Intervalle)
+    let laufzeitMin = 0;
+    let stadienMin = { vorbereitung: 0, produktion: 0, verpacken: 0 };
+    if (entry.stadien) {
+        Object.entries(entry.stadien).forEach(([key, arr]) => {
+            if (Array.isArray(arr)) {
+                arr.forEach(st => {
+                    if (st && st.start) {
+                        let end = st.end;
+                        if (!end) end = new Date().toISOString();
+                        if (!isNaN(Date.parse(st.start)) && !isNaN(Date.parse(end))) {
+                            const min = Math.round((new Date(end)-new Date(st.start))/1000/60);
+                            laufzeitMin += min;
+                            stadienMin[key] = (stadienMin[key]||0) + min;
+                        }
+                    }
+                });
+            }
+        });
+    }
+    document.getElementById('produktionsdauerInfo').textContent = laufzeitMin > 0 ? laufzeitMin + ' min' : 'Keine Zeit automatisch erfasst';
+    // Felder immer anzeigen und mit Zeit vorbefüllen (auch wenn 0)
+    const vorFeld = document.getElementById('vorbereitungManuell');
+    const prodFeld = document.getElementById('produktionManuell');
+    const verFeld = document.getElementById('verpackenManuell');
+    vorFeld.style.display = '';
+    prodFeld.style.display = '';
+    verFeld.style.display = '';
+    vorFeld.value = stadienMin.vorbereitung;
+    prodFeld.value = stadienMin.produktion;
+    verFeld.value = stadienMin.verpacken;
+    const istMengeModal = new bootstrap.Modal(document.getElementById('istMengeModal'));
+    istMengeModal.show();
+}
+
+// Passe archiveEntry und updateEntry an, um openIstMengeModal zu nutzen
+function archiveEntry(id) {
+    zuArchivierendeId = id;
+    const entry = entries.find(e => String(e.id) === String(id));
+    openIstMengeModal(entry);
+}
+
+// Passe den Handler für das Ist-Menge-Modal an, damit auch updateEntry-Archivierung unterstützt wird
+let updateEntryArchivierung = false;
+document.getElementById('istMengeSpeichernBtn').onclick = async function() {
+    const id = zuArchivierendeId;
+    const entry = entries.find(e => String(e.id) === String(id));
+    if (!entry) {
+        alert('Fehler: Eintrag nicht gefunden!');
+        return;
+    }
+    const istMenge = parseInt(document.getElementById('istMengeInput').value);
+    const abschlussDatum = document.getElementById('abschlussDatumInput').value;
+    const datenErfasst = document.getElementById('datenErfasstInput').checked;
+    const vorMin = parseInt(document.getElementById('vorbereitungManuell').value);
+    const prodMin = parseInt(document.getElementById('produktionManuell').value);
+    const verMin = parseInt(document.getElementById('verpackenManuell').value);
+    if (isNaN(istMenge) || istMenge < 0) {
+        alert('Bitte eine gültige Stückzahl eingeben!');
+        return;
+    }
+    if (!abschlussDatum) {
+        alert('Bitte das Abschlussdatum eintragen!');
+        return;
+    }
+    // Für jedes Stadium, das keine Zeit hat, ggf. manuelle Zeit übernehmen
+    const now = new Date();
+    if (!entry.stadien) entry.stadien = {};
+    if ((!entry.stadien.vorbereitung || !entry.stadien.vorbereitung.start || !entry.stadien.vorbereitung.end) && !isNaN(vorMin) && vorMin > 0) {
+        const end = new Date(now.getTime());
+        const start = new Date(end.getTime() - vorMin*60000);
+        entry.stadien.vorbereitung = { start: start.toISOString(), end: end.toISOString() };
+    }
+    if ((!entry.stadien.produktion || !entry.stadien.produktion.start || !entry.stadien.produktion.end) && !isNaN(prodMin) && prodMin > 0) {
+        const end = new Date(now.getTime());
+        const start = new Date(end.getTime() - prodMin*60000);
+        entry.stadien.produktion = { start: start.toISOString(), end: end.toISOString() };
+    }
+    if ((!entry.stadien.verpacken || !entry.stadien.verpacken.start || !entry.stadien.verpacken.end) && !isNaN(verMin) && verMin > 0) {
+        const end = new Date(now.getTime());
+        const start = new Date(end.getTime() - verMin*60000);
+        entry.stadien.verpacken = { start: start.toISOString(), end: end.toISOString() };
+    }
+    // Setze Status, Endzeit, Rueckmeldung
+    entry.status = 'completed';
+    entry.endZeit = now.toISOString();
+    entry.rueckmeldung = {
+        istMenge,
+        abschlussDatum,
+        datenErfasst
+    };
+    // Sende an Archiv
+    await fetch(`${API_URL}/prod-archiv`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(entry)
+    });
+    // Lösche aus aktiven Aufträgen
+    await fetch(`${API_URL}/prod-auftraege/${id}`, { method: 'DELETE' });
+    await refreshData();
+    const istMengeModal = bootstrap.Modal.getInstance(document.getElementById('istMengeModal'));
+    istMengeModal.hide();
+    zuArchivierendeId = null;
+    // Schließe ggf. das Bearbeiten-Modal
+    const newEntryModal = bootstrap.Modal.getInstance(document.getElementById('newEntryModal'));
+    if (newEntryModal) newEntryModal.hide();
+    document.getElementById('newEntryForm').reset();
+};
+
+// Eintrag aktualisieren
+async function updateEntry(id) {
+    const entryIndex = entries.findIndex(e => e.id === id);
+    if (entryIndex === -1) return;
+    const alterStatus = entries[entryIndex].status;
+    const neuerStatus = document.getElementById('status').value;
+    let startZeit = entries[entryIndex].startZeit;
+    let endZeit = entries[entryIndex].endZeit;
+    let stadien = entries[entryIndex].stadien || { vorbereitung: null, produktion: null, verpacken: null };
+    if (neuerStatus === 'new') {
+        startZeit = null;
+        endZeit = null;
+        stadien = { vorbereitung: null, produktion: null, verpacken: null };
+    }
+    if (alterStatus !== 'in_production' && neuerStatus === 'in_production') {
+        startZeit = new Date().toISOString();
+    }
+    if (alterStatus !== 'completed' && neuerStatus === 'completed') {
+        zuArchivierendeId = id;
+        const entry = entries.find(e => String(e.id) === String(id));
+        openIstMengeModal(entry);
+        return;
+    }
+    const updatedEntry = {
+        ...entries[entryIndex],
+        bezeichnung: document.getElementById('bezeichnung').value,
+        status: neuerStatus,
+        beschreibung: document.getElementById('beschreibung').value,
+        netzwerkDatei: document.getElementById('netzwerkDatei').value,
+        bearbeiter: document.getElementById('bearbeiter').value,
+        sollMenge: parseInt(document.getElementById('sollMenge').value),
+        artikelnummer: document.getElementById('artikelnummer').value,
+        artikelbezeichnung: document.getElementById('artikelbezeichnung').value,
+        maschine: document.getElementById('maschine').value,
+        kundenname: document.getElementById('kundenname').value,
+        due: document.getElementById('due').value,
+        startZeit,
+        endZeit,
+        pausen: entries[entryIndex].pausen || [],
+        stadien
+    };
+    await fetch(`${API_URL}/prod-auftraege/${id}`, {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(updatedEntry)
+    });
+    await refreshData();
+    const modal = bootstrap.Modal.getInstance(document.getElementById('newEntryModal'));
+    if (!(alterStatus !== 'completed' && neuerStatus === 'completed')) {
+        if (modal) modal.hide();
+        document.getElementById('newEntryForm').reset();
+    }
+}
+
+// Eintrag löschen
+async function deleteEntry(id) {
+    if (confirm('Möchten Sie diesen Eintrag wirklich löschen?')) {
+        await fetch(`${API_URL}/prod-auftraege/${id}`, { method: 'DELETE' });
+        await refreshData();
+    }
+}
+
+// Eintrag anzeigen
+function viewEntry(id) {
+    const entry = entries.find(e => e.id === id);
+    if (!entry) return;
+
+    alert(`
+        ID: ${entry.id}
+        Bezeichnung: ${entry.bezeichnung}
+        Status: ${getStatusText(entry.status)}
+        Datum: ${formatDate(entry.datum)}
+        Beschreibung: ${entry.beschreibung}
+        Datei: ${entry.netzwerkDatei || 'Keine Datei zugeordnet'}
+    `);
+}
+
+// Excel Export
+function exportToExcel() {
+    alert('Excel-Export wird vorbereitet...');
+}
+
+// Hilfsfunktionen
+function getStatusText(status) {
+    const statusMap = {
+        'new': 'Neu',
+        'in_production': 'In Produktion',
+        'completed': 'Abgeschlossen'
+    };
+    return statusMap[status] || status;
+}
+
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('de-DE');
+}
+
+// Event Listener
+document.getElementById('searchInput').addEventListener('input', filterData);
+
+// Beim Laden der Seite Standard-Tab aktiv
+document.addEventListener('DOMContentLoaded', async () => {
+    await refreshData();
+    zeigeTab('aktiv');
+    startLaufzeitTimer();
+});
+
+// Timer stoppen, wenn auf Archiv gewechselt wird
+function zeigeTab(tab) {
+    document.getElementById('bereichAktiv').style.display = (tab === 'aktiv') ? '' : 'none';
+    document.getElementById('bereichArchiv').style.display = (tab === 'archiv') ? '' : 'none';
+    document.getElementById('tabAktiv').classList.toggle('active', tab === 'aktiv');
+    document.getElementById('tabArchiv').classList.toggle('active', tab === 'archiv');
+    if(tab === 'archiv') {
+        filterArchiv();
+        stopLaufzeitTimer();
+    } else {
+        startLaufzeitTimer();
+    }
+}
+// Archiv-Filter und Statistik
+function filterArchiv() {
+    const archivBody = document.getElementById('archivTableBody');
+    archivBody.innerHTML = '';
+    const archivEintraege = archivEntries;
+    let sumLaufzeit = 0;
+    let countLaufzeit = 0;
+    archivEintraege.forEach(entry => {
+        // Laufzeit berechnen (ohne Pausen)
+        let pausenMs = 0;
+        if (entry.pausen && entry.pausen.length) {
+            entry.pausen.forEach(p => {
+                if (p.start && p.end) pausenMs += (new Date(p.end) - new Date(p.start));
+            });
+        }
+        let laufzeitStr = '';
+        let laufzeitMin = 0;
+        if (entry.startZeit && entry.endZeit) {
+            const start = new Date(entry.startZeit);
+            const end = new Date(entry.endZeit);
+            const diffMs = end - start - pausenMs;
+            laufzeitMin = Math.round(diffMs/1000/60);
+        } else if (entry.stadien) {
+            // Wenn keine globale Zeit, dann Zeit aus allen Stadien summieren
+            Object.values(entry.stadien).forEach(st => {
+                if (st && st.start && st.end && st.start !== 'null' && st.end !== 'null' && !isNaN(Date.parse(st.start)) && !isNaN(Date.parse(st.end))) {
+                    laufzeitMin += Math.round((new Date(st.end)-new Date(st.start))/1000/60);
+                }
+            });
+        }
+        const diffH = Math.floor(laufzeitMin/60);
+        const diffMin = laufzeitMin%60;
+        laufzeitStr = `${diffH}h ${diffMin}min`;
+        sumLaufzeit += laufzeitMin;
+        countLaufzeit++;
+        // Rueckmeldung-Felder extrahieren
+        let istMenge = '';
+        if (entry.rueckmeldung) {
+            istMenge = entry.rueckmeldung.istMenge || '';
+        }
+        archivBody.innerHTML += `
+            <tr>
+                <td>${entry.auftrag_id || entry.id}</td>
+                <td>${entry.bezeichnung}</td>
+                <td>${entry.bearbeiter||''}</td>
+                <td>${entry.startZeit ? formatDate(entry.startZeit,true) : ''}</td>
+                <td>${entry.endZeit ? formatDate(entry.endZeit,true) : ''}</td>
+                <td>${laufzeitStr}</td>
+                <td>${entry.stadien && entry.stadien.vorbereitung && entry.stadien.vorbereitung.start && entry.stadien.vorbereitung.end ? Math.round((new Date(entry.stadien.vorbereitung.end)-new Date(entry.stadien.vorbereitung.start))/1000/60) + ' min' : ''}</td>
+                <td>${entry.stadien && entry.stadien.produktion && entry.stadien.produktion.start && entry.stadien.produktion.end ? Math.round((new Date(entry.stadien.produktion.end)-new Date(entry.stadien.produktion.start))/1000/60) + ' min' : ''}</td>
+                <td>${entry.stadien && entry.stadien.verpacken && entry.stadien.verpacken.start && entry.stadien.verpacken.end ? Math.round((new Date(entry.stadien.verpacken.end)-new Date(entry.stadien.verpacken.start))/1000/60) + ' min' : ''}</td>
+                <td>${istMenge}</td>
+                <td>${entry.netzwerkDatei ? `<a href="file://///192.168.1.20/GemeinsameDaten/Produktion/${entry.netzwerkDatei}" target="_blank" class="file-link"><i class="bi bi-file-earmark me-1"></i>${entry.netzwerkDatei}</a>` : '<span class="text-muted">Keine Datei</span>'}</td>
+                <td>
+                  <button class="btn btn-sm btn-danger" onclick="deleteArchivEntry(${entry.id})" title="Löschen">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </td>
+                <td>${entry.kundenname || ''}</td>
+                <td>${entry.due ? formatDate(entry.due) : ''}</td>
+            </tr>
+        `;
+    });
+    // Statistik
+    const statDiv = document.getElementById('archivStatistik');
+    // Zusätzliche Kennzahlen berechnen
+    let sumIstMenge = 0;
+    let countIstMenge = 0;
+    let sumZeitProStueck = 0;
+    archivEintraege.forEach(entry => {
+        let laufzeitMin = 0;
+        STADIEN.forEach(s => {
+            if (Array.isArray(entry.stadien && entry.stadien[s])) {
+                entry.stadien[s].forEach(st => {
+                    if (st && st.start) {
+                        let end = st.end;
+                        if (!end) end = new Date().toISOString();
+                        if (!isNaN(Date.parse(st.start)) && !isNaN(Date.parse(end))) {
+                            laufzeitMin += Math.round((new Date(end)-new Date(st.start))/1000/60);
+                        }
+                    }
+                });
+            }
+        });
+        if (entry.rueckmeldung && entry.rueckmeldung.istMenge) {
+            sumIstMenge += Number(entry.rueckmeldung.istMenge);
+            countIstMenge++;
+            if (Number(entry.rueckmeldung.istMenge) > 0) {
+                sumZeitProStueck += laufzeitMin / Number(entry.rueckmeldung.istMenge);
+            }
+        }
+    });
+    const avgIstMenge = countIstMenge ? (sumIstMenge / countIstMenge).toFixed(1) : '-';
+    const avgZeitProStueck = countIstMenge ? Math.round(sumZeitProStueck / countIstMenge) + ' min' : '-';
+    statDiv.innerHTML = `<b>Anzahl Aufträge:</b> ${archivEintraege.length} &nbsp; <b>Gesamtlaufzeit:</b> ${Math.floor(sumLaufzeit/60)}h ${sumLaufzeit%60}min &nbsp; <b>Ø Laufzeit:</b> ${countLaufzeit ? Math.floor(sumLaufzeit/countLaufzeit/60)+'h '+(Math.round(sumLaufzeit/countLaufzeit)%60)+'min' : '-'} &nbsp; <b>Ø Ist-Menge:</b> ${avgIstMenge} &nbsp; <b>Ø Zeit pro Stück:</b> ${avgZeitProStueck}`;
+}
+// Erweiterte Auswertung mit Chart.js
+let chartAuftraege = null;
+let chartLaufzeit = null;
+function auswertungArchiv(archivEintraege) {
+    // 1. Aufträge pro Monat
+    const monatMap = {};
+    archivEintraege.forEach(e => {
+        if(!e.endZeit) return;
+        const monat = new Date(e.endZeit).toLocaleString('de-DE', {month:'2-digit', year:'2-digit'});
+        monatMap[monat] = (monatMap[monat]||0)+1;
+    });
+    const monate = Object.keys(monatMap).sort();
+    const werte = monate.map(m=>monatMap[m]);
+    if(chartAuftraege) chartAuftraege.destroy();
+    chartAuftraege = new Chart(document.getElementById('auftraegeProMonatChart').getContext('2d'), {
+        type: 'bar',
+        data: { labels: monate, datasets: [{ label: 'Abgeschlossene Aufträge', data: werte, backgroundColor: '#003366' }] },
+        options: { plugins: { legend: { display: false } } }
+    });
+    // 2. Durchschnittliche Laufzeit pro Monat
+    const laufzeitMap = {};
+    archivEintraege.forEach(e => {
+        if(!e.startZeit || !e.endZeit) return;
+        const monat = new Date(e.endZeit).toLocaleString('de-DE', {month:'2-digit', year:'2-digit'});
+        let pausenMs = 0;
+        if(e.pausen && e.pausen.length) {
+            e.pausen.forEach(p => { if(p.start && p.end) pausenMs += (new Date(p.end)-new Date(p.start)); });
+        }
+        const laufzeitMin = Math.round((new Date(e.endZeit)-new Date(e.startZeit)-pausenMs)/1000/60);
+        laufzeitMap[monat] = laufzeitMap[monat]||[];
+        laufzeitMap[monat].push(laufzeitMin);
+    });
+    const avgLaufzeit = monate.map(m=>laufzeitMap[m]?Math.round(laufzeitMap[m].reduce((a,b)=>a+b,0)/laufzeitMap[m].length):0);
+    if(chartLaufzeit) chartLaufzeit.destroy();
+    chartLaufzeit = new Chart(document.getElementById('durchschnittLaufzeitChart').getContext('2d'), {
+        type: 'line',
+        data: { labels: monate, datasets: [{ label: 'Ø Laufzeit (min)', data: avgLaufzeit, borderColor: '#009999', backgroundColor: '#00999922', fill: true }] },
+        options: { plugins: { legend: { display: false } } }
+    });
+    // Füge im Archiv-Tab unter den bisherigen Diagrammen für jeden Schritt ein Canvas-Element ein:
+    // <canvas id="laufzeit_vorbereitung_chart" height="80"></canvas>
+    // <canvas id="laufzeit_produktion_chart" height="80"></canvas>
+    // <canvas id="laufzeit_verpacken_chart" height="80"></canvas>
+    // ... existing code ...
+    // Nach der bisherigen Auswertung für laufzeitMap:
+    const schrittLaufzeitMap = { vorbereitung: {}, produktion: {}, verpacken: {} };
+    archivEintraege.forEach(e => {
+        if (!e.stadien) return;
+        STADIEN.forEach(s => {
+            const st = e.stadien[s];
+            if (st && st.start && st.end) {
+                const monat = new Date(e.endZeit).toLocaleString('de-DE', {month:'2-digit', year:'2-digit'});
+                if (!schrittLaufzeitMap[s][monat]) schrittLaufzeitMap[s][monat] = [];
+                schrittLaufzeitMap[s][monat].push(Math.round((new Date(st.end)-new Date(st.start))/1000/60));
+            }
+        });
+    });
+    // Für jeden Schritt ein Diagramm erzeugen (Chart.js)
+    STADIEN.forEach(s => {
+        const avgSchritt = monate.map(m => schrittLaufzeitMap[s][m] ? Math.round(schrittLaufzeitMap[s][m].reduce((a,b)=>a+b,0)/schrittLaufzeitMap[s][m].length) : 0);
+        const canvasId = `laufzeit_${s}_chart`;
+        let chart = window[canvasId];
+        if (chart) chart.destroy();
+        const canvasElem = document.getElementById(canvasId);
+        if (canvasElem) {
+            window[canvasId] = new Chart(canvasElem.getContext('2d'), {
+                type: 'line',
+                data: { labels: monate, datasets: [{ label: `Ø ${STADIEN_LABELS[s]} (min)`, data: avgSchritt, borderColor: '#009999', backgroundColor: '#00999922', fill: true }] },
+                options: { plugins: { legend: { display: false } } }
+            });
+        }
+    });
+}
+// Format mit Uhrzeit für Archiv
+function formatDate(dateString, mitZeit) {
+    const date = new Date(dateString);
+    if(mitZeit) return date.toLocaleString('de-DE');
+    return date.toLocaleDateString('de-DE');
+}
+
+// Pausenfunktion: Pausen-Array pro Auftrag
+async function pauseEntry(id) {
+    const entryIndex = entries.findIndex(e => e.id === id);
+    if (entryIndex === -1) return;
+    let entry = {...entries[entryIndex]};
+    if (!entry.pausen) entry.pausen = [];
+    if (!entry.pausen.length || entry.pausen[entry.pausen.length-1].end) {
+        entry.pausen.push({start: new Date().toISOString(), end: null});
+    }
+    await fetch(`${API_URL}/prod-auftraege/${id}`, {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(entry)
+    });
+    await refreshData();
+}
+async function resumeEntry(id) {
+    const entryIndex = entries.findIndex(e => e.id === id);
+    if (entryIndex === -1) return;
+    let entry = {...entries[entryIndex]};
+    if (entry.pausen && entry.pausen.length && !entry.pausen[entry.pausen.length-1].end) {
+        entry.pausen[entry.pausen.length-1].end = new Date().toISOString();
+    }
+    await fetch(`${API_URL}/prod-auftraege/${id}`, {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(entry)
+    });
+    await refreshData();
+}
+
+// Neue Funktion zum Löschen eines Archiv-Eintrags
+async function deleteArchivEntry(id) {
+    if (confirm('Möchten Sie diesen Archiv-Eintrag wirklich löschen?')) {
+        await fetch(`${API_URL}/prod-archiv/${id}`, { method: 'DELETE' });
+        await refreshData();
+        zeigeTab('archiv'); // Bleibe im Archiv-Tab und aktualisiere die Ansicht!
+    }
+}
+
+// Funktion zum Vorbereiten des Modals für einen neuen Auftrag
+function prepareNewEntryModal() {
+    currentEntryId = null;
+    document.getElementById('newEntryForm').reset();
+    const saveButton = document.querySelector('#newEntryModal .btn-primary');
+    saveButton.replaceWith(saveButton.cloneNode(true));
+    const newSaveButton = document.querySelector('#newEntryModal .btn-primary');
+    newSaveButton.onclick = async () => { await saveNewEntry(); };
+}
+
+// Nach jedem Schließen des Modals currentEntryId zurücksetzen
+document.getElementById('newEntryModal').addEventListener('hidden.bs.modal', function () {
+    currentEntryId = null;
+});
+
+// Variable für die zu archivierende ID
+let zuArchivierendeId = null;
+
+// Hilfsfunktion: Summe aller Intervalle für einen bestimmten Stadium
+function summeStadien(stadien, key) {
+    let min = 0;
+    if (stadien && Array.isArray(stadien[key])) {
+        stadien[key].forEach(st => {
+            if (st && st.start) {
+                let end = st.end;
+                if (!end) end = new Date().toISOString(); // Laufendes Intervall: bis jetzt
+                if (!isNaN(Date.parse(st.start)) && !isNaN(Date.parse(end))) {
+                    min += Math.round((new Date(end)-new Date(st.start))/1000/60);
+                }
+            }
+        });
+    }
+    return min > 0 ? min + ' min' : '';
+}
+
+// Avatar-Map wie auf index.html
+const avatarMap = {
+    'admin': 'https://randomuser.me/api/portraits/men/1.jpg',
+    'petra': 'https://randomuser.me/api/portraits/women/2.jpg',
+    'jürgen': 'https://randomuser.me/api/portraits/men/3.jpg',
+    'nizia': 'https://randomuser.me/api/portraits/women/4.jpg',
+    'fatih': 'https://randomuser.me/api/portraits/men/5.jpg',
+    'silas': 'https://randomuser.me/api/portraits/men/6.jpg',
+    'julian': 'https://randomuser.me/api/portraits/men/7.jpg'
+};
+
+document.addEventListener('DOMContentLoaded', function() {
+    const loggedInUser = localStorage.getItem('loggedInUser');
+    if (loggedInUser) {
+        const usernameDisplay = loggedInUser.charAt(0).toUpperCase() + loggedInUser.slice(1);
+        const userNameSpan = document.getElementById('userName');
+        if (userNameSpan) userNameSpan.textContent = usernameDisplay;
+        const userAvatar = document.getElementById('userAvatar');
+        if (userAvatar) userAvatar.src = avatarMap[loggedInUser.toLowerCase()] || 'https://randomuser.me/api/portraits/lego/1.jpg';
+    }
+});
+    </script>
+</body>
+<!-- Versionsnummer unten rechts -->
+<div style="position: fixed; bottom: 10px; right: 10px; font-size: 12px; color: #718096; background: rgba(255,255,255,0.8); padding: 4px 8px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); z-index: 9999;">Version 1.0.0</div>
+</html> 
