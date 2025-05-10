@@ -1,293 +1,190 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="de">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title>Digitaler Verpackungsdruck Preisberechner v1.0.0</title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2575.5">
-  <style type="text/css">
-    body {
-      font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-      margin: 0;
-      background: #f7fafc;
-      color: #2d3748;
-    }
-    h2 {
-      margin-top: 18px;
-      margin-bottom: 12px;
-      text-align: center;
-      font-weight: 600;
-      color: #1a3b6e;
-      letter-spacing: 0.5px;
-      font-size: 1.35rem;
-    }
-    form {
-      margin: 0 auto;
-      max-width: 1100px;
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 2px 10px 0 rgba(30,60,90,0.06);
-      padding: 16px 10px 8px 10px;
-    }
-    .form-section {
-      background: #f5f7fa;
-      border-radius: 8px;
-      padding: 10px 8px 4px 8px;
-      margin-bottom: 0;
-      box-shadow: 0 1px 2px 0 rgba(30,60,90,0.03);
-      border: 1px solid #bfc9d1;
-    }
-    label {
-      display: block;
-      margin-top: 6px;
-      font-size: 13px;
-      font-weight: 500;
-      color: #2e3d32;
-    }
-    input, select {
-      margin-top: 3px;
-      margin-bottom: 6px;
-      padding: 4px 7px;
-      border-radius: 5px;
-      border: 1px solid #bfc9d1;
-      font-size: 13px;
-      background: #fff;
-      width: 100%;
-      box-sizing: border-box;
-      transition: border 0.2s;
-    }
-    input:focus, select:focus {
-      border: 1.2px solid #388e3c;
-      outline: none;
-    }
-    button {
-      padding: 8px 18px;
-      font-size: 14px;
-      font-weight: 600;
-      color: #fff;
-      background: linear-gradient(90deg, #1a3b6e 60%, #2c5282 100%);
-      border: none;
-      border-radius: 7px;
-      box-shadow: 0 1px 4px 0 rgba(0,0,0,0.07);
-      cursor: pointer;
-      margin: 18px auto 0 auto;
-      display: block;
-      letter-spacing: 0.3px;
-      transition: background 0.2s;
-    }
-    button:hover {
-      background: linear-gradient(90deg, #2c5282 60%, #1a3b6e 100%);
-    }
-    .result {
-      margin-top: 0;
-      padding: 12px 8px 10px 8px;
-      background: #fff;
-      border-radius: 10px;
-      box-shadow: 0 1px 6px 0 rgba(30,60,90,0.05);
-      border: 1px solid #bfc9d1;
-      font-size: 13px;
-      min-height: 120px;
-    }
-    .warn {
-      color: #b71c1c;
-      font-weight: bold;
-      font-size: 13px;
-    }
-    .hint {
-      color: #607d68;
-      font-size: 11px;
-      margin-top: 3px;
-      display: block;
-    }
-    .back-button {
-      position: fixed;
-      top: 20px;
-      left: 20px;
-      padding: 10px 20px;
-      background-color: #1a3b6e;
-      color: white;
-      text-decoration: none;
-      border-radius: 4px;
-      font-weight: 500;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      transition: background-color 0.2s;
-      z-index: 1000;
-    }
-    .back-button:hover {
-      background-color: #2c5282;
-    }
-    .reset-button {
-      padding: 8px 18px;
-      font-size: 14px;
-      font-weight: 600;
-      color: #fff;
-      background: #dc2626;
-      border: none;
-      border-radius: 7px;
-      box-shadow: 0 1px 4px 0 rgba(0,0,0,0.07);
-      cursor: pointer;
-      margin: 18px 0 0 10px;
-      display: inline-block;
-      letter-spacing: 0.3px;
-      transition: background 0.2s;
-    }
-    .reset-button:hover {
-      background: #b91c1c;
-    }
-    .pdf-button {
-      padding: 8px 18px;
-      font-size: 14px;
-      font-weight: 600;
-      color: #fff;
-      background: #1a3b6e;
-      border: none;
-      border-radius: 7px;
-      box-shadow: 0 1px 4px 0 rgba(0,0,0,0.07);
-      cursor: pointer;
-      margin: 18px 0 0 10px;
-      display: inline-block;
-      letter-spacing: 0.3px;
-      transition: background 0.2s;
-    }
-    .pdf-button:hover {
-      background: #2c5282;
-    }
-    .version {
-      position: fixed;
-      bottom: 10px;
-      right: 10px;
-      font-size: 12px;
-      color: #718096;
-      background: rgba(255, 255, 255, 0.8);
-      padding: 4px 8px;
-      border-radius: 4px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
-    .header {
-      background-color: #1a3b6e;
-      padding: 10px 0;
-    }
-    .header-content {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      position: relative;
-    }
-    .logo {
-      color: #fff;
-      font-size: 1.5rem;
-      font-weight: 600;
-      text-decoration: none;
-      position: absolute;
-      left: 24px;
-    }
-    .seiten-titel {
-      color: #fff;
-      font-size: 1.3em;
-      font-weight: 600;
-      text-align: center;
-      flex: 1;
-    }
-    .button-row-oben {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      align-items: flex-start;
-      width: 240px;
-      margin-left: 18px;
-      margin-top: 18px;
-    }
-    .button-row-oben a,
-    .button-row-oben button {
-      display: block;
-      width: 100%;
-      min-width: 180px;
-      max-width: 100%;
-      box-sizing: border-box;
-      margin: 0;
-      text-align: left;
-      font-size: 15px;
-      font-weight: 600;
-      padding: 10px 18px;
-      border-radius: 7px;
-      background: linear-gradient(90deg, #1a3b6e 60%, #2c5282 100%);
-      color: #fff;
-      border: none;
-      box-shadow: 0 1px 4px 0 rgba(0,0,0,0.07);
-      letter-spacing: 0.3px;
-      transition: background 0.2s;
-      cursor: pointer;
-    }
-    .button-row-oben a:hover,
-    .button-row-oben button:hover {
-      background: linear-gradient(90deg, #2c5282 60%, #1a3b6e 100%);
-    }
-    .button-row-oben .reset-button {
-      background: #dc2626;
-    }
-    .button-row-oben .reset-button:hover {
-      background: #b91c1c;
-    }
-    .button-row-oben .pdf-button {
-      background: #1a3b6e;
-    }
-    .button-row-oben .pdf-button:hover {
-      background: #2c5282;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digitaler Verpackungsdruck</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #003366;
+            --secondary-color: #009999;
+            --accent-color: #FFB900;
+            --background-color: #f8f9fa;
+            --text-color: #333;
+        }
+        body {
+            background-color: #fff;
+            color: var(--text-color);
+            font-family: '72', 'Segoe UI', Arial, sans-serif;
+            font-size: 0.98rem;
+        }
+        .navbar {
+            background-color: #003366 !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            min-height: 64px;
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+        }
+        .navbar-brand img {
+            height: 40px;
+            margin-right: 12px;
+        }
+        .navbar-brand span {
+            font-size: 1.13rem;
+            font-weight: 700;
+            color: #fff;
+            margin-left: 0;
+        }
+        .container-box {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+            padding: 1.2rem 1.2rem 1rem 1.2rem;
+            margin-top: 1.2rem;
+            margin-bottom: 1.2rem;
+        }
+        .kalk-flex {
+            display: flex;
+            gap: 22px;
+            justify-content: center;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+        }
+        .kalk-card {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+            border: 1px solid #e3e8ee;
+            padding: 18px 16px 14px 16px;
+            min-width: 220px;
+            max-width: 320px;
+            flex: 1 1 0;
+            margin-bottom: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .kalk-card input,
+        .kalk-card select {
+            width: 100%;
+            margin-bottom: 8px;
+            min-height: 38px;
+            font-size: 1rem;
+        }
+        .kalk-card h3 {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: #003366;
+            margin-bottom: 10px;
+            margin-top: 0;
+        }
+        .button-row {
+            display: flex;
+            gap: 18px;
+            justify-content: flex-end;
+            margin-top: 32px;
+        }
+        .button-row button {
+            background: linear-gradient(90deg, #1a3b6e 60%, #009999 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1.08rem;
+            padding: 12px 28px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: background 0.18s, box-shadow 0.18s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .button-row button:hover {
+            background: linear-gradient(90deg, #009999 60%, #1a3b6e 100%);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.13);
+        }
+        .button-row i {
+            font-size: 1.2em;
+        }
+        @media (max-width: 1100px) {
+            .kalk-flex { flex-direction: column; gap: 12px; }
+            .kalk-card { max-width: 100%; min-width: 0; }
+        }
+        #userInfo {
+            gap: 10px;
+            margin-left: 32px;
+        }
+        #userAvatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #fff;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+        }
+        #userName {
+            font-weight: 500;
+            color: #fff;
+            font-family: '72', 'Segoe UI', Arial, sans-serif;
+        }
+    </style>
 </head>
 <body>
-  <header class="header">
-    <div class="header-content">
-      <a href="#" class="logo">Hausenstein</a>
-      <span class="seiten-titel" style="color:#fff; font-size:1.3em; font-weight:600; margin-left:24px;">Digitaler Verpackungsdrucker Preisberechner</span>
-    </div>
-  </header>
-  <div style="display: flex; align-items: flex-start;">
-    <div class="button-row-oben">
-      <a href="index.html">← Zurück zur Startseite</a>
-      <button type="button" class="pdf-button" onclick="exportToPDF()">Als PDF exportieren</button>
-      <button type="button" class="reset-button" onclick="resetForm()">Formular zurücksetzen</button>
-    </div>
-    <div style="display: inline-block; margin-top: 10mm; position: relative; left: 0%; margin: 0 auto; width: 100%;">
-      <form id="druckerForm" onsubmit="event.preventDefault(); berechneDrucker();">
-        <div style="display: flex; gap: 24px; flex-wrap: wrap;">
-          <fieldset class="form-section" style="flex: 1 1 250px; min-width: 220px;">
-            <legend>Auftragsdaten</legend>
-            <label>Artikelnummer: <input type="text" id="artikelnummer" placeholder="z.B. DRK-001"></label>
-            <label>Verpackungslänge (mm): <input type="number" id="verpackungLaenge" required title="Länge der Verpackung in mm"></label>
-            <label>Anzahl: <input type="number" id="anzahlTeile" min="1" value="1" required title="Wie viele Verpackungen werden benötigt?"></label>
-            <label>Farbkosten pro Stück (€): <input type="number" id="farbkosten" min="0" step="0.01" required title="Farbkosten pro Verpackung in Euro"></label>
-          </fieldset>
-          <fieldset class="form-section" style="flex: 1 1 250px; min-width: 220px;">
-            <legend>Produktionsparameter</legend>
-            <label>Druckgeschwindigkeit (m/min): <input type="number" id="druckGeschwindigkeit" value="30" readonly title="Druckgeschwindigkeit in m/min"></label>
-            <label>Rüstzeit (min): <input type="number" id="ruestzeit" min="0" value="15" required title="Rüstzeit in Minuten"></label>
-            <label>Preiseinheit (Menge):
-              <select id="preiseinheit" required title="Preis für diese Stückzahl">
-                <option value="1">1 Stück</option>
-                <option value="100" selected>100 Stück</option>
-                <option value="1000">1000 Stück</option>
-              </select>
-            </label>
-          </fieldset>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <img src="LOGO.svg" alt="Logo" />
+                <span>Digitaler Verpackungsdruck</span>
+            </a>
+            <div class="d-flex align-items-center" id="userInfo" style="gap:10px; margin-left:32px;">
+                <img id="userAvatar" src="https://randomuser.me/api/portraits/men/1.jpg" alt="User" style="width:32px; height:32px; border-radius:50%; object-fit:cover; border:2px solid #fff; box-shadow:0 1px 4px rgba(0,0,0,0.08);">
+                <span id="userName" style="font-weight:500; color:#fff;">Benutzer</span>
+            </div>
         </div>
-        <div style="display: flex; justify-content: center; gap: 15px; margin-top: 20px;">
-          <button type="submit" style="background: linear-gradient(90deg, #1a3b6e 60%, #2c5282 100%); min-width: 120px;">Berechnen</button>
-        </div>
-      </form>
-      <div style="display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; margin-top: 16px; margin-left: 40px;">
-        <div class="result" id="ergebnis" style="flex: 1 1 0; min-width: 200px; max-width: 38%; font-size:12px;"></div>
-      </div>
+    </nav>
+    <div class="container mt-3 mb-2">
+        <a href="index.html" class="btn btn-outline-primary"><i class="bi bi-arrow-left"></i> Zurück zur Startseite</a>
     </div>
-  </div>
-  <div class="version">v1.0.1</div>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script>
+    <div class="container container-box mt-3 mb-2">
+        <form id="druckerForm" onsubmit="event.preventDefault(); berechneDrucker();">
+            <div class="kalk-flex">
+                <div class="kalk-card">
+                    <h3>Auftragsdaten</h3>
+                    <label>Artikelnummer: <input type="text" id="artikelnummer" placeholder="z.B. DRK-001"></label>
+                    <label>Verpackungslänge (mm): <input type="number" id="verpackungLaenge" required title="Länge der Verpackung in mm"></label>
+                    <label>Anzahl: <input type="number" id="anzahlTeile" min="1" value="1" required title="Wie viele Verpackungen werden benötigt?"></label>
+                    <label>Farbkosten pro Stück (€): <input type="number" id="farbkosten" min="0" step="0.01" required title="Farbkosten pro Verpackung in Euro"></label>
+                </div>
+                <div class="kalk-card">
+                    <h3>Produktionsparameter</h3>
+                    <label>Druckgeschwindigkeit (m/min): <input type="number" id="druckGeschwindigkeit" value="30" readonly title="Druckgeschwindigkeit in m/min"></label>
+                    <label>Rüstzeit (min): <input type="number" id="ruestzeit" min="0" value="15" required title="Rüstzeit in Minuten"></label>
+                    <label>Preiseinheit (Menge):
+                        <select id="preiseinheit" required title="Preis für diese Stückzahl">
+                            <option value="1">1 Stück</option>
+                            <option value="100" selected>100 Stück</option>
+                            <option value="1000">1000 Stück</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="kalk-card">
+                    <h3>Ergebnis</h3>
+                    <div class="result" id="ergebnis" style="font-size:12px;"></div>
+                </div>
+            </div>
+            <div class="button-row">
+                <button type="submit"><i class="bi bi-calculator"></i> Berechnen</button>
+                <button type="button" onclick="exportToPDF()"><i class="bi bi-file-earmark-pdf"></i> Als PDF exportieren</button>
+                <button type="button" onclick="resetForm()" style="background:#dc2626;"><i class="bi bi-arrow-counterclockwise"></i> Formular zurücksetzen</button>
+            </div>
+        </form>
+    </div>
+    <div class="version" style="position:fixed; bottom:10px; right:10px; font-size:12px; color:#718096; background:rgba(255,255,255,0.8); padding:4px 8px; border-radius:4px; box-shadow:0 1px 3px rgba(0,0,0,0.1); z-index:999;">v1.0.1</div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
     // Konstanten für die Berechnung
     const ANLAGEKOSTEN = 20000; // €
     const NUTZUNGSDAUER = 10; // Jahre
@@ -296,6 +193,28 @@
     const STROMKOSTEN_PRO_KWH = 0.35; // €
     const PERSONALKOSTEN_PRO_STUNDE = 20; // €
     const ARBEITSSTUNDEN_PRO_JAHR = 1600; // Stunden
+
+    // Avatar-Map wie auf index.html
+    const avatarMap = {
+        'admin': 'https://randomuser.me/api/portraits/men/1.jpg',
+        'petra': 'https://randomuser.me/api/portraits/women/2.jpg',
+        'jürgen': 'https://randomuser.me/api/portraits/men/3.jpg',
+        'nizia': 'https://randomuser.me/api/portraits/women/4.jpg',
+        'fatih': 'https://randomuser.me/api/portraits/men/5.jpg',
+        'silas': 'https://randomuser.me/api/portraits/men/6.jpg',
+        'julian': 'https://randomuser.me/api/portraits/men/7.jpg'
+    };
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const loggedInUser = localStorage.getItem('loggedInUser');
+        if (loggedInUser) {
+            const usernameDisplay = loggedInUser.charAt(0).toUpperCase() + loggedInUser.slice(1);
+            const userNameSpan = document.getElementById('userName');
+            if (userNameSpan) userNameSpan.textContent = usernameDisplay;
+            const userAvatar = document.getElementById('userAvatar');
+            if (userAvatar) userAvatar.src = avatarMap[loggedInUser.toLowerCase()] || 'https://randomuser.me/api/portraits/lego/1.jpg';
+        }
+    });
 
     // Funktion zum Zurücksetzen des Formulars
     function resetForm() {
@@ -402,6 +321,6 @@
         pdf.save(filename);
       });
     }
-  </script>
+    </script>
 </body>
 </html>

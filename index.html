@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Startseite v1.0.0</title>
+    <title>Startseite</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="icon" type="image/png" sizes="192x192" href="icon.png">
     <link rel="apple-touch-icon" sizes="180x180" href="icon.png">
     <link rel="manifest" href="manifest.json">
@@ -12,34 +14,101 @@
     <style>
         :root {
             --primary-color: #003366;
-            --secondary-color: #002244;
-            --accent-color: #e9730c;
-            --text-color: #32363a;
+            --secondary-color: #009999;
+            --accent-color: #FFB900;
+            --background-color: #f8f9fa;
+            --text-color: #333;
             --light-bg: #f7f9fa;
             --white: #ffffff;
             --tile-shadow: 0 2px 8px rgba(0,0,0,0.07);
         }
-
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+        .navbar {
+            background-color: var(--primary-color) !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .navbar-brand img {
+            height: 40px;
+            margin-right: 12px;
+        }
+        .container-box {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+            padding: 2rem 2rem 1.5rem 2rem;
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+        }
+        .nav-tabs .nav-link.active {
+            background-color: var(--primary-color);
+            color: #fff;
+        }
+        .nav-tabs .nav-link {
+            color: var(--primary-color);
+        }
+        .tab-content {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            padding: 24px;
+            margin-top: 16px;
+        }
+        .action-button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: background-color 0.2s;
+        }
+        .action-button:hover {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        .table {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .table thead th {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+        }
+        .table tbody tr:hover {
+            background-color: rgba(0,0,0,0.02);
+        }
+        .summary-box {
+            background: var(--accent-color);
+            color: #333;
+            border-radius: 8px;
+            padding: 16px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+        @media (max-width: 600px) {
+            .container-box { padding: 1rem; }
+        }
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
             font-family: '72', 'Segoe UI', Arial, sans-serif;
             line-height: 1.6;
-            color: var(--text-color);
-            background-color: var(--light-bg);
         }
-
         .header {
             background: var(--primary-color);
             color: var(--white);
             padding: 24px 0 16px 0;
             box-shadow: 0 2px 8px rgba(0,0,0,0.06);
         }
-
         .header-content {
             max-width: 1200px;
             margin: 0 auto;
@@ -48,7 +117,6 @@
             align-items: center;
             justify-content: space-between;
         }
-
         .logo {
             font-size: 2rem;
             font-weight: bold;
@@ -56,20 +124,17 @@
             text-decoration: none;
             letter-spacing: 2px;
         }
-
         .seiten-titel {
             font-size: 1.5rem;
             font-weight: 600;
             color: var(--white);
             margin-left: 1.5rem;
         }
-
         .main-container {
             max-width: 1200px;
             margin: 2.5rem auto 0 auto;
             padding: 0 2rem;
         }
-
         .login-container {
             background: var(--white);
             border-radius: 8px;
@@ -77,7 +142,6 @@
             padding: 2rem;
             margin-bottom: 2rem;
         }
-
         .welcome-section {
             background: var(--white);
             border-radius: 8px;
@@ -86,76 +150,76 @@
             margin-bottom: 2rem;
             display: none;
         }
-
         .nav-links {
             background: none;
             box-shadow: none;
             padding: 0;
             margin-bottom: 2rem;
         }
-
         .nav-links h2 {
             color: var(--primary-color);
             margin-bottom: 2rem;
             font-size: 2rem;
             font-weight: 500;
         }
-
         .nav-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 2.5rem;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.3rem;
         }
-
         .nav-card {
             background: var(--white);
-            border-radius: 16px;
+            border-radius: 11px;
             box-shadow: var(--tile-shadow);
-            padding: 1.5rem 1rem 1rem 1rem;
+            padding: 1rem 0.7rem 0.7rem 0.7rem;
             text-align: center;
             transition: box-shadow 0.2s, transform 0.2s;
             cursor: pointer;
             border: 1px solid #e5eaf3;
             position: relative;
+            min-height: 180px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
-
         .nav-card:hover {
             box-shadow: 0 8px 24px rgba(10,110,209,0.10);
             transform: translateY(-4px) scale(1.03);
             border-color: var(--primary-color);
         }
-
-        .nav-card a {
-            color: var(--primary-color);
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 1.2rem;
-            display: block;
-            margin-top: 1.2rem;
-        }
-
-        .nav-card p {
-            color: #5a5d5f;
-            margin-top: 0.5rem;
-            font-size: 1rem;
-        }
-
-        .nav-card .material-icons {
-            font-size: 2.2rem;
-            color: var(--primary-color);
-            background: #eaf3fc;
+        .nav-card .icon-circle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
-            padding: 10px;
-            margin-bottom: 0.5rem;
+            background: #eaf3fc;
+            margin: 0 auto 12px auto;
             box-shadow: 0 2px 8px rgba(10,110,209,0.07);
         }
-
+        .nav-card .icon-circle .material-icons {
+            font-size: 2rem;
+            color: var(--primary-color);
+        }
+        .nav-card .tile-title {
+            font-size: 1.13rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.3rem;
+            margin-top: 0;
+        }
+        .nav-card .tile-desc {
+            color: #5a5d5f;
+            font-size: 0.97rem;
+            margin: 0;
+        }
         form {
             display: flex;
             flex-direction: column;
             gap: 1rem;
         }
-
         input[type="text"],
         input[type="password"] {
             padding: 0.75rem;
@@ -164,14 +228,12 @@
             font-size: 1rem;
             transition: border-color 0.2s;
         }
-
         input[type="text"]:focus,
         input[type="password"]:focus {
             outline: none;
             border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(26,59,110,0.1);
         }
-
         button {
             padding: 0.75rem 1.5rem;
             background-color: var(--primary-color);
@@ -183,11 +245,9 @@
             cursor: pointer;
             transition: background-color 0.2s;
         }
-
         button:hover {
             background-color: var(--secondary-color);
         }
-
         .logout-btn {
             background: var(--accent-color);
             color: var(--white);
@@ -200,11 +260,9 @@
             margin-top: 1.5rem;
             transition: background 0.2s;
         }
-
         .logout-btn:hover {
             background: #b85c00;
         }
-
         .error-message {
             color: var(--accent-color);
             background-color: #fff5f5;
@@ -213,7 +271,6 @@
             margin-top: 1rem;
             display: none;
         }
-
         .welcome-message {
             background-color: #ebf8ff;
             color: var(--primary-color);
@@ -222,23 +279,19 @@
             margin-bottom: 1.5rem;
             font-weight: 500;
         }
-
         @media (max-width: 768px) {
             .header-content {
                 flex-direction: column;
                 text-align: center;
                 gap: 1rem;
             }
-
             .main-container {
                 padding: 0 1rem;
             }
-
             .nav-grid {
                 grid-template-columns: 1fr;
             }
         }
-
         .version {
             position: fixed;
             bottom: 10px;
@@ -253,12 +306,19 @@
     </style>
 </head>
 <body>
-    <header class="header">
-        <div class="header-content">
-            <a href="#" class="logo">Hausenstein</a>
-            <span class="seiten-titel">Startseite</span>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <img src="LOGO.svg" alt="Logo" />
+                <span>Startseite</span>
+            </a>
+            <div class="d-flex align-items-center" id="userInfo" style="gap:10px; margin-left:32px;">
+                <img id="userAvatar" src="https://randomuser.me/api/portraits/men/1.jpg" alt="User" style="width:32px; height:32px; border-radius:50%; object-fit:cover; border:2px solid #fff; box-shadow:0 1px 4px rgba(0,0,0,0.08);">
+                <span id="userName" style="font-weight:500; color:#fff;">Benutzer</span>
+            </div>
         </div>
-    </header>
+    </nav>
 
     <main class="main-container">
         <div id="loginForm" class="login-container">
@@ -273,44 +333,42 @@
             </div>
         </div>
 
-        <div id="welcomeMessage" class="welcome-section">
-            <div class="welcome-message">
-                Willkommen, <span id="userDisplayName"></span>!
-            </div>
-        </div>
-
         <div class="nav-links" id="navLinks">
-            <h2>Unsere Services</h2>
             <div class="nav-grid">
                 <a href="Kalkulation.html" class="nav-card" style="text-decoration:none;">
-                    <span class="material-icons">calculate</span>
-                    <div style="color:var(--primary-color);font-weight:600;font-size:1.2rem;margin-top:1.2rem;">Kalkulation</div>
-                    <p>Berechnen Sie Ihre Kosten mit unserem professionellen Kalkulationstool</p>
+                    <div class="icon-circle"><span class="material-icons">calculate</span></div>
+                    <div class="tile-title">Kalkulation</div>
+                    <div class="tile-desc">Berechnen Sie Ihre Kosten mit unserem professionellen Kalkulationstool</div>
                 </a>
                 <a href="EPS.html" class="nav-card" style="text-decoration:none;">
-                    <span class="material-icons">view_in_ar</span>
-                    <div style="color:var(--primary-color);font-weight:600;font-size:1.2rem;margin-top:1.2rem;">EPS-Berechnung</div>
-                    <p>Optimieren Sie Ihre EPS-Produktion mit unserem spezialisierten Tool</p>
+                    <div class="icon-circle"><span class="material-icons">view_in_ar</span></div>
+                    <div class="tile-title">EPS-Berechnung</div>
+                    <div class="tile-desc">Optimieren Sie Ihre EPS-Produktion mit unserem spezialisierten Tool</div>
                 </a>
                 <a href="Drucker.html" class="nav-card" style="text-decoration:none;">
-                    <span class="material-icons">print</span>
-                    <div style="color:var(--primary-color);font-weight:600;font-size:1.2rem;margin-top:1.2rem;">Digitaler Verpackungsdruck</div>
-                    <p>Kalkulieren Sie die Kosten für digitalen Verpackungsdruck</p>
+                    <div class="icon-circle"><span class="material-icons">print</span></div>
+                    <div class="tile-title">Digitaler Verpackungsdruck</div>
+                    <div class="tile-desc">Kalkulieren Sie die Kosten für digitalen Verpackungsdruck</div>
                 </a>
                 <a href="Plotter.html" class="nav-card" style="text-decoration:none;">
-                    <span class="material-icons">content_cut</span>
-                    <div style="color:var(--primary-color);font-weight:600;font-size:1.2rem;margin-top:1.2rem;">Verpackungsplotter</div>
-                    <p>Berechnen Sie die Kosten für das Schneiden und Rillen von Verpackungen</p>
+                    <div class="icon-circle"><span class="material-icons">content_cut</span></div>
+                    <div class="tile-title">Verpackungsplotter</div>
+                    <div class="tile-desc">Berechnen Sie die Kosten für das Schneiden und Rillen von Verpackungen</div>
                 </a>
                 <a href="Aufgabe.html" class="nav-card" style="text-decoration:none;">
-                    <span class="material-icons">assignment</span>
-                    <div style="color:var(--primary-color);font-weight:600;font-size:1.2rem;margin-top:1.2rem;">Aufgaben</div>
-                    <p>Verwalten Sie Ihre Aufgaben zentral im Netzwerk</p>
+                    <div class="icon-circle"><span class="material-icons">assignment</span></div>
+                    <div class="tile-title">Aufgaben</div>
+                    <div class="tile-desc">Verwalten Sie Ihre Aufgaben zentral im Netzwerk</div>
                 </a>
                 <a href="Produktionsaufträge.html" class="nav-card" style="text-decoration:none;">
-                    <span class="material-icons">factory</span>
-                    <div style="color:var(--primary-color);font-weight:600;font-size:1.2rem;margin-top:1.2rem;">Produktionsaufträge</div>
-                    <p>Verwalten Sie Ihre Produktionsaufträge und das Archiv zentral</p>
+                    <div class="icon-circle"><span class="material-icons">factory</span></div>
+                    <div class="tile-title">Produktionsaufträge</div>
+                    <div class="tile-desc">Verwalten Sie Ihre Produktionsaufträge und das Archiv zentral</div>
+                </a>
+                <a href="Palettenkonto.html" class="nav-card" style="text-decoration:none;">
+                    <div class="icon-circle"><span class="material-icons">inventory_2</span></div>
+                    <div class="tile-title">Palettenkonto</div>
+                    <div class="tile-desc">Verwalten Sie Palettenbewegungen, Konten und Auswertungen</div>
                 </a>
             </div>
         </div>
@@ -336,26 +394,51 @@
         function showLoggedInState(username) {
             document.getElementById('loginForm').style.display = 'none';
             document.getElementById('navLinks').style.display = 'block';
-            document.getElementById('welcomeMessage').style.display = 'block';
             document.getElementById('logoutBtn').style.display = 'block';
-            document.getElementById('userDisplayName').textContent = username;
             document.getElementById('errorMessage').style.display = 'none';
+            // User-Info oben rechts anzeigen
+            document.getElementById('userInfo').style.display = 'flex';
+            // Ersten Buchstaben groß schreiben
+            const usernameDisplay = username.charAt(0).toUpperCase() + username.slice(1);
+            document.getElementById('userName').textContent = usernameDisplay;
+            // Avatar je nach Name
+            const avatarMap = {
+                'admin': 'https://randomuser.me/api/portraits/men/1.jpg',
+                'petra': 'https://randomuser.me/api/portraits/women/2.jpg',
+                'jürgen': 'https://randomuser.me/api/portraits/men/3.jpg',
+                'nizia': 'https://randomuser.me/api/portraits/women/4.jpg',
+                'fatih': 'https://randomuser.me/api/portraits/men/5.jpg',
+                'silas': 'https://randomuser.me/api/portraits/men/6.jpg',
+                'julian': 'https://randomuser.me/api/portraits/men/7.jpg'
+            };
+            document.getElementById('userAvatar').src = avatarMap[username.toLowerCase()] || 'https://randomuser.me/api/portraits/lego/1.jpg';
         }
 
         // Funktion zum Anzeigen des abgemeldeten Zustands
         function showLoggedOutState() {
             document.getElementById('loginForm').style.display = 'block';
             document.getElementById('navLinks').style.display = 'none';
-            document.getElementById('welcomeMessage').style.display = 'none';
-            document.getElementById('logoutBtn').style.display = 'none';
             document.getElementById('errorMessage').style.display = 'none';
             document.getElementById('userLoginForm').reset();
+            // User-Info oben rechts ausblenden
+            document.getElementById('userInfo').style.display = 'none';
         }
 
         // Beim Laden der Seite prüfen, ob ein Benutzer angemeldet ist
         window.addEventListener('load', function() {
             const loggedInUser = localStorage.getItem('loggedInUser');
-            if (loggedInUser) {
+            const loginTime = localStorage.getItem('loginTime');
+            if (loggedInUser && loginTime) {
+                const now = Date.now();
+                const eightHours = 8 * 60 * 60 * 1000; // 8 Stunden in ms
+                if (now - parseInt(loginTime, 10) > eightHours) {
+                    // Zeit überschritten, automatisch abmelden
+                    localStorage.removeItem('loggedInUser');
+                    localStorage.removeItem('loginTime');
+                    showLoggedOutState();
+                    alert('Sie wurden aus Sicherheitsgründen automatisch abgemeldet.');
+                    return;
+                }
                 showLoggedInState(loggedInUser);
             } else {
                 showLoggedOutState();
@@ -370,6 +453,7 @@
             if (users[username] && users[username] === password) {
                 // Erfolgreiche Anmeldung
                 localStorage.setItem('loggedInUser', username);
+                localStorage.setItem('loginTime', Date.now()); // Login-Zeit speichern
                 showLoggedInState(username);
             } else {
                 // Fehlgeschlagene Anmeldung
@@ -380,7 +464,9 @@
         document.getElementById('logoutBtn').addEventListener('click', function() {
             // Benutzer abmelden
             localStorage.removeItem('loggedInUser');
+            localStorage.removeItem('loginTime'); // Login-Zeit entfernen
             showLoggedOutState();
+            location.reload(); // Seite neu laden
         });
     </script>
 </body>

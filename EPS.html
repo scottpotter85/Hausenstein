@@ -1,951 +1,888 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="de">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title>EPS Preisberechner v1.1.0</title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2575.5">
-  <style type="text/css">
-    body {
-      font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-      margin: 0;
-      background: #f7fafc;
-      color: #2d3748;
-    }
-    h2 {
-      margin-top: 18px;
-      margin-bottom: 12px;
-      text-align: center;
-      font-weight: 600;
-      color: #1a3b6e;
-      letter-spacing: 0.5px;
-      font-size: 1.35rem;
-    }
-    form {
-      margin: 0 auto;
-      max-width: 1100px;
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 2px 10px 0 rgba(30,60,90,0.06);
-      padding: 16px 10px 8px 10px;
-    }
-    .form-section {
-      background: #f5f7fa;
-      border-radius: 8px;
-      padding: 10px 8px 4px 8px;
-      margin-bottom: 0;
-      box-shadow: 0 1px 2px 0 rgba(30,60,90,0.03);
-      border: 1px solid #bfc9d1;
-    }
-    label {
-      display: block;
-      margin-top: 6px;
-      font-size: 13px;
-      font-weight: 500;
-      color: #2e3d32;
-    }
-    input, select {
-      margin-top: 3px;
-      margin-bottom: 6px;
-      padding: 4px 7px;
-      border-radius: 5px;
-      border: 1px solid #bfc9d1;
-      font-size: 13px;
-      background: #fff;
-      width: 100%;
-      box-sizing: border-box;
-      transition: border 0.2s;
-    }
-    input:focus, select:focus {
-      border: 1.2px solid #388e3c;
-      outline: none;
-    }
-    button {
-      padding: 8px 18px;
-      font-size: 14px;
-      font-weight: 600;
-      color: #fff;
-      background: linear-gradient(90deg, #1a3b6e 60%, #2c5282 100%);
-      border: none;
-      border-radius: 7px;
-      box-shadow: 0 1px 4px 0 rgba(0,0,0,0.07);
-      cursor: pointer;
-      margin: 18px auto 0 auto;
-      display: block;
-      letter-spacing: 0.3px;
-      transition: background 0.2s;
-    }
-    button:hover {
-      background: linear-gradient(90deg, #2c5282 60%, #1a3b6e 100%);
-    }
-    .result {
-      margin-top: 0;
-      padding: 12px 8px 10px 8px;
-      background: #fff;
-      border-radius: 10px;
-      box-shadow: 0 1px 6px 0 rgba(30,60,90,0.05);
-      border: 1px solid #bfc9d1;
-      font-size: 13px;
-      min-height: 120px;
-    }
-    table {
-      border-collapse: collapse;
-      margin-top: 8px;
-      width: 100%;
-      background: #f5f7fa;
-      border-radius: 6px;
-      overflow: hidden;
-      font-size: 12px;
-    }
-    th, td {
-      border: 1px solid #bfc9d1;
-      padding: 4px 7px;
-      text-align: center;
-    }
-    th {
-      background: #e3e8ee;
-      font-weight: 600;
-      color: #388e3c;
-      letter-spacing: 0.3px;
-    }
-    .warn {
-      color: #b71c1c;
-      font-weight: bold;
-      font-size: 13px;
-    }
-    .hint {
-      color: #607d68;
-      font-size: 11px;
-      margin-top: 3px;
-      display: block;
-    }
-    @media (max-width: 1100px) {
-      .result, #blockCanvas { max-width: 100% !important; }
-      form > div[style*='display: flex'] { flex-direction: column; }
-    }
-    @media (max-width: 900px) {
-      #blockCanvas { width: 100% !important; height: 220px !important; }
-    }
-    @media (max-width: 700px) {
-      form { padding: 6px 1vw 4px 1vw; }
-      .form-section { padding: 5px 2px 2px 2px; }
-      #blockCanvas { height: 120px !important; }
-    }
-    .back-button {
-      position: fixed;
-      top: 20px;
-      left: 20px;
-      padding: 10px 20px;
-      background-color: #1a3b6e;
-      color: white;
-      text-decoration: none;
-      border-radius: 4px;
-      font-weight: 500;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      transition: background-color 0.2s;
-      z-index: 1000;
-    }
-    .back-button:hover {
-      background-color: #2c5282;
-    }
-    .reset-button {
-      padding: 8px 18px;
-      font-size: 14px;
-      font-weight: 600;
-      color: #fff;
-      background: #dc2626;
-      border: none;
-      border-radius: 7px;
-      box-shadow: 0 1px 4px 0 rgba(0,0,0,0.07);
-      cursor: pointer;
-      margin: 18px 0 0 10px;
-      display: inline-block;
-      letter-spacing: 0.3px;
-      transition: background 0.2s;
-    }
-    .reset-button:hover {
-      background: #b91c1c;
-    }
-    .pdf-button {
-      padding: 8px 18px;
-      font-size: 14px;
-      font-weight: 600;
-      color: #fff;
-      background: #1a3b6e;
-      border: none;
-      border-radius: 7px;
-      box-shadow: 0 1px 4px 0 rgba(0,0,0,0.07);
-      cursor: pointer;
-      margin: 18px 0 0 10px;
-      display: inline-block;
-      letter-spacing: 0.3px;
-      transition: background 0.2s;
-    }
-    .pdf-button:hover {
-      background: #2c5282;
-    }
-    .version {
-      position: fixed;
-      bottom: 10px;
-      right: 10px;
-      font-size: 12px;
-      color: #718096;
-      background: rgba(255, 255, 255, 0.8);
-      padding: 4px 8px;
-      border-radius: 4px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
-    .header {
-      background-color: #1a3b6e;
-      padding: 10px 0;
-    }
-    .header-content {
-      max-width: 1100px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      position: relative;
-    }
-    .logo {
-      color: #fff;
-      font-size: 1.5rem;
-      font-weight: 600;
-      text-decoration: none;
-      position: absolute;
-      left: 24px;
-    }
-    .seiten-titel {
-      color: #fff;
-      font-size: 1.3em;
-      font-weight: 600;
-      text-align: center;
-      flex: 1;
-    }
-    .button-row-oben {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      align-items: flex-start;
-      width: 240px;
-      margin-left: 18px;
-      margin-top: 18px;
-    }
-    .button-row-oben a,
-    .button-row-oben button {
-      display: block;
-      width: 100%;
-      min-width: 180px;
-      max-width: 100%;
-      box-sizing: border-box;
-      margin: 0;
-      text-align: left;
-      font-size: 15px;
-      font-weight: 600;
-      padding: 10px 18px;
-      border-radius: 7px;
-      background: linear-gradient(90deg, #1a3b6e 60%, #2c5282 100%);
-      color: #fff;
-      border: none;
-      box-shadow: 0 1px 4px 0 rgba(0,0,0,0.07);
-      letter-spacing: 0.3px;
-      transition: background 0.2s;
-      cursor: pointer;
-    }
-    .button-row-oben a:hover,
-    .button-row-oben button:hover {
-      background: linear-gradient(90deg, #2c5282 60%, #1a3b6e 100%);
-    }
-    .button-row-oben .reset-button {
-      background: #dc2626;
-    }
-    .button-row-oben .reset-button:hover {
-      background: #b91c1c;
-    }
-    .button-row-oben .pdf-button {
-      background: #1a3b6e;
-    }
-    .button-row-oben .pdf-button:hover {
-      background: #2c5282;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EPS-Berechnung</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #003366;
+            --secondary-color: #009999;
+            --accent-color: #FFB900;
+            --background-color: #f8f9fa;
+            --text-color: #333;
+        }
+        body {
+            background-color: #fff;
+            color: var(--text-color);
+            font-family: '72', 'Segoe UI', Arial, sans-serif;
+            font-size: 0.98rem;
+        }
+        .navbar {
+            background-color: #003366 !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            min-height: 64px;
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+        }
+        .navbar-brand img {
+            height: 40px;
+            margin-right: 12px;
+        }
+        .navbar-brand span {
+            font-size: 1.13rem;
+            font-weight: 700;
+            color: #fff;
+            margin-left: 0;
+        }
+        .container-box {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+            padding: 1rem 0.8rem 0.8rem 0.8rem;
+            margin-top: 0.7rem;
+            margin-bottom: 0.7rem;
+            max-width: 1200px;
+        }
+        .kalk-flex {
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+        .kalk-card {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+            border: 1px solid #e3e8ee;
+            padding: 12px 10px 10px 10px;
+            min-width: 220px;
+            max-width: 320px;
+            flex: 1 1 0;
+            margin-bottom: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+        .kalk-card input,
+        .kalk-card select {
+            width: 100%;
+            margin-bottom: 6px;
+            min-height: 32px;
+            font-size: 0.98rem;
+        }
+        .kalk-card h3 {
+            font-size: 1.01rem;
+            font-weight: 600;
+            color: #003366;
+            margin-bottom: 7px;
+            margin-top: 0;
+        }
+        .button-row {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 18px;
+        }
+        .button-row button {
+            background: linear-gradient(90deg, #1a3b6e 60%, #009999 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1.02rem;
+            padding: 10px 18px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: background 0.18s, box-shadow 0.18s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .button-row button:hover {
+            background: linear-gradient(90deg, #009999 60%, #1a3b6e 100%);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.13);
+        }
+        .button-row i {
+            font-size: 1.1em;
+        }
+        @media (max-width: 1100px) {
+            .kalk-flex { flex-direction: column; gap: 8px; }
+            .kalk-card { max-width: 100%; min-width: 0; }
+        }
+        #userInfo {
+            gap: 10px;
+            margin-left: 32px;
+        }
+        #userAvatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #fff;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+        }
+        #userName {
+            font-weight: 500;
+            color: #fff;
+            font-family: '72', 'Segoe UI', Arial, sans-serif;
+        }
+    </style>
 </head>
 <body>
-  <header class="header">
-    <div class="header-content">
-      <a href="#" class="logo">Hausenstein</a>
-      <span class="seiten-titel">EPS Schneideanlagen Preisberechner</span>
-    </div>
-  </header>
-  <div style="display: flex; align-items: flex-start;">
-    <div class="button-row-oben">
-      <a href="index.html">← Zurück zur Startseite</a>
-      <button type="button" class="pdf-button" onclick="exportToPDF()">Als PDF exportieren</button>
-      <button type="button" class="reset-button" onclick="resetForm()">Formular zurücksetzen</button>
-    </div>
-    <div style="display: inline-block; margin-top: 10mm; position: relative; left: 0%; margin: 0 auto; width: 100%;">
-      <form id="epsForm" onsubmit="event.preventDefault(); berechneEPS();">
-        <div style="display: flex; gap: 24px; flex-wrap: wrap;">
-          <fieldset class="form-section" style="flex: 1 1 250px; min-width: 220px;">
-            <legend>Rohblockdaten</legend>
-            <label>Artikelnummer: <input type="text" id="artikelnummer" placeholder="z.B. EPS-001"></label>
-            <label>Länge (X) [mm]: <input type="number" id="blockLaenge" required title="Länge (X) des Rohblocks in mm" value="2030"></label>
-            <label>Breite (Z) [mm]: <input type="number" id="blockBreite" required title="Breite (Z) des Rohblocks in mm" value="1020"></label>
-            <label>Höhe (Y) [mm]: <input type="number" id="blockHoehe" required title="Höhe (Y) des Rohblocks in mm" value="1230"></label>
-            <label>Rohdichte (kg/m³):
-              <select id="dichte" required title="Rohdichte des Blocks">
-                <option value="15">15</option>
-                <option value="18">18</option>
-                <option value="27">27</option>
-              </select>
-            </label>
-          </fieldset>
-          <fieldset class="form-section" style="flex: 1 1 250px; min-width: 220px;">
-            <legend>Bauteildaten</legend>
-            <label>Länge (X) [mm]: <input type="number" id="teilLaenge" required title="Länge (X) des Bauteils in mm"></label>
-            <label>Breite (Z) [mm]: <input type="number" id="teilBreite" required title="Breite (Z) des Bauteils in mm"></label>
-            <label>Höhe (Y) [mm]: <input type="number" id="teilHoehe" required title="Höhe (Y) des Bauteils in mm"></label>
-            <label>Anzahl: <input type="number" id="anzahlTeile" min="1" value="1" required title="Wie viele Bauteile werden benötigt?"></label>
-          </fieldset>
-          <fieldset class="form-section" style="flex: 1 1 250px; min-width: 220px;">
-            <legend>Produktionsparameter</legend>
-            <label><b>XY-Schnitt:</b></label>
-            <label>Schneidegeschwindigkeit XY (mm/min): <input type="number" id="geschwindigkeitXY" required title="Schneidegeschwindigkeit XY in mm/min" value="600"></label>
-            <label>Anzahl Drähte XY: <input type="number" id="anzahlDraehteXY" min="1" value="1" required title="Wie viele Drähte sind für XY eingespannt?"></label>
-            <label><b>Z-Schnitt:</b></label>
-            <label>Schneidegeschwindigkeit Z (mm/min): <input type="number" id="geschwindigkeitZ" required title="Schneidegeschwindigkeit Z in mm/min" value="600"></label>
-            <label>Anzahl Drähte Z: <input type="number" id="anzahlDraehteZ" min="1" value="1" required title="Wie viele Drähte sind für Z eingespannt?"></label>
-            <label><b>Umstapeln:</b></label>
-            <label>Zeitaufwand Umstapeln pro Block (min): <input type="number" id="zeitUmstapeln" min="0" value="5" required title="Zeit für Umstapeln pro Block in Minuten"></label>
-            <label>Abbrand pro Schnitt (mm): <input type="number" id="abbrand" min="0" value="2" required title="Abbrand durch Schneidedraht in mm"></label>
-            <label>Preiseinheit (Menge):
-              <select id="preiseinheit" required title="Preis für diese Stückzahl">
-                <option value="1">1 Stück</option>
-                <option value="100" selected>100 Stück</option>
-                <option value="1000">1000 Stück</option>
-              </select>
-            </label>
-            <label>Verpackung:
-              <select id="verpackungstyp" onchange="toggleVerpackungFrei()">
-                <option value="" selected disabled>Bitte auswählen</option>
-                <option value="frei">Frei wählbar</option>
-                <option value="palette">Palette</option>
-                <option value="v1806">V1806</option>
-              </select>
-            </label>
-            <div id="verpackungFreiFields" style="display:none;">
-              <label>Länge (mm): <input type="number" id="verpackungLaenge" min="1" value="1200"></label>
-              <label>Breite (mm): <input type="number" id="verpackungBreite" min="1" value="800"></label>
-              <label>Höhe (mm): <input type="number" id="verpackungHoehe" min="1" value="2000"></label>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <img src="LOGO.svg" alt="Logo" />
+                <span>EPS-Berechnung</span>
+            </a>
+            <div class="d-flex align-items-center" id="userInfo" style="gap:10px; margin-left:32px;">
+                <img id="userAvatar" src="https://randomuser.me/api/portraits/men/1.jpg" alt="User" style="width:32px; height:32px; border-radius:50%; object-fit:cover; border:2px solid #fff; box-shadow:0 1px 4px rgba(0,0,0,0.08);">
+                <span id="userName" style="font-weight:500; color:#fff;">Benutzer</span>
             </div>
-            <span class="hint">Der Abstand zwischen den Bauteilen entspricht dem eingestellten Abbrand.</span>
-          </fieldset>
         </div>
-        <div style="display: flex; justify-content: center; gap: 15px; margin-top: 20px;">
-          <button type="submit" style="background: linear-gradient(90deg, #1a3b6e 60%, #2c5282 100%); min-width: 120px;">Berechnen</button>
-        </div>
-      </form>
-      <div id="visual-row" style="display: flex; gap: 20px; align-items: stretch; flex-wrap: nowrap; margin-top: 16px; margin-left: 0; margin-bottom: 60px;">
-        <div id="block3d" style="flex: 1 1 0; min-width: 200px; min-height: 200px; background:#fff;"></div>
-        <canvas id="blockCanvas" style="flex: 1 1 0; min-width: 200px; min-height: 200px; background:#fff;"></canvas>
-        <div class="result" id="ergebnis" style="flex: 1 1 0; min-width: 200px; font-size:12px;"></div>
-      </div>
+    </nav>
+    <div class="container mt-3 mb-2">
+        <a href="index.html" class="btn btn-outline-primary"><i class="bi bi-arrow-left"></i> Zurück zur Startseite</a>
     </div>
-  </div>
-  <div class="version">v1.1.0</div>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.min.js"></script>
-  <script>
-    // Funktion zum Zurücksetzen des Formulars
-    function resetForm() {
-      if (confirm('Möchten Sie wirklich alle Eingaben zurücksetzen?')) {
-        // Formular zurücksetzen
-        document.getElementById('epsForm').reset();
-        // Gespeicherte Werte löschen
-        localStorage.removeItem('epsFormValues');
-        localStorage.removeItem('epsResults');
-        localStorage.removeItem('epsDrawing');
-        // Ergebnis und Zeichnung leeren
-        document.getElementById('ergebnis').innerHTML = '';
-        const canvas = document.getElementById('blockCanvas');
-        const ctx = canvas.getContext('2d');
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        // 3D-Zeichnung leeren
-        const block3d = document.getElementById('block3d');
-        if (block3d) block3d.innerHTML = '';
-        // Standardwerte setzen
-        document.getElementById('blockLaenge').value = '2030';
-        document.getElementById('blockBreite').value = '1020';
-        document.getElementById('blockHoehe').value = '1230';
-        setzeGeschwindigkeitNachDichte();
-      }
-    }
-
-    // Speichern der Formularwerte
-    function saveFormValues() {
-      const formData = {};
-      const formElements = document.getElementById('epsForm').elements;
-      for (let element of formElements) {
-        if (element.id) {
-          formData[element.id] = element.value;
-        }
-      }
-      localStorage.setItem('epsFormValues', JSON.stringify(formData));
-    }
-
-    // Speichern der Ergebnisse
-    function saveResults() {
-      const results = {
-        html: document.getElementById('ergebnis').innerHTML,
-        canvas: document.getElementById('blockCanvas').toDataURL()
-      };
-      localStorage.setItem('epsResults', JSON.stringify(results));
-    }
-
-    // Laden der gespeicherten Werte
-    function loadSavedValues() {
-      // Formularwerte laden
-      const savedValues = JSON.parse(localStorage.getItem('epsFormValues') || '{}');
-      Object.keys(savedValues).forEach(key => {
-        const element = document.getElementById(key);
-        if (element) {
-          element.value = savedValues[key];
-        }
-      });
-
-      // Ergebnisse laden
-      const savedResults = JSON.parse(localStorage.getItem('epsResults') || '{}');
-      if (savedResults.html) {
-        document.getElementById('ergebnis').innerHTML = savedResults.html;
-      }
-      if (savedResults.canvas) {
-        const img = new Image();
-        img.onload = function() {
-          const canvas = document.getElementById('blockCanvas');
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0);
-        };
-        img.src = savedResults.canvas;
-      }
-    }
-
-    // Event Listener für Formularänderungen
-    document.getElementById('epsForm').addEventListener('input', saveFormValues);
-
-    // Beim Laden der Seite
-    window.addEventListener('DOMContentLoaded', () => {
-      setzeGeschwindigkeitNachDichte();
-      loadSavedValues();
-    });
-
-    function berechneEPS() {
-      const abbrand = parseFloat(document.getElementById('abbrand').value) || 2; // mm Abbrand pro Schnitt (anpassbar)
-      const gesAbstand = abbrand; // Nur Abbrand als Abstand zwischen Bauteilen
-      // Eingaben holen
-      const blockL = parseInt(document.getElementById('blockLaenge').value); // X
-      const blockH = parseInt(document.getElementById('blockHoehe').value); // Y
-      const blockB = parseInt(document.getElementById('blockBreite').value); // Z
-      const teilL = parseInt(document.getElementById('teilLaenge').value); // X
-      const teilH = parseInt(document.getElementById('teilHoehe').value); // Y
-      const teilB = parseInt(document.getElementById('teilBreite').value); // Z
-      const anzahl = parseInt(document.getElementById('anzahlTeile').value);
-      const dichte = parseFloat(document.getElementById('dichte').value);
-      // Warnung, falls Bauteil größer als Block
-      if (teilL > blockL || teilB > blockB || teilH > blockH) {
-        document.getElementById('ergebnis').innerHTML = '<span class="warn">Das Bauteil ist in mindestens einer Dimension größer als der Rohblock!</span>';
-        zeichneBlock(null, null, null, null, null, null, null, null, null, null);
-        return;
-      }
-      // Alle 6 Orientierungen prüfen
-      const orientierungen = [
-        { name: 'Länge-Breite-Höhe', l: teilL, b: teilB, h: teilH },
-        { name: 'Länge-Höhe-Breite', l: teilL, b: teilH, h: teilB },
-        { name: 'Breite-Länge-Höhe', l: teilB, b: teilL, h: teilH },
-        { name: 'Breite-Höhe-Länge', l: teilB, b: teilH, h: teilL },
-        { name: 'Höhe-Länge-Breite', l: teilH, b: teilL, h: teilB },
-        { name: 'Höhe-Breite-Länge', l: teilH, b: teilB, h: teilL },
-      ];
-      // Für jede Orientierung: Wie viele Bauteile passen rein?
-      let orientErgebnisse = orientierungen.map(o => {
-        // Anzahl Bauteile pro Richtung (inkl. Sicherheitsabstand + Abbrand, außer am Rand)
-        const nL = Math.floor((blockL + gesAbstand) / (o.l + gesAbstand));
-        const nB = Math.floor((blockB + gesAbstand) / (o.b + gesAbstand));
-        const nH = Math.floor((blockH + gesAbstand) / (o.h + gesAbstand));
-        const maxTeile = nL * nB * nH;
-        const teilVol = (o.l/1000) * (o.b/1000) * (o.h/1000); // m³
-        const blockVol = (blockL/1000) * (blockB/1000) * (blockH/1000); // m³
-        const gesamtTeile = Math.min(maxTeile, anzahl);
-        const gesamtVol = teilVol * gesamtTeile;
-        const abfallVol = blockVol - teilVol * maxTeile;
-        return {
-          name: o.name,
-          nL, nB, nH,
-          maxTeile,
-          teilVol,
-          blockVol,
-          gesamtTeile,
-          gesamtVol,
-          abfallVol,
-          l: o.l, b: o.b, h: o.h
-        };
-      });
-      // Nach Abfall sortieren (aufsteigend)
-      orientErgebnisse.sort((a, b) => a.abfallVol - b.abfallVol);
-      // Top 3 Orientierungen
-      const top3 = orientErgebnisse.slice(0, 3);
-      // Beste Orientierung für weitere Berechnung
-      const beste = top3[0];
-      // Wie viele Blöcke werden benötigt?
-      const benoetigteBloeckeRaw = Math.ceil(anzahl / beste.maxTeile);
-      const letzteBlockTeile = anzahl % beste.maxTeile === 0 ? beste.maxTeile : anzahl % beste.maxTeile;
-      // Nutzungsgrad des letzten Blocks
-      const nutzungsgrad = (letzteBlockTeile * beste.teilVol) / beste.blockVol;
-      let benoetigteBloecke = benoetigteBloeckeRaw;
-      let letzterBlockBerechnet = true;
-      if (benoetigteBloeckeRaw > 1 && nutzungsgrad <= 0.5) {
-        benoetigteBloecke = benoetigteBloeckeRaw - 1;
-        letzterBlockBerechnet = false;
-      }
-      // Gewicht
-      const blockGew = beste.blockVol * dichte;
-      const gesamtGew = beste.teilVol * anzahl * dichte;
-      // Preis je m³ nach Dichte
-      let preisProM3 = 0;
-      if (dichte === 15) preisProM3 = 49.70;
-      else if (dichte === 18) preisProM3 = 60.68;
-      else if (dichte === 27) preisProM3 = 72.42;
-      // Materialkosten inkl. Abfall: gesamtes Blockvolumen wird berechnet
-      let materialkosten_voll = (benoetigteBloeckeRaw - 1) * beste.blockVol * preisProM3;
-      let materialkosten_letzter = 0;
-      if (benoetigteBloeckeRaw === 1) {
-        // Es gibt nur einen Block
-        if (nutzungsgrad > 0.5) {
-          materialkosten_letzter = beste.blockVol * preisProM3;
-        } else {
-          materialkosten_letzter = letzteBlockTeile * beste.teilVol * preisProM3;
-        }
-      } else {
-        // Mehrere Blöcke
-        if (nutzungsgrad > 0.5) {
-          materialkosten_letzter = beste.blockVol * preisProM3;
-        } else {
-          materialkosten_letzter = letzteBlockTeile * beste.teilVol * preisProM3;
-        }
-      }
-      const materialkosten = materialkosten_voll + materialkosten_letzter;
-      const kostenProBauteil = materialkosten / anzahl;
-      const kostenGesamt = materialkosten;
-      // Tatsächlicher Materialwert und Abfall
-      const gesamtMaterialwert = anzahl * beste.teilVol * preisProM3;
-      // Abfallberechnung
-      let abfallVolVoll = (benoetigteBloeckeRaw - 1) * (beste.blockVol - beste.maxTeile * beste.teilVol);
-      let abfallVolRest = 0;
-      if (benoetigteBloeckeRaw === 1) {
-        // Nur ein Block
-        if (nutzungsgrad > 0.5) {
-          abfallVolRest = beste.blockVol - (letzteBlockTeile * beste.teilVol);
-        } else {
-          // Anteiliger Abfall pro Bauteil im Block
-          const abfallProBauteil = (beste.blockVol - (beste.maxTeile * beste.teilVol)) / beste.maxTeile;
-          abfallVolRest = letzteBlockTeile * abfallProBauteil;
-        }
-      } else {
-        // Mehrere Blöcke
-        if (nutzungsgrad > 0.5) {
-          abfallVolRest = beste.blockVol - (letzteBlockTeile * beste.teilVol);
-        } else {
-          const abfallProBauteil = (beste.blockVol - (beste.maxTeile * beste.teilVol)) / beste.maxTeile;
-          abfallVolRest = letzteBlockTeile * abfallProBauteil;
-        }
-      }
-      const gesamtAbfallVol = abfallVolVoll + abfallVolRest;
-      const gesamtAbfallWert = gesamtAbfallVol * preisProM3;
-      // --- NEU: Variablen für zweistufige Kalkulation ---
-      const geschwXY = parseInt(document.getElementById('geschwindigkeitXY').value);
-      const anzahlDraehteXY = Math.max(1, parseInt(document.getElementById('anzahlDraehteXY').value));
-      const geschwZ = parseInt(document.getElementById('geschwindigkeitZ').value);
-      const anzahlDraehteZ = Math.max(1, parseInt(document.getElementById('anzahlDraehteZ').value));
-      const zeitUmstapeln = parseFloat(document.getElementById('zeitUmstapeln').value) || 0;
-      // --- ENDE NEU ---
-      // --- NEU: Zweistufige Schnittzeitberechnung ---
-      // Schritt 1: XY-Schnitt (X und Y)
-      const schnitteX = beste.nL > 0 ? beste.nL - 1 : 0;
-      const schnitteY = beste.nH > 0 ? beste.nH - 1 : 0;
-      const effektiveSchnitteX = Math.ceil(schnitteX / anzahlDraehteXY);
-      const effektiveSchnitteY = Math.ceil(schnitteY / anzahlDraehteXY);
-      const schnittwegX = effektiveSchnitteX * blockB; // X-Schnitte über Breite (Z)
-      const schnittwegY = effektiveSchnitteY * blockL; // Y-Schnitte über Länge (X)
-      const schnittzeitX = schnittwegX / geschwXY;
-      const schnittzeitY = schnittwegY / geschwXY;
-      // Schritt 2: Umstapeln
-      // Zeit pro Block (eingegeben)
-      // Schritt 3: Z-Schnitt
-      const schnitteZ = beste.nB > 0 ? beste.nB - 1 : 0;
-      const effektiveSchnitteZ = Math.ceil(schnitteZ / anzahlDraehteZ);
-      const schnittwegZ = effektiveSchnitteZ * blockL; // Z-Schnitte über Länge (X)
-      const schnittzeitZ = schnittwegZ / geschwZ;
-      // Gesamtschnittzeit pro Block (min)
-      const schnittzeitBlock = schnittzeitX + schnittzeitY + zeitUmstapeln + schnittzeitZ;
-      // --- ENDE NEU ---
-      // Schnittzeit pro Bauteil (min) wieder korrekt berechnen
-      const schnittzeitBauteil = beste.maxTeile > 0 ? (schnittzeitBlock / beste.maxTeile) : 0;
-      // Maschinenkosten (35,34 €/h) jetzt korrekt auf Basis der Schnittzeit
-      const maschinenStunden = schnittzeitBlock / 60; // Stunden pro Block (exakt)
-      const maschinenKostenProBlock = maschinenStunden * 35.34;
-      const maschinenKostenProBauteil = beste.maxTeile > 0 ? maschinenKostenProBlock / beste.maxTeile : 0;
-      const maschinenKostenGesamt = maschinenKostenProBauteil * anzahl;
-      // Hilfsfunktion für Zeitformatierung (nur Stunden und Minuten)
-      function formatZeitBlock(min) {
-        if (!min || min === 0) return '0 min';
-        const h = Math.floor(min / 60);
-        const m = Math.round(min % 60);
-        return (h > 0 ? h + ' h ' : '') + m + ' min';
-      }
-
-      // Hilfsfunktion für Zeitformatierung (mit Sekunden für kurze Zeiten)
-      function formatZeitBauteil(min) {
-        if (!min || min === 0) return '0 min';
-        const h = Math.floor(min / 60);
-        const m = Math.floor(min % 60);
-        const s = Math.round((min % 1) * 60);
-        if (min < 1) {
-          return s + ' sec';
-        }
-        return (h > 0 ? h + ' h ' : '') + m + ' min' + (s > 0 ? ' ' + s + ' sec' : '');
-      }
-
-      // Verpackungsmaße bestimmen (jetzt innerhalb von berechneEPS und vor der Ausgabe)
-      let vL = 1200, vB = 800, vH = 2000;
-      const verpackungstyp = document.getElementById('verpackungstyp').value;
-      if (verpackungstyp === 'palette') { vL = 1200; vB = 800; vH = 2000; }
-      else if (verpackungstyp === 'v1806') { vL = 1200; vB = 760; vH = 700; }
-      else if (verpackungstyp === 'frei') {
-        vL = parseInt(document.getElementById('verpackungLaenge').value) || 1;
-        vB = parseInt(document.getElementById('verpackungBreite').value) || 1;
-        vH = parseInt(document.getElementById('verpackungHoehe').value) || 1;
-      }
-      // Wie viele Bauteile passen in eine Verpackung? (optimale Stapelung)
-      const nL_v = Math.floor(vL / beste.l);
-      const nB_v = Math.floor(vB / beste.b);
-      const nH_v = Math.floor(vH / beste.h);
-      const maxProVerpackung = Math.max(1, nL_v * nB_v * nH_v);
-      const benoetigteVerpackungen = Math.ceil(anzahl / maxProVerpackung);
-
-      // Verpackungskosten berechnen
-      let verpackungskosten = 0;
-      if (verpackungstyp === 'v1806') {
-        verpackungskosten = benoetigteVerpackungen * 3.60; // 3,60€ pro V1806 Verpackung
-      }
-
-      // Ergebnis-Tabelle
-      let tabelle = `<table><tr><th>Orientierung</th><th>Stück/L</th><th>Stück/B</th><th>Stück/H</th><th>Max. Stück/Block</th><th>Abfall (m³)</th></tr>`;
-      top3.forEach(o => {
-        tabelle += `<tr><td>${o.name}</td><td>${o.nL}</td><td>${o.nB}</td><td>${o.nH}</td><td>${o.maxTeile}</td><td>${o.abfallVol.toFixed(3)}</td></tr>`;
-      });
-      tabelle += `</table>`;
-      // Preis pro Preiseinheit berechnen (1, 100, 1000 Stück)
-      let preisProEinheit = 0;
-      let einheitText = '';
-      const gesamtPreis = kostenGesamt + maschinenKostenGesamt + verpackungskosten;
-      const preiseinheitMenge = parseInt(document.getElementById('preiseinheit').value);
-      preisProEinheit = gesamtPreis / anzahl * preiseinheitMenge;
-      einheitText = `für ${preiseinheitMenge} Stück`;
-      // Ausgabe
-      document.getElementById('ergebnis').innerHTML = `
-        <div style="font-size:1.3em; font-weight:800; color:#fff; background:linear-gradient(90deg,#1a3b6e 60%,#2c5282 100%); border-radius:9px; padding:10px 0 7px 0; text-align:center; margin-bottom:14px; letter-spacing:0.5px; box-shadow:0 1px 4px 0 rgba(26,59,110,0.08);">
-          <span style="font-size:0.7em; font-weight:600; color:#e3e8ee; margin-right:8px;">Preis</span>
-          <span style="font-size:1em; font-weight:900; color:#fff; background:#2c5282; border-radius:6px; padding:2px 10px; margin:0 7px; display:inline-block;">${preisProEinheit.toFixed(2)} €</span>
-          <span style="font-size:0.8em; font-weight:600; color:#e3e8ee;">${einheitText}</span>
+    <div class="container container-box mt-3 mb-2">
+        <!-- Tabs -->
+        <ul class="nav nav-tabs mb-4" id="epsTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="eingabe-tab" data-bs-toggle="tab" data-bs-target="#eingabe" type="button" role="tab">
+                    <i class="bi bi-pencil-square me-1"></i>Eingabe
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="visu-tab" data-bs-toggle="tab" data-bs-target="#visu" type="button" role="tab">
+                    <i class="bi bi-bar-chart-line me-1"></i>Visualisierung & Ergebnis
+                </button>
+            </li>
+        </ul>
+        <div class="tab-content" id="epsTabsContent">
+            <!-- Eingabe Tab -->
+            <div class="tab-pane fade show active" id="eingabe" role="tabpanel">
+                <form id="epsForm" onsubmit="event.preventDefault(); berechneEPS();">
+                    <div class="kalk-flex">
+                        <div class="kalk-card">
+                            <h3>Rohblockdaten</h3>
+                            <label>Artikelnummer: <input type="text" id="artikelnummer" placeholder="z.B. EPS-001"></label>
+                            <label>Länge (X) [mm]: <input type="number" id="blockLaenge" required title="Länge (X) des Rohblocks in mm" value="2030"></label>
+                            <label>Breite (Z) [mm]: <input type="number" id="blockBreite" required title="Breite (Z) des Rohblocks in mm" value="1020"></label>
+                            <label>Höhe (Y) [mm]: <input type="number" id="blockHoehe" required title="Höhe (Y) des Rohblocks in mm" value="1230"></label>
+                            <label>Rohdichte (kg/m³):
+                                <select id="dichte" required title="Rohdichte des Blocks">
+                                    <option value="15">15</option>
+                                    <option value="18">18</option>
+                                    <option value="27">27</option>
+                                </select>
+                            </label>
+                        </div>
+                        <div class="kalk-card">
+                            <h3>Bauteildaten</h3>
+                            <label>Länge (X) [mm]: <input type="number" id="teilLaenge" required title="Länge (X) des Bauteils in mm"></label>
+                            <label>Breite (Z) [mm]: <input type="number" id="teilBreite" required title="Breite (Z) des Bauteils in mm"></label>
+                            <label>Höhe (Y) [mm]: <input type="number" id="teilHoehe" required title="Höhe (Y) des Bauteils in mm"></label>
+                            <label>Anzahl: <input type="number" id="anzahlTeile" min="1" value="1" required title="Wie viele Bauteile werden benötigt?"></label>
+                        </div>
+                        <div class="kalk-card">
+                            <h3>Produktionsparameter</h3>
+                            <label><b>XY-Schnitt:</b></label>
+                            <label>Schneidegeschwindigkeit XY (mm/min): <input type="number" id="geschwindigkeitXY" required title="Schneidegeschwindigkeit XY in mm/min" value="600"></label>
+                            <label>Anzahl Drähte XY: <input type="number" id="anzahlDraehteXY" min="1" value="1" required title="Wie viele Drähte sind für XY eingespannt?"></label>
+                            <label><b>Z-Schnitt:</b></label>
+                            <label>Schneidegeschwindigkeit Z (mm/min): <input type="number" id="geschwindigkeitZ" required title="Schneidegeschwindigkeit Z in mm/min" value="600"></label>
+                            <label>Anzahl Drähte Z: <input type="number" id="anzahlDraehteZ" min="1" value="1" required title="Wie viele Drähte sind für Z eingespannt?"></label>
+                            <label><b>Umstapeln:</b></label>
+                            <label>Zeitaufwand Umstapeln pro Block (min): <input type="number" id="zeitUmstapeln" min="0" value="5" required title="Zeit für Umstapeln pro Block in Minuten"></label>
+                            <label>Abbrand pro Schnitt (mm): <input type="number" id="abbrand" min="0" value="2" required title="Abbrand durch Schneidedraht in mm"></label>
+                            <label>Preiseinheit (Menge):
+                                <select id="preiseinheit" required title="Preis für diese Stückzahl">
+                                    <option value="1">1 Stück</option>
+                                    <option value="100" selected>100 Stück</option>
+                                    <option value="1000">1000 Stück</option>
+                                </select>
+                            </label>
+                            <label>Verpackung:
+                                <select id="verpackungstyp" onchange="toggleVerpackungFrei()">
+                                    <option value="" selected disabled>Bitte auswählen</option>
+                                    <option value="frei">Frei wählbar</option>
+                                    <option value="palette">Palette</option>
+                                    <option value="v1806">V1806</option>
+                                </select>
+                            </label>
+                            <div id="verpackungFreiFields" style="display:none;">
+                                <label>Länge (mm): <input type="number" id="verpackungLaenge" min="1" value="1200"></label>
+                                <label>Breite (mm): <input type="number" id="verpackungBreite" min="1" value="800"></label>
+                                <label>Höhe (mm): <input type="number" id="verpackungHoehe" min="1" value="2000"></label>
+                            </div>
+                            <span class="hint">Der Abstand zwischen den Bauteilen entspricht dem eingestellten Abbrand.</span>
+                        </div>
+                    </div>
+                    <div class="button-row">
+                        <button type="submit"><i class="bi bi-calculator"></i> Berechnen</button>
+                        <button type="button" onclick="exportToPDF()"><i class="bi bi-file-earmark-pdf"></i> Als PDF exportieren</button>
+                        <button type="button" onclick="resetForm()" style="background:#dc2626;"><i class="bi bi-arrow-counterclockwise"></i> Formular zurücksetzen</button>
+                    </div>
+                </form>
+            </div>
+            <!-- Visualisierung & Ergebnis Tab -->
+            <div class="tab-pane fade" id="visu" role="tabpanel">
+                <div class="kalk-flex" style="flex-direction:row; justify-content:center; align-items:stretch; gap:32px; max-width:1400px; margin:0 auto 18px auto;">
+                    <div style="display:flex; flex-direction:row; gap:24px; width:100%;">
+                        <div style="flex:1 1 0; min-width:320px; max-width:420px; display:flex; flex-direction:column; align-items:center;">
+                            <h3 style='font-size:1.05rem; font-weight:600; color:#003366; margin-bottom:10px; margin-top:0;'>3D-Visualisierung</h3>
+                            <div id="block3d" class="visual-block3d" style="width:100%; min-width:280px; min-height:220px; max-width:420px; background:#fff; margin-bottom:10px;"></div>
+                        </div>
+                        <div style="flex:1 1 0; min-width:320px; max-width:420px; display:flex; flex-direction:column; align-items:center;">
+                            <h3 style='font-size:1.05rem; font-weight:600; color:#003366; margin-bottom:10px; margin-top:0;'>2D-Ansicht</h3>
+                            <canvas id="blockCanvas" class="visual-block2d" style="width:100%; min-width:280px; min-height:220px; max-width:420px; background:#fff; margin-bottom:10px;"></canvas>
+                        </div>
+                        <div class="kalk-card" style="flex:1 1 0; min-width:320px; max-width:420px;">
+                            <h3>Ergebnis</h3>
+                            <div class="result" id="ergebnis" style="font-size:12px;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="button-row">
+                    <button type="button" onclick="berechneEPS()"><i class="bi bi-calculator"></i> Berechnen</button>
+                    <button type="button" onclick="exportToPDF()"><i class="bi bi-file-earmark-pdf"></i> Als PDF exportieren</button>
+                    <button type="button" onclick="resetForm()" style="background:#dc2626;"><i class="bi bi-arrow-counterclockwise"></i> Formular zurücksetzen</button>
+                </div>
+            </div>
         </div>
-        <b>Tatsächlicher Materialwert (nur Bauteile):</b> ${gesamtMaterialwert.toFixed(2)} €<br>
-        <b>Tatsächlicher Abfall:</b> ${gesamtAbfallVol.toFixed(3)} m³ (${gesamtAbfallWert.toFixed(2)} €)<br>
-        <b>Optimale Ausrichtung:</b> ${beste.name}<br>
-        <b>Max. Bauteile pro Block:</b> ${beste.maxTeile}<br>
-        <b>Benötigte Blöcke:</b> ${benoetigteBloeckeRaw}<br>
-        <b>Berechnete Blöcke:</b> ${benoetigteBloecke}<br>
-        <b>Bauteile im letzten Block:</b> ${letzteBlockTeile}<br>
-        <b>Verpackung:</b> ${verpackungstyp === 'palette' ? 'Palette' : verpackungstyp === 'v1806' ? 'V1806' : `Frei (${vL}x${vB}x${vH} mm)`}<br>
-        <b>Max. Bauteile pro Verpackung:</b> ${maxProVerpackung}<br>
-        <b>Benötigte Verpackungen:</b> ${benoetigteVerpackungen}<br>
-        <b>Gesamtgewicht Bauteile:</b> ${gesamtGew.toFixed(2)} kg<br>
-        <b>Materialkosten pro Bauteil:</b> ${kostenProBauteil.toFixed(2)} €<br>
-        <b>Materialkosten gesamt:</b> ${kostenGesamt.toFixed(2)} €<br>
-        <b>Maschinenkosten pro Bauteil:</b> ${maschinenKostenProBauteil.toFixed(2)} €<br>
-        <b>Maschinenkosten gesamt:</b> ${maschinenKostenGesamt.toFixed(2)} €<br>
-        ${verpackungskosten > 0 ? `<b>Verpackungskosten gesamt:</b> ${verpackungskosten.toFixed(2)} €<br>` : ''}
-        <b>Exakte Schnittzeit pro Block:</b> ${formatZeitBlock(schnittzeitBlock)}<br>
-        <b>Exakte Schnittzeit pro Bauteil:</b> ${formatZeitBauteil(schnittzeitBauteil)}<br>
-        <br>
-        <b>Top 3 Orientierungen (nach wenigstem Abfall):</b><br>
-        ${tabelle}
-      `;
-      // Zeichnung aktualisieren (Draufsicht: Block-Länge x Block-Höhe, Bauteile als Rechtecke)
-      syncVisualHeights();
-      zeichneBlock(blockL, blockH, beste.l, beste.h, beste.nL, beste.nH, gesAbstand, beste.maxTeile, anzahl, beste.name);
-      renderBlock3D(blockL, blockB, blockH, beste.l, beste.b, beste.h, beste.nL, beste.nB, beste.nH, gesAbstand, beste.maxTeile, anzahl);
-      saveFormValues();
-      saveResults();
-      // Verpackung Dropdown Umschalten
-      function toggleVerpackungFrei() {
-        const typ = document.getElementById('verpackungstyp').value;
-        document.getElementById('verpackungFreiFields').style.display = (typ === 'frei') ? 'block' : 'none';
-      }
-    }
-    // Zeichnet die Anordnung der Bauteile im Block (Draufsicht X/Y)
-    function zeichneBlock(blockL, blockH, teilL, teilH, nL, nH, abstand, maxTeile, anzahl, orientName) {
-      // Zeichne X (Länge) und Y (Höhe) als Rechteck
-      const blockB = parseInt(document.getElementById('blockBreite').value); // Z
-      const canvas = document.getElementById('blockCanvas');
-      const ctx = canvas.getContext('2d');
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      if (!blockL || !blockH || !teilL || !teilH || !nL || !nH) {
-        ctx.font = '16px Helvetica';
-        ctx.fillStyle = '#bbb';
-        ctx.fillText('Keine Zeichnung möglich', 120, 180);
-        return;
-      }
-      const margin = 30;
-      // Maßstab für X (Länge) und Y (Höhe)
-      const scaleL = (canvas.width - 2*margin) / blockL;
-      const scaleH = (canvas.height - 2*margin) / blockH;
-      const scale = Math.min(scaleL, scaleH);
-      // Block zeichnen (X × Y)
-      ctx.strokeStyle = '#333';
-      ctx.lineWidth = 2;
-      ctx.strokeRect(margin, margin, blockL*scale, blockH*scale);
-      // Bauteile zeichnen (nur als grobe Darstellung, nicht exakt gestapelt wie im 3D-Block)
-      let gezeichnet = 0;
-      for (let i = 0; i < nL; i++) {
-        for (let j = 0; j < nH; j++) {
-          if (gezeichnet >= Math.min(maxTeile, anzahl)) break;
-          // Verteile die Bauteile gleichmäßig im X/Y-Rechteck (X = teilL, Y = teilH)
-          const x = margin + i * (teilL + abstand) * scale;
-          const y = margin + j * (teilH + abstand) * scale;
-          ctx.fillStyle = '#7ec6f7';
-          ctx.strokeStyle = '#1976d2';
-          ctx.lineWidth = 1;
-          ctx.fillRect(x, y, teilL*scale, teilH*scale);
-          ctx.strokeRect(x, y, teilL*scale, teilH*scale);
-          gezeichnet++;
+    </div>
+    <div class="version" style="position:fixed; bottom:10px; right:10px; font-size:12px; color:#718096; background:rgba(255,255,255,0.8); padding:4px 8px; border-radius:4px; box-shadow:0 1px 3px rgba(0,0,0,0.1); z-index:999;">v1.1.0</div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Funktion zum Zurücksetzen des Formulars
+        function resetForm() {
+            if (confirm('Möchten Sie wirklich alle Eingaben zurücksetzen?')) {
+                // Formular zurücksetzen
+                document.getElementById('epsForm').reset();
+                // Gespeicherte Werte löschen
+                localStorage.removeItem('epsFormValues');
+                localStorage.removeItem('epsResults');
+                localStorage.removeItem('epsDrawing');
+                // Ergebnis und Zeichnung leeren
+                document.getElementById('ergebnis').innerHTML = '';
+                const canvas = document.getElementById('blockCanvas');
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                // 3D-Zeichnung leeren
+                const block3d = document.getElementById('block3d');
+                if (block3d) block3d.innerHTML = '';
+                // Standardwerte setzen
+                document.getElementById('blockLaenge').value = '2030';
+                document.getElementById('blockBreite').value = '1020';
+                document.getElementById('blockHoehe').value = '1230';
+                setzeGeschwindigkeitNachDichte();
+            }
         }
-      }
-      // Legende
-      ctx.font = '13px Helvetica';
-      ctx.fillStyle = '#222';
-      ctx.fillText('Block: Länge (X): ' + blockL + ' mm, Höhe (Y): ' + blockH + ' mm', margin, 18);
-    }
-    // Setzt die Standard-Schneidegeschwindigkeit je nach Dichte
-    function setzeGeschwindigkeitNachDichte() {
-      const dichte = document.getElementById('dichte').value;
-      const geschwXYInput = document.getElementById('geschwindigkeitXY');
-      const geschwZInput = document.getElementById('geschwindigkeitZ');
-      if (dichte == '15') {
-        geschwXYInput.value = 650;
-        geschwZInput.value = 650;
-      } else if (dichte == '18') {
-        geschwXYInput.value = 600;
-        geschwZInput.value = 600;
-      } else if (dichte == '27') {
-        geschwXYInput.value = 450;
-        geschwZInput.value = 450;
-      }
-    }
-    document.getElementById('dichte').addEventListener('change', setzeGeschwindigkeitNachDichte);
 
-    // PDF Export Funktion
-    function exportToPDF() {
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const pageHeight = doc.internal.pageSize.getHeight();
-      // Titel und Artikelnummer
-      doc.setFontSize(18);
-      doc.text('EPS Schneideanlagen Preisberechnung', 30, 36);
-      const artikelnummer = document.getElementById('artikelnummer').value;
-      if (artikelnummer) {
-        doc.setFontSize(13);
-        doc.setTextColor(26, 59, 110);
-        doc.text(`Artikelnummer: ${artikelnummer}`, 30, 56);
-        doc.setTextColor(0, 0, 0);
-      }
-      // Eingabedaten links oben
-      let yPos = artikelnummer ? 76 : 56;
-      doc.setFontSize(10);
-      doc.text('Eingabedaten:', 30, yPos);
-      yPos += 12;
-      doc.setFontSize(9);
-      doc.text(`Block: ${document.getElementById('blockLaenge').value}x${document.getElementById('blockBreite').value}x${document.getElementById('blockHoehe').value} mm`, 34, yPos);
-      yPos += 10;
-      doc.text(`Rohdichte: ${document.getElementById('dichte').value} kg/m³`, 34, yPos);
-      yPos += 10;
-      doc.text(`Bauteil: ${document.getElementById('teilLaenge').value}x${document.getElementById('teilBreite').value}x${document.getElementById('teilHoehe').value} mm`, 34, yPos);
-      yPos += 10;
-      doc.text(`Anzahl: ${document.getElementById('anzahlTeile').value} Stück`, 34, yPos);
-      yPos += 10;
-      doc.text(`Geschwindigkeit: ${document.getElementById('geschwindigkeitXY').value} mm/min`, 34, yPos);
-      yPos += 10;
-      doc.text(`Drähte: ${document.getElementById('anzahlDraehteXY').value}`, 34, yPos);
-      yPos += 10;
-      doc.text(`Abbrand: ${document.getElementById('abbrand').value} mm`, 34, yPos);
-      yPos += 16;
-      // Ergebnisse rechts oben
-      let resultY = artikelnummer ? 76 : 56;
-      doc.setFontSize(10);
-      doc.text('Ergebnisse:', pageWidth/2, resultY);
-      resultY += 12;
-      doc.setFontSize(9);
-      const ergebnisDiv = document.getElementById('ergebnis');
-      const ergebnisText = ergebnisDiv.innerText;
-      const ergebnisLines = ergebnisText.split('\n')
-        .filter(line => line.trim() !== '')
-        .filter(line => !line.includes('Top 3 Orientierungen'))
-        .filter(line => !line.includes('Geschätzte Schnittzeit'))
-        .filter(line => !line.startsWith('Hinweis:'));
-      ergebnisLines.forEach(line => {
-        if (line.includes('Preis')) {
-          doc.setFontSize(13);
-          doc.setTextColor(26, 59, 110);
-          doc.setFont(undefined, 'bold');
-          doc.text(line, pageWidth/2, resultY);
-          resultY += 13;
-          doc.setFontSize(9);
-          doc.setTextColor(0, 0, 0);
-          doc.setFont(undefined, 'normal');
-        } else {
-          doc.text(line, pageWidth/2, resultY);
-          resultY += 9;
+        // Speichern der Formularwerte
+        function saveFormValues() {
+            const formData = {};
+            const formElements = document.getElementById('epsForm').elements;
+            for (let element of formElements) {
+                if (element.id) {
+                    formData[element.id] = element.value;
+                }
+            }
+            localStorage.setItem('epsFormValues', JSON.stringify(formData));
         }
-      });
-      // Tabelle mittig unten
-      let tableY = Math.max(yPos, resultY) + 10;
-      // Beide Zeichnungen (3D und 2D) nebeneinander im PDF platzieren
-      const block3dDiv = document.getElementById('block3d');
-      const canvasBlock = document.getElementById('blockCanvas');
-      // 3D-Canvas direkt als Bild exportieren
-      const webglCanvas = block3dDiv ? block3dDiv.querySelector('canvas') : null;
-      if (webglCanvas && canvasBlock) {
-        window.html2canvas(canvasBlock, { scale: 1.2 }).then(canvas2d => {
-          const totalWidth = pageWidth - 60;
-          const imgWidth = totalWidth / 2 - 10;
-          const imgHeight3d = webglCanvas.height * (imgWidth / webglCanvas.width);
-          const imgHeight2d = canvas2d.height * (imgWidth / canvas2d.width);
-          const maxImgHeight = Math.max(imgHeight3d, imgHeight2d);
-          doc.addImage(webglCanvas.toDataURL('image/png'), 'PNG', 30, tableY, imgWidth, maxImgHeight);
-          doc.addImage(canvas2d.toDataURL('image/png'), 'PNG', 30 + imgWidth + 20, tableY, imgWidth, maxImgHeight);
-          const filename = artikelnummer ? `EPS_Berechnung_${artikelnummer}.pdf` : 'EPS_Berechnung.pdf';
-          doc.save(filename);
-        });
-      } else if (webglCanvas) {
-        const imgData3d = webglCanvas.toDataURL('image/png');
-        const imgWidth3d = pageWidth - 60;
-        const imgHeight3d = webglCanvas.height * (imgWidth3d / webglCanvas.width);
-        doc.addImage(imgData3d, 'PNG', 30, tableY, imgWidth3d, imgHeight3d);
-        const filename = artikelnummer ? `EPS_Berechnung_${artikelnummer}.pdf` : 'EPS_Berechnung.pdf';
-        doc.save(filename);
-      } else if (canvasBlock) {
-        window.html2canvas(canvasBlock, { scale: 1.2 }).then(canvas2d => {
-          const imgData2d = canvas2d.toDataURL('image/png');
-          const imgWidth2d = pageWidth - 60;
-          const imgHeight2d = canvas2d.height * (imgWidth2d / canvas2d.width);
-          doc.addImage(imgData2d, 'PNG', 30, tableY, imgWidth2d, imgHeight2d);
-          const filename = artikelnummer ? `EPS_Berechnung_${artikelnummer}.pdf` : 'EPS_Berechnung.pdf';
-          doc.save(filename);
-        });
-      } else {
-        const filename = artikelnummer ? `EPS_Berechnung_${artikelnummer}.pdf` : 'EPS_Berechnung.pdf';
-        doc.save(filename);
-      }
-    }
-    // 3D-Visualisierung mit three.js
-    let threeScene, threeRenderer, threeCamera, threeControls;
-    function renderBlock3D(blockL, blockB, blockH, teilL, teilB, teilH, nL, nB, nH, abstand, maxTeile, anzahl) {
-      const container = document.getElementById('block3d');
-      // Vorherige Szene entfernen
-      if (threeRenderer) {
-        threeRenderer.dispose();
-        container.innerHTML = '';
-      }
-      // Szene, Kamera, Renderer
-      threeScene = new THREE.Scene();
-      threeScene.background = new THREE.Color(0xf7fafc);
-      const aspect = container.offsetWidth / container.offsetHeight;
-      threeCamera = new THREE.PerspectiveCamera(45, aspect, 1, 10000);
-      threeCamera.position.set(blockL*1.2, -blockB*1.2, blockH*1.2);
-      threeCamera.up.set(0,0,1);
-      threeCamera.lookAt(new THREE.Vector3(blockL/2, blockB/2, blockH/2));
-      threeRenderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
-      threeRenderer.setSize(container.offsetWidth, container.offsetHeight);
-      container.appendChild(threeRenderer.domElement);
-      // Controls
-      threeControls = new THREE.OrbitControls(threeCamera, threeRenderer.domElement);
-      threeControls.target.set(blockL/2, blockB/2, blockH/2);
-      threeControls.update();
-      // Block (sichtbarer)
-      const blockGeometry = new THREE.BoxGeometry(blockL, blockB, blockH);
-      const blockMaterial = new THREE.MeshBasicMaterial({ color: 0x1976d2, transparent: true, opacity: 0.35, wireframe: false });
-      const blockMesh = new THREE.Mesh(blockGeometry, blockMaterial);
-      blockMesh.position.set(blockL/2, blockB/2, blockH/2);
-      threeScene.add(blockMesh);
-      // Block-Rahmen (Wireframe)
-      const edges = new THREE.EdgesGeometry(blockGeometry);
-      const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x1976d2, linewidth: 2 }));
-      line.position.copy(blockMesh.position);
-      threeScene.add(line);
-      // Bauteile
-      const teilGeometry = new THREE.BoxGeometry(teilL, teilB, teilH);
-      let gezeichnet = 0;
-      for (let i = 0; i < nL; i++) {
-        for (let j = 0; j < nB; j++) {
-          for (let k = 0; k < nH; k++) {
-            if (gezeichnet >= Math.min(maxTeile, anzahl)) break;
-            // Abwechselnde Farben als Schachbrettmuster in allen Dimensionen
-            const farbe = ((i + j + k) % 2 === 0) ? 0x7ec6f7 : 0xf7b47e;
-            const teilMaterial = new THREE.MeshPhongMaterial({ color: farbe, shininess: 60 });
-            const teilMesh = new THREE.Mesh(teilGeometry, teilMaterial);
-            // Position: X = Länge, Y = Breite, Z = Höhe
-            teilMesh.position.set(
-              (i * (teilL + abstand)) + teilL/2,
-              (j * (teilB + abstand)) + teilB/2,
-              (k * (teilH + abstand)) + teilH/2
-            );
-            threeScene.add(teilMesh);
-            gezeichnet++;
-          }
+
+        // Speichern der Ergebnisse
+        function saveResults() {
+            const results = {
+                html: document.getElementById('ergebnis').innerHTML,
+                canvas: document.getElementById('blockCanvas').toDataURL()
+            };
+            localStorage.setItem('epsResults', JSON.stringify(results));
         }
-      }
-      // Licht
-      const light = new THREE.DirectionalLight(0xffffff, 0.8);
-      light.position.set(1,1,2);
-      threeScene.add(light);
-      const ambient = new THREE.AmbientLight(0xffffff, 0.5);
-      threeScene.add(ambient);
-      // Render-Loop
-      function animate() {
-        threeRenderer.render(threeScene, threeCamera);
-        requestAnimationFrame(animate);
-      }
-      animate();
-    }
-    // Synchronisiert die Höhe und Breite der Visualisierungen mit dem Ergebnisfeld
-    function syncVisualHeights() {
-      const ergebnis = document.getElementById('ergebnis');
-      const block3d = document.getElementById('block3d');
-      const blockCanvas = document.getElementById('blockCanvas');
-      if (!ergebnis || !block3d || !blockCanvas) return;
-      const height = ergebnis.offsetHeight;
-      block3d.style.height = height + 'px';
-      blockCanvas.height = height;
-      blockCanvas.style.height = height + 'px';
-      // Breite anpassen (optional, für Gleichmäßigkeit)
-      const width = ergebnis.offsetWidth;
-      block3d.style.width = width + 'px';
-      blockCanvas.width = width;
-      blockCanvas.style.width = width + 'px';
-    }
-    window.addEventListener('resize', syncVisualHeights);
-  </script>
+
+        // Laden der gespeicherten Werte
+        function loadSavedValues() {
+            // Formularwerte laden
+            const savedValues = JSON.parse(localStorage.getItem('epsFormValues') || '{}');
+            Object.keys(savedValues).forEach(key => {
+                const element = document.getElementById(key);
+                if (element) {
+                    element.value = savedValues[key];
+                }
+            });
+
+            // Ergebnisse laden
+            const savedResults = JSON.parse(localStorage.getItem('epsResults') || '{}');
+            if (savedResults.html) {
+                document.getElementById('ergebnis').innerHTML = savedResults.html;
+            }
+            if (savedResults.canvas) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.getElementById('blockCanvas');
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0);
+                };
+                img.src = savedResults.canvas;
+            }
+        }
+
+        // Event Listener für Formularänderungen
+        document.getElementById('epsForm').addEventListener('input', saveFormValues);
+
+        // Beim Laden der Seite
+        window.addEventListener('DOMContentLoaded', () => {
+            setzeGeschwindigkeitNachDichte();
+            loadSavedValues();
+        });
+
+        function berechneEPS() {
+            const abbrand = parseFloat(document.getElementById('abbrand').value) || 2; // mm Abbrand pro Schnitt (anpassbar)
+            const gesAbstand = abbrand; // Nur Abbrand als Abstand zwischen Bauteilen
+            // Eingaben holen
+            const blockL = parseInt(document.getElementById('blockLaenge').value); // X
+            const blockH = parseInt(document.getElementById('blockHoehe').value); // Y
+            const blockB = parseInt(document.getElementById('blockBreite').value); // Z
+            const teilL = parseInt(document.getElementById('teilLaenge').value); // X
+            const teilH = parseInt(document.getElementById('teilHoehe').value); // Y
+            const teilB = parseInt(document.getElementById('teilBreite').value); // Z
+            const anzahl = parseInt(document.getElementById('anzahlTeile').value);
+            const dichte = parseFloat(document.getElementById('dichte').value);
+            // Warnung, falls Bauteil größer als Block
+            if (teilL > blockL || teilB > blockB || teilH > blockH) {
+                document.getElementById('ergebnis').innerHTML = '<span class="warn">Das Bauteil ist in mindestens einer Dimension größer als der Rohblock!</span>';
+                zeichneBlock(null, null, null, null, null, null, null, null, null, null);
+                return;
+            }
+            // Alle 6 Orientierungen prüfen
+            const orientierungen = [
+                { name: 'Länge-Breite-Höhe', l: teilL, b: teilB, h: teilH },
+                { name: 'Länge-Höhe-Breite', l: teilL, b: teilH, h: teilB },
+                { name: 'Breite-Länge-Höhe', l: teilB, b: teilL, h: teilH },
+                { name: 'Breite-Höhe-Länge', l: teilB, b: teilH, h: teilL },
+                { name: 'Höhe-Länge-Breite', l: teilH, b: teilL, h: teilB },
+                { name: 'Höhe-Breite-Länge', l: teilH, b: teilB, h: teilL },
+            ];
+            // Für jede Orientierung: Wie viele Bauteile passen rein?
+            let orientErgebnisse = orientierungen.map(o => {
+                // Anzahl Bauteile pro Richtung (inkl. Sicherheitsabstand + Abbrand, außer am Rand)
+                const nL = Math.floor((blockL + gesAbstand) / (o.l + gesAbstand));
+                const nB = Math.floor((blockB + gesAbstand) / (o.b + gesAbstand));
+                const nH = Math.floor((blockH + gesAbstand) / (o.h + gesAbstand));
+                const maxTeile = nL * nB * nH;
+                const teilVol = (o.l/1000) * (o.b/1000) * (o.h/1000); // m³
+                const blockVol = (blockL/1000) * (blockB/1000) * (blockH/1000); // m³
+                const gesamtTeile = Math.min(maxTeile, anzahl);
+                const gesamtVol = teilVol * gesamtTeile;
+                const abfallVol = blockVol - teilVol * maxTeile;
+                return {
+                    name: o.name,
+                    nL, nB, nH,
+                    maxTeile,
+                    teilVol,
+                    blockVol,
+                    gesamtTeile,
+                    gesamtVol,
+                    abfallVol,
+                    l: o.l, b: o.b, h: o.h
+                };
+            });
+            // Nach Abfall sortieren (aufsteigend)
+            orientErgebnisse.sort((a, b) => a.abfallVol - b.abfallVol);
+            // Top 3 Orientierungen
+            const top3 = orientErgebnisse.slice(0, 3);
+            // Beste Orientierung für weitere Berechnung
+            const beste = top3[0];
+            // Wie viele Blöcke werden benötigt?
+            const benoetigteBloeckeRaw = Math.ceil(anzahl / beste.maxTeile);
+            const letzteBlockTeile = anzahl % beste.maxTeile === 0 ? beste.maxTeile : anzahl % beste.maxTeile;
+            // Nutzungsgrad des letzten Blocks
+            const nutzungsgrad = (letzteBlockTeile * beste.teilVol) / beste.blockVol;
+            let benoetigteBloecke = benoetigteBloeckeRaw;
+            let letzterBlockBerechnet = true;
+            if (benoetigteBloeckeRaw > 1 && nutzungsgrad <= 0.5) {
+                benoetigteBloecke = benoetigteBloeckeRaw - 1;
+                letzterBlockBerechnet = false;
+            }
+            // Gewicht
+            const blockGew = beste.blockVol * dichte;
+            const gesamtGew = beste.teilVol * anzahl * dichte;
+            // Preis je m³ nach Dichte
+            let preisProM3 = 0;
+            if (dichte === 15) preisProM3 = 49.70;
+            else if (dichte === 18) preisProM3 = 60.68;
+            else if (dichte === 27) preisProM3 = 72.42;
+            // Materialkosten inkl. Abfall: gesamtes Blockvolumen wird berechnet
+            let materialkosten_voll = (benoetigteBloeckeRaw - 1) * beste.blockVol * preisProM3;
+            let materialkosten_letzter = 0;
+            if (benoetigteBloeckeRaw === 1) {
+                // Es gibt nur einen Block
+                if (nutzungsgrad > 0.5) {
+                    materialkosten_letzter = beste.blockVol * preisProM3;
+                } else {
+                    materialkosten_letzter = letzteBlockTeile * beste.teilVol * preisProM3;
+                }
+            } else {
+                // Mehrere Blöcke
+                if (nutzungsgrad > 0.5) {
+                    materialkosten_letzter = beste.blockVol * preisProM3;
+                } else {
+                    materialkosten_letzter = letzteBlockTeile * beste.teilVol * preisProM3;
+                }
+            }
+            const materialkosten = materialkosten_voll + materialkosten_letzter;
+            const kostenProBauteil = materialkosten / anzahl;
+            const kostenGesamt = materialkosten;
+            // Tatsächlicher Materialwert und Abfall
+            const gesamtMaterialwert = anzahl * beste.teilVol * preisProM3;
+            // Abfallberechnung
+            let abfallVolVoll = (benoetigteBloeckeRaw - 1) * (beste.blockVol - beste.maxTeile * beste.teilVol);
+            let abfallVolRest = 0;
+            if (benoetigteBloeckeRaw === 1) {
+                // Nur ein Block
+                if (nutzungsgrad > 0.5) {
+                    abfallVolRest = beste.blockVol - (letzteBlockTeile * beste.teilVol);
+                } else {
+                    // Anteiliger Abfall pro Bauteil im Block
+                    const abfallProBauteil = (beste.blockVol - (beste.maxTeile * beste.teilVol)) / beste.maxTeile;
+                    abfallVolRest = letzteBlockTeile * abfallProBauteil;
+                }
+            } else {
+                // Mehrere Blöcke
+                if (nutzungsgrad > 0.5) {
+                    abfallVolRest = beste.blockVol - (letzteBlockTeile * beste.teilVol);
+                } else {
+                    const abfallProBauteil = (beste.blockVol - (beste.maxTeile * beste.teilVol)) / beste.maxTeile;
+                    abfallVolRest = letzteBlockTeile * abfallProBauteil;
+                }
+            }
+            const gesamtAbfallVol = abfallVolVoll + abfallVolRest;
+            const gesamtAbfallWert = gesamtAbfallVol * preisProM3;
+            // --- NEU: Variablen für zweistufige Kalkulation ---
+            const geschwXY = parseInt(document.getElementById('geschwindigkeitXY').value);
+            const anzahlDraehteXY = Math.max(1, parseInt(document.getElementById('anzahlDraehteXY').value));
+            const geschwZ = parseInt(document.getElementById('geschwindigkeitZ').value);
+            const anzahlDraehteZ = Math.max(1, parseInt(document.getElementById('anzahlDraehteZ').value));
+            const zeitUmstapeln = parseFloat(document.getElementById('zeitUmstapeln').value) || 0;
+            // --- ENDE NEU ---
+            // --- NEU: Zweistufige Schnittzeitberechnung ---
+            // Schritt 1: XY-Schnitt (X und Y)
+            const schnitteX = beste.nL > 0 ? beste.nL - 1 : 0;
+            const schnitteY = beste.nH > 0 ? beste.nH - 1 : 0;
+            const effektiveSchnitteX = Math.ceil(schnitteX / anzahlDraehteXY);
+            const effektiveSchnitteY = Math.ceil(schnitteY / anzahlDraehteXY);
+            const schnittwegX = effektiveSchnitteX * blockB; // X-Schnitte über Breite (Z)
+            const schnittwegY = effektiveSchnitteY * blockL; // Y-Schnitte über Länge (X)
+            const schnittzeitX = schnittwegX / geschwXY;
+            const schnittzeitY = schnittwegY / geschwXY;
+            // Schritt 2: Umstapeln
+            // Zeit pro Block (eingegeben)
+            // Schritt 3: Z-Schnitt
+            const schnitteZ = beste.nB > 0 ? beste.nB - 1 : 0;
+            const effektiveSchnitteZ = Math.ceil(schnitteZ / anzahlDraehteZ);
+            const schnittwegZ = effektiveSchnitteZ * blockL; // Z-Schnitte über Länge (X)
+            const schnittzeitZ = schnittwegZ / geschwZ;
+            // Gesamtschnittzeit pro Block (min)
+            const schnittzeitBlock = schnittzeitX + schnittzeitY + zeitUmstapeln + schnittzeitZ;
+            // --- ENDE NEU ---
+            // Schnittzeit pro Bauteil (min) wieder korrekt berechnen
+            const schnittzeitBauteil = beste.maxTeile > 0 ? (schnittzeitBlock / beste.maxTeile) : 0;
+            // Maschinenkosten (35,34 €/h) jetzt korrekt auf Basis der Schnittzeit
+            const maschinenStunden = schnittzeitBlock / 60; // Stunden pro Block (exakt)
+            const maschinenKostenProBlock = maschinenStunden * 35.34;
+            const maschinenKostenProBauteil = beste.maxTeile > 0 ? maschinenKostenProBlock / beste.maxTeile : 0;
+            const maschinenKostenGesamt = maschinenKostenProBauteil * anzahl;
+            // Hilfsfunktion für Zeitformatierung (nur Stunden und Minuten)
+            function formatZeitBlock(min) {
+                if (!min || min === 0) return '0 min';
+                const h = Math.floor(min / 60);
+                const m = Math.round(min % 60);
+                return (h > 0 ? h + ' h ' : '') + m + ' min';
+            }
+
+            // Hilfsfunktion für Zeitformatierung (mit Sekunden für kurze Zeiten)
+            function formatZeitBauteil(min) {
+                if (!min || min === 0) return '0 min';
+                const h = Math.floor(min / 60);
+                const m = Math.floor(min % 60);
+                const s = Math.round((min % 1) * 60);
+                if (min < 1) {
+                    return s + ' sec';
+                }
+                return (h > 0 ? h + ' h ' : '') + m + ' min' + (s > 0 ? ' ' + s + ' sec' : '');
+            }
+
+            // Verpackungsmaße bestimmen (jetzt innerhalb von berechneEPS und vor der Ausgabe)
+            let vL = 1200, vB = 800, vH = 2000;
+            const verpackungstyp = document.getElementById('verpackungstyp').value;
+            if (verpackungstyp === 'palette') { vL = 1200; vB = 800; vH = 2000; }
+            else if (verpackungstyp === 'v1806') { vL = 1200; vB = 760; vH = 700; }
+            else if (verpackungstyp === 'frei') {
+                vL = parseInt(document.getElementById('verpackungLaenge').value) || 1;
+                vB = parseInt(document.getElementById('verpackungBreite').value) || 1;
+                vH = parseInt(document.getElementById('verpackungHoehe').value) || 1;
+            }
+            // Wie viele Bauteile passen in eine Verpackung? (optimale Stapelung)
+            const nL_v = Math.floor(vL / beste.l);
+            const nB_v = Math.floor(vB / beste.b);
+            const nH_v = Math.floor(vH / beste.h);
+            const maxProVerpackung = Math.max(1, nL_v * nB_v * nH_v);
+            const benoetigteVerpackungen = Math.ceil(anzahl / maxProVerpackung);
+
+            // Verpackungskosten berechnen
+            let verpackungskosten = 0;
+            if (verpackungstyp === 'v1806') {
+                verpackungskosten = benoetigteVerpackungen * 3.60; // 3,60€ pro V1806 Verpackung
+            }
+
+            // Ergebnis-Tabelle
+            let tabelle = `<table><tr><th>Orientierung</th><th>Stück/L</th><th>Stück/B</th><th>Stück/H</th><th>Max. Stück/Block</th><th>Abfall (m³)</th></tr>`;
+            top3.forEach(o => {
+                tabelle += `<tr><td>${o.name}</td><td>${o.nL}</td><td>${o.nB}</td><td>${o.nH}</td><td>${o.maxTeile}</td><td>${o.abfallVol.toFixed(3)}</td></tr>`;
+            });
+            tabelle += `</table>`;
+            // Preis pro Preiseinheit berechnen (1, 100, 1000 Stück)
+            let preisProEinheit = 0;
+            let einheitText = '';
+            const gesamtPreis = kostenGesamt + maschinenKostenGesamt + verpackungskosten;
+            const preiseinheitMenge = parseInt(document.getElementById('preiseinheit').value);
+            preisProEinheit = gesamtPreis / anzahl * preiseinheitMenge;
+            einheitText = `für ${preiseinheitMenge} Stück`;
+            // Ausgabe
+            document.getElementById('ergebnis').innerHTML = `
+                <div style="font-size:1.3em; font-weight:800; color:#fff; background:linear-gradient(90deg,#1a3b6e 60%,#2c5282 100%); border-radius:9px; padding:10px 0 7px 0; text-align:center; margin-bottom:14px; letter-spacing:0.5px; box-shadow:0 1px 4px 0 rgba(26,59,110,0.08);">
+                    <span style="font-size:0.7em; font-weight:600; color:#e3e8ee; margin-right:8px;">Preis</span>
+                    <span style="font-size:1em; font-weight:900; color:#fff; background:#2c5282; border-radius:6px; padding:2px 10px; margin:0 7px; display:inline-block;">${preisProEinheit.toFixed(2)} €</span>
+                    <span style="font-size:0.8em; font-weight:600; color:#e3e8ee;">${einheitText}</span>
+                </div>
+                <b>Tatsächlicher Materialwert (nur Bauteile):</b> ${gesamtMaterialwert.toFixed(2)} €<br>
+                <b>Tatsächlicher Abfall:</b> ${gesamtAbfallVol.toFixed(3)} m³ (${gesamtAbfallWert.toFixed(2)} €)<br>
+                <b>Optimale Ausrichtung:</b> ${beste.name}<br>
+                <b>Max. Bauteile pro Block:</b> ${beste.maxTeile}<br>
+                <b>Benötigte Blöcke:</b> ${benoetigteBloeckeRaw}<br>
+                <b>Berechnete Blöcke:</b> ${benoetigteBloecke}<br>
+                <b>Bauteile im letzten Block:</b> ${letzteBlockTeile}<br>
+                <b>Verpackung:</b> ${verpackungstyp === 'palette' ? 'Palette' : verpackungstyp === 'v1806' ? 'V1806' : `Frei (${vL}x${vB}x${vH} mm)`}<br>
+                <b>Max. Bauteile pro Verpackung:</b> ${maxProVerpackung}<br>
+                <b>Benötigte Verpackungen:</b> ${benoetigteVerpackungen}<br>
+                <b>Gesamtgewicht Bauteile:</b> ${gesamtGew.toFixed(2)} kg<br>
+                <b>Materialkosten pro Bauteil:</b> ${kostenProBauteil.toFixed(2)} €<br>
+                <b>Materialkosten gesamt:</b> ${kostenGesamt.toFixed(2)} €<br>
+                <b>Maschinenkosten pro Bauteil:</b> ${maschinenKostenProBauteil.toFixed(2)} €<br>
+                <b>Maschinenkosten gesamt:</b> ${maschinenKostenGesamt.toFixed(2)} €<br>
+                ${verpackungskosten > 0 ? `<b>Verpackungskosten gesamt:</b> ${verpackungskosten.toFixed(2)} €<br>` : ''}
+                <b>Exakte Schnittzeit pro Block:</b> ${formatZeitBlock(schnittzeitBlock)}<br>
+                <b>Exakte Schnittzeit pro Bauteil:</b> ${formatZeitBauteil(schnittzeitBauteil)}<br>
+                <br>
+                <b>Top 3 Orientierungen (nach wenigstem Abfall):</b><br>
+                ${tabelle}
+            `;
+            // Zeichnung aktualisieren (Draufsicht: Block-Länge x Block-Höhe, Bauteile als Rechtecke)
+            syncVisualHeights();
+            zeichneBlock(blockL, blockH, beste.l, beste.h, beste.nL, beste.nH, gesAbstand, beste.maxTeile, anzahl, beste.name);
+            renderBlock3D(blockL, blockB, blockH, beste.l, beste.b, beste.h, beste.nL, beste.nB, beste.nH, gesAbstand, beste.maxTeile, anzahl);
+            saveFormValues();
+            saveResults();
+            // Verpackung Dropdown Umschalten
+            function toggleVerpackungFrei() {
+                const typ = document.getElementById('verpackungstyp').value;
+                document.getElementById('verpackungFreiFields').style.display = (typ === 'frei') ? 'block' : 'none';
+            }
+            // Nach Berechnung automatisch auf Ergebnis-Tab umschalten
+            if (window.bootstrap && document.querySelector('#visu-tab')) {
+                var tab = new bootstrap.Tab(document.querySelector('#visu-tab'));
+                tab.show();
+            }
+        }
+        // Zeichnet die Anordnung der Bauteile im Block (Draufsicht X/Y)
+        function zeichneBlock(blockL, blockH, teilL, teilH, nL, nH, abstand, maxTeile, anzahl, orientName) {
+            // Zeichne X (Länge) und Y (Höhe) als Rechteck
+            const blockB = parseInt(document.getElementById('blockBreite').value); // Z
+            const canvas = document.getElementById('blockCanvas');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if (!blockL || !blockH || !teilL || !teilH || !nL || !nH) {
+                ctx.font = '16px Helvetica';
+                ctx.fillStyle = '#bbb';
+                ctx.fillText('Keine Zeichnung möglich', 120, 180);
+                return;
+            }
+            const margin = 30;
+            // Maßstab für X (Länge) und Y (Höhe)
+            const scaleL = (canvas.width - 2*margin) / blockL;
+            const scaleH = (canvas.height - 2*margin) / blockH;
+            const scale = Math.min(scaleL, scaleH);
+            // Block zeichnen (X × Y)
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(margin, margin, blockL*scale, blockH*scale);
+            // Bauteile zeichnen (nur als grobe Darstellung, nicht exakt gestapelt wie im 3D-Block)
+            let gezeichnet = 0;
+            for (let i = 0; i < nL; i++) {
+                for (let j = 0; j < nH; j++) {
+                    if (gezeichnet >= Math.min(maxTeile, anzahl)) break;
+                    // Verteile die Bauteile gleichmäßig im X/Y-Rechteck (X = teilL, Y = teilH)
+                    const x = margin + i * (teilL + abstand) * scale;
+                    const y = margin + j * (teilH + abstand) * scale;
+                    ctx.fillStyle = '#7ec6f7';
+                    ctx.strokeStyle = '#1976d2';
+                    ctx.lineWidth = 1;
+                    ctx.fillRect(x, y, teilL*scale, teilH*scale);
+                    ctx.strokeRect(x, y, teilL*scale, teilH*scale);
+                    gezeichnet++;
+                }
+            }
+            // Legende
+            ctx.font = '13px Helvetica';
+            ctx.fillStyle = '#222';
+            ctx.fillText('Block: Länge (X): ' + blockL + ' mm, Höhe (Y): ' + blockH + ' mm', margin, 18);
+        }
+        // Setzt die Standard-Schneidegeschwindigkeit je nach Dichte
+        function setzeGeschwindigkeitNachDichte() {
+            const dichte = document.getElementById('dichte').value;
+            const geschwXYInput = document.getElementById('geschwindigkeitXY');
+            const geschwZInput = document.getElementById('geschwindigkeitZ');
+            if (dichte == '15') {
+                geschwXYInput.value = 650;
+                geschwZInput.value = 650;
+            } else if (dichte == '18') {
+                geschwXYInput.value = 600;
+                geschwZInput.value = 600;
+            } else if (dichte == '27') {
+                geschwXYInput.value = 450;
+                geschwZInput.value = 450;
+            }
+        }
+        document.getElementById('dichte').addEventListener('change', setzeGeschwindigkeitNachDichte);
+
+        // PDF Export Funktion
+        function exportToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const pageHeight = doc.internal.pageSize.getHeight();
+            // Titel und Artikelnummer
+            doc.setFontSize(18);
+            doc.text('EPS Schneideanlagen Preisberechnung', 30, 36);
+            const artikelnummer = document.getElementById('artikelnummer').value;
+            if (artikelnummer) {
+                doc.setFontSize(13);
+                doc.setTextColor(26, 59, 110);
+                doc.text(`Artikelnummer: ${artikelnummer}`, 30, 56);
+                doc.setTextColor(0, 0, 0);
+            }
+            // Eingabedaten links oben
+            let yPos = artikelnummer ? 76 : 56;
+            doc.setFontSize(10);
+            doc.text('Eingabedaten:', 30, yPos);
+            yPos += 12;
+            doc.setFontSize(9);
+            doc.text(`Block: ${document.getElementById('blockLaenge').value}x${document.getElementById('blockBreite').value}x${document.getElementById('blockHoehe').value} mm`, 34, yPos);
+            yPos += 10;
+            doc.text(`Rohdichte: ${document.getElementById('dichte').value} kg/m³`, 34, yPos);
+            yPos += 10;
+            doc.text(`Bauteil: ${document.getElementById('teilLaenge').value}x${document.getElementById('teilBreite').value}x${document.getElementById('teilHoehe').value} mm`, 34, yPos);
+            yPos += 10;
+            doc.text(`Anzahl: ${document.getElementById('anzahlTeile').value} Stück`, 34, yPos);
+            yPos += 10;
+            doc.text(`Geschwindigkeit: ${document.getElementById('geschwindigkeitXY').value} mm/min`, 34, yPos);
+            yPos += 10;
+            doc.text(`Drähte: ${document.getElementById('anzahlDraehteXY').value}`, 34, yPos);
+            yPos += 10;
+            doc.text(`Abbrand: ${document.getElementById('abbrand').value} mm`, 34, yPos);
+            yPos += 16;
+            // Ergebnisse rechts oben
+            let resultY = artikelnummer ? 76 : 56;
+            doc.setFontSize(10);
+            doc.text('Ergebnisse:', pageWidth/2, resultY);
+            resultY += 12;
+            doc.setFontSize(9);
+            const ergebnisDiv = document.getElementById('ergebnis');
+            const ergebnisText = ergebnisDiv.innerText;
+            const ergebnisLines = ergebnisText.split('\n')
+                .filter(line => line.trim() !== '')
+                .filter(line => !line.includes('Top 3 Orientierungen'))
+                .filter(line => !line.includes('Geschätzte Schnittzeit'))
+                .filter(line => !line.startsWith('Hinweis:'));
+            ergebnisLines.forEach(line => {
+                if (line.includes('Preis')) {
+                    doc.setFontSize(13);
+                    doc.setTextColor(26, 59, 110);
+                    doc.setFont(undefined, 'bold');
+                    doc.text(line, pageWidth/2, resultY);
+                    resultY += 13;
+                    doc.setFontSize(9);
+                    doc.setTextColor(0, 0, 0);
+                    doc.setFont(undefined, 'normal');
+                } else {
+                    doc.text(line, pageWidth/2, resultY);
+                    resultY += 9;
+                }
+            });
+            // Tabelle mittig unten
+            let tableY = Math.max(yPos, resultY) + 10;
+            // Beide Zeichnungen (3D und 2D) nebeneinander im PDF platzieren
+            const block3dDiv = document.getElementById('block3d');
+            const canvasBlock = document.getElementById('blockCanvas');
+            // 3D-Canvas direkt als Bild exportieren
+            const webglCanvas = block3dDiv ? block3dDiv.querySelector('canvas') : null;
+            if (webglCanvas && canvasBlock) {
+                window.html2canvas(canvasBlock, { scale: 1.2 }).then(canvas2d => {
+                    const totalWidth = pageWidth - 60;
+                    const imgWidth = totalWidth / 2 - 10;
+                    const imgHeight3d = webglCanvas.height * (imgWidth / webglCanvas.width);
+                    const imgHeight2d = canvas2d.height * (imgWidth / canvas2d.width);
+                    const maxImgHeight = Math.max(imgHeight3d, imgHeight2d);
+                    doc.addImage(webglCanvas.toDataURL('image/png'), 'PNG', 30, tableY, imgWidth, maxImgHeight);
+                    doc.addImage(canvas2d.toDataURL('image/png'), 'PNG', 30 + imgWidth + 20, tableY, imgWidth, maxImgHeight);
+                    const filename = artikelnummer ? `EPS_Berechnung_${artikelnummer}.pdf` : 'EPS_Berechnung.pdf';
+                    doc.save(filename);
+                });
+            } else if (webglCanvas) {
+                const imgData3d = webglCanvas.toDataURL('image/png');
+                const imgWidth3d = pageWidth - 60;
+                const imgHeight3d = webglCanvas.height * (imgWidth3d / webglCanvas.width);
+                doc.addImage(imgData3d, 'PNG', 30, tableY, imgWidth3d, imgHeight3d);
+                const filename = artikelnummer ? `EPS_Berechnung_${artikelnummer}.pdf` : 'EPS_Berechnung.pdf';
+                doc.save(filename);
+            } else if (canvasBlock) {
+                window.html2canvas(canvasBlock, { scale: 1.2 }).then(canvas2d => {
+                    const imgData2d = canvas2d.toDataURL('image/png');
+                    const imgWidth2d = pageWidth - 60;
+                    const imgHeight2d = canvas2d.height * (imgWidth2d / canvas2d.width);
+                    doc.addImage(imgData2d, 'PNG', 30, tableY, imgWidth2d, imgHeight2d);
+                    const filename = artikelnummer ? `EPS_Berechnung_${artikelnummer}.pdf` : 'EPS_Berechnung.pdf';
+                    doc.save(filename);
+                });
+            } else {
+                const filename = artikelnummer ? `EPS_Berechnung_${artikelnummer}.pdf` : 'EPS_Berechnung.pdf';
+                doc.save(filename);
+            }
+        }
+        // 3D-Visualisierung mit three.js
+        let threeScene, threeRenderer, threeCamera, threeControls;
+        function renderBlock3D(blockL, blockB, blockH, teilL, teilB, teilH, nL, nB, nH, abstand, maxTeile, anzahl) {
+            const container = document.getElementById('block3d');
+            // Vorherige Szene entfernen
+            if (threeRenderer) {
+                threeRenderer.dispose();
+                container.innerHTML = '';
+            }
+            // Szene, Kamera, Renderer
+            threeScene = new THREE.Scene();
+            threeScene.background = new THREE.Color(0xf7fafc);
+            const aspect = container.offsetWidth / container.offsetHeight;
+            threeCamera = new THREE.PerspectiveCamera(45, aspect, 1, 10000);
+            threeCamera.position.set(blockL*1.2, -blockB*1.2, blockH*1.2);
+            threeCamera.up.set(0,0,1);
+            threeCamera.lookAt(new THREE.Vector3(blockL/2, blockB/2, blockH/2));
+            threeRenderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+            threeRenderer.setSize(container.offsetWidth, container.offsetHeight);
+            container.appendChild(threeRenderer.domElement);
+            // Controls
+            threeControls = new THREE.OrbitControls(threeCamera, threeRenderer.domElement);
+            threeControls.target.set(blockL/2, blockB/2, blockH/2);
+            threeControls.update();
+            // Block (sichtbarer)
+            const blockGeometry = new THREE.BoxGeometry(blockL, blockB, blockH);
+            const blockMaterial = new THREE.MeshBasicMaterial({ color: 0x1976d2, transparent: true, opacity: 0.35, wireframe: false });
+            const blockMesh = new THREE.Mesh(blockGeometry, blockMaterial);
+            blockMesh.position.set(blockL/2, blockB/2, blockH/2);
+            threeScene.add(blockMesh);
+            // Block-Rahmen (Wireframe)
+            const edges = new THREE.EdgesGeometry(blockGeometry);
+            const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x1976d2, linewidth: 2 }));
+            line.position.copy(blockMesh.position);
+            threeScene.add(line);
+            // Bauteile
+            const teilGeometry = new THREE.BoxGeometry(teilL, teilB, teilH);
+            let gezeichnet = 0;
+            for (let i = 0; i < nL; i++) {
+                for (let j = 0; j < nB; j++) {
+                    for (let k = 0; k < nH; k++) {
+                        if (gezeichnet >= Math.min(maxTeile, anzahl)) break;
+                        // Abwechselnde Farben als Schachbrettmuster in allen Dimensionen
+                        const farbe = ((i + j + k) % 2 === 0) ? 0x7ec6f7 : 0xf7b47e;
+                        const teilMaterial = new THREE.MeshPhongMaterial({ color: farbe, shininess: 60 });
+                        const teilMesh = new THREE.Mesh(teilGeometry, teilMaterial);
+                        // Position: X = Länge, Y = Breite, Z = Höhe
+                        teilMesh.position.set(
+                            (i * (teilL + abstand)) + teilL/2,
+                            (j * (teilB + abstand)) + teilB/2,
+                            (k * (teilH + abstand)) + teilH/2
+                        );
+                        threeScene.add(teilMesh);
+                        gezeichnet++;
+                    }
+                }
+            }
+            // Licht
+            const light = new THREE.DirectionalLight(0xffffff, 0.8);
+            light.position.set(1,1,2);
+            threeScene.add(light);
+            const ambient = new THREE.AmbientLight(0xffffff, 0.5);
+            threeScene.add(ambient);
+            // Render-Loop
+            function animate() {
+                threeRenderer.render(threeScene, threeCamera);
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+        // Synchronisiert die Höhe und Breite der Visualisierungen mit dem Ergebnisfeld
+        function syncVisualHeights() {
+            const ergebnis = document.getElementById('ergebnis');
+            const block3d = document.getElementById('block3d');
+            const blockCanvas = document.getElementById('blockCanvas');
+            if (!ergebnis || !block3d || !blockCanvas) return;
+            const height = ergebnis.offsetHeight;
+            block3d.style.height = height + 'px';
+            blockCanvas.height = height;
+            blockCanvas.style.height = height + 'px';
+            // Breite anpassen (optional, für Gleichmäßigkeit)
+            const width = ergebnis.offsetWidth;
+            block3d.style.width = width + 'px';
+            blockCanvas.width = width;
+            blockCanvas.style.width = width + 'px';
+        }
+        window.addEventListener('resize', syncVisualHeights);
+
+        // Nach jedem Tab-Wechsel und nach jedem Berechnen: Visualisierung neu rendern
+        function ensureVisualsUpToDate() {
+            // Prüfe, ob die Visualisierungs-Elemente existieren
+            if (document.getElementById('block3d') && document.getElementById('blockCanvas')) {
+                berechneEPS();
+            }
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            const loggedInUser = localStorage.getItem('loggedInUser');
+            if (loggedInUser) {
+                const usernameDisplay = loggedInUser.charAt(0).toUpperCase() + loggedInUser.slice(1);
+                const userNameSpan = document.getElementById('userName');
+                if (userNameSpan) userNameSpan.textContent = usernameDisplay;
+                const userAvatar = document.getElementById('userAvatar');
+                if (userAvatar) userAvatar.src = avatarMap[loggedInUser.toLowerCase()] || 'https://randomuser.me/api/portraits/lego/1.jpg';
+            }
+        });
+
+        // Avatar-Map wie auf index.html
+        const avatarMap = {
+            'admin': 'https://randomuser.me/api/portraits/men/1.jpg',
+            'petra': 'https://randomuser.me/api/portraits/women/2.jpg',
+            'jürgen': 'https://randomuser.me/api/portraits/men/3.jpg',
+            'nizia': 'https://randomuser.me/api/portraits/women/4.jpg',
+            'fatih': 'https://randomuser.me/api/portraits/men/5.jpg',
+            'silas': 'https://randomuser.me/api/portraits/men/6.jpg',
+            'julian': 'https://randomuser.me/api/portraits/men/7.jpg'
+        };
+    </script>
 </body>
 </html>

@@ -2,251 +2,186 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kalkulation</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
     <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-        body {
-            font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-            margin: 0;
-            background: #f7fafc;
-            color: #2d3748;
-            padding-top: 0;
+        :root {
+            --primary-color: #003366;
+            --secondary-color: #009999;
+            --accent-color: #FFB900;
+            --background-color: #f8f9fa;
+            --text-color: #333;
         }
-        h2 {
-            margin-top: 18px;
-            margin-bottom: 12px;
-            text-align: center;
+        body {
+            background-color: #fff;
+            color: var(--text-color);
+            font-family: '72', 'Segoe UI', Arial, sans-serif;
+            font-size: 0.98rem;
+        }
+        .navbar {
+            background-color: #003366 !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            min-height: 64px;
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+        }
+        .navbar-brand img {
+            height: 40px;
+            margin-right: 12px;
+        }
+        .navbar-brand span {
+            font-size: 1.13rem;
+            font-weight: 700;
+            color: #fff;
+            margin-left: 0;
+            letter-spacing: 0;
+        }
+        .container-box {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+            padding: 1rem 0.8rem 0.8rem 0.8rem;
+            margin-top: 0.7rem;
+            margin-bottom: 0.7rem;
+            max-width: 1350px;
+            margin-left: 10px;
+            margin-right: auto;
+        }
+        .nav-tabs .nav-link.active {
+            background-color: var(--primary-color);
+            color: #fff;
+        }
+        .nav-tabs .nav-link {
+            color: var(--primary-color);
+        }
+        .tab-content {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            padding: 24px;
+            margin-top: 16px;
+        }
+        .action-button, .btn-primary, .pdf-button, .reset-button {
+            background-color: var(--primary-color) !important;
+            color: #fff !important;
+            border: none;
+            border-radius: 6px !important;
+            font-weight: 500;
+            font-size: 0.98rem;
+            padding: 6px 16px;
+            box-shadow: none;
+            transition: background 0.18s;
+        }
+        .action-button:hover, .btn-primary:hover, .pdf-button:hover {
+            background-color: var(--secondary-color) !important;
+            color: #fff !important;
+        }
+        .reset-button {
+            background: #dc2626 !important;
+        }
+        .reset-button:hover {
+            background: #b91c1c !important;
+        }
+        input, select, textarea {
+            border-radius: 5px !important;
+            border: 1.2px solid #bfc9d1;
+            font-size: 0.98rem;
+            padding: 5px 8px;
+            background: #fff;
+            transition: border 0.18s, box-shadow 0.18s;
+        }
+        input:focus, select:focus, textarea:focus {
+            border: 1.2px solid var(--primary-color);
+            box-shadow: 0 0 0 1.5px #00336622;
+            outline: none;
+        }
+        .form-section {
+            border-radius: 7px;
+            border: 1px solid #e3e8ee;
+            box-shadow: none;
+            background: #f9fbfd;
+            padding: 14px 10px 8px 10px;
+            margin-bottom: 0;
+        }
+        .form-section legend {
             font-weight: 600;
             color: #1a3b6e;
-            letter-spacing: 0.5px;
-            font-size: 1.35rem;
+            font-size: 1.08rem;
+            letter-spacing: 0.3px;
         }
         .main-flex-container {
             display: flex;
             align-items: flex-start;
             justify-content: center;
             width: 100%;
-            margin-top: 5mm;
+            margin-top: 0.5rem;
+            max-width: 1350px;
+            margin-left: 10px;
+            margin-right: auto;
         }
         .button-leiste {
-            min-width: 200px;
-            margin-right: 32px;
+            min-width: 220px;
+            margin-right: 36px;
             margin-top: 0;
-        }
-        form {
-            margin: 0;
-        }
-        .form-row {
-            display: flex;
-            gap: 36px;
-            flex-wrap: nowrap;
-            max-width: 100%;
-        }
-        .form-section {
-            flex: 1 1 0;
-            min-width: 260px;
-            margin-bottom: 0;
-            border-radius: 10px;
-            padding: 18px 16px 8px 16px;
-            margin-bottom: 0;
-            box-shadow: 0 1px 2px 0 rgba(30,60,90,0.03);
-            border: 1px solid #bfc9d1;
-            background: #fff;
-        }
-        .form-section:nth-child(1) { border: 1px solid #bfc9d1; }
-        .form-section:nth-child(2) { border: 1px solid #bfc9d1; }
-        .form-section:nth-child(3) { border: 1px solid #bfc9d1; }
-        .form-section:nth-child(4) { border: 1px solid #bfc9d1; }
-        .form-section legend {
-            font-weight: 600;
-            color: #1a3b6e;
-            padding: 0 5px;
-            font-size: 14px;
-            letter-spacing: 0.3px;
-        }
-        label {
-            display: block;
-            margin-top: 6px;
-            font-size: 13px;
-            font-weight: 500;
-            color: #2e3d32;
-        }
-        input, select {
-            margin-top: 3px;
-            margin-bottom: 6px;
-            padding: 4px 7px;
-            border-radius: 5px;
-            border: 1px solid #bfc9d1;
-            font-size: 13px;
-            background: #fff;
-            width: 100%;
-            box-sizing: border-box;
-            transition: border 0.2s;
-        }
-        input:focus, select:focus {
-            border: 1.2px solid #388e3c;
-            outline: none;
-        }
-        input[readonly] {
-            background: #e3e8ee;
-            border-color: #bfc9d1;
-        }
-        .input-aufschlag-prozent {
-            width: 60px;
-            font-size: 1em;
-            text-align: right;
-            border: 1px solid #bfc9d1;
-            border-radius: 4px;
-            color: #1a3b6e;
-            background: #f7fafc;
-        }
-        button {
-            padding: 8px 18px;
-            font-size: 14px;
-            font-weight: 600;
-            color: #fff;
-            background: linear-gradient(90deg, #1a3b6e 60%, #2c5282 100%);
-            border: none;
-            border-radius: 7px;
-            box-shadow: 0 1px 4px 0 rgba(0,0,0,0.07);
-            cursor: pointer;
-            margin: 18px auto 0 auto;
-            display: block;
-            letter-spacing: 0.3px;
-            transition: background 0.2s;
-        }
-        button:hover {
-            background: linear-gradient(90deg, #2c5282 60%, #1a3b6e 100%);
         }
         .button-row {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             justify-content: center;
-            margin-top: 20px;
+            margin-top: 18px;
+            margin-left: 60px;
         }
-        .reset-button {
-            background: #dc2626;
-        }
-        .reset-button:hover {
-            background: #b91c1c;
-        }
-        .pdf-button {
-            background: #1a3b6e;
-        }
-        .pdf-button:hover {
-            background: #2c5282;
-        }
-        table {
-            border-collapse: collapse;
-            margin-top: 16px;
-            width: 100%;
-            background: #f5f7fa;
+        .button-row button {
+            background: linear-gradient(90deg, #1a3b6e 60%, #009999 100%);
+            color: #fff;
+            border: none;
             border-radius: 8px;
-            overflow: hidden;
-            font-size: 1.12em;
-        }
-        th, td {
-            border: 1px solid #bfc9d1;
-            padding: 10px 14px;
-            text-align: center;
-        }
-        td {
-            color: #2d3748;
-        }
-        th {
-            background: #e3e8ee;
             font-weight: 600;
-            color: #1a3b6e;
-            letter-spacing: 0.3px;
+            font-size: 1.02rem;
+            padding: 10px 18px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: background 0.18s, box-shadow 0.18s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        .result-section {
-            margin-top: 15px;
-            padding: 12px 8px 10px 8px;
-            background: #fff;
-            border-radius: 10px;
-            box-shadow: 0 1px 6px 0 rgba(30,60,90,0.05);
-            border: 1px solid #bfc9d1;
-            font-size: 13px;
+        .button-row button:hover {
+            background: linear-gradient(90deg, #009999 60%, #1a3b6e 100%);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.13);
         }
-        .vk-endpreis {
-            font-weight: bold;
-            color: #1a3b6e;
-            background: #e3e8ee;
-            padding: 4px 6px;
-            border-radius: 5px;
-        }
-        .version {
-            position: fixed;
-            bottom: 10px;
-            right: 10px;
-            font-size: 12px;
-            color: #718096;
-            background: rgba(255, 255, 255, 0.8);
-            padding: 4px 8px;
-            border-radius: 4px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-        .debug-box {
-            margin-top: 8px;
-            padding: 7px 10px;
-            border-radius: 6px;
-            font-size: 13px;
-            font-weight: bold;
-            background: #fff3cd;
-            color: #856404;
-            border: 2px solid #ffe066;
-        }
-        .debug-kundendaten { background: #e3fcec; color: #276749; border-color: #38a169; }
-        .debug-kalkulation { background: #e3e8ee; color: #2b6cb0; border-color: #3182ce; }
-        .debug-versand { background: #fff5e6; color: #b7791f; border-color: #ed8936; }
-        .debug-lagerung { background: #fce8f3; color: #97266d; border-color: #d53f8c; }
-        .debug-ergebnis { background: #f7fafc; color: #1a365d; border-color: #2b6cb0; }
-        @media (max-width: 1100px) {
-            .form-row { flex-direction: column; max-width: 100%; }
-            .form-section { min-width: 0; }
-            form { max-width: 100%; margin-left: 0; }
-        }
-        input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-        input[type=number] {
-            -moz-appearance: textfield;
-        }
-        .input-aufschlag-prozent::-webkit-inner-spin-button, .input-aufschlag-prozent::-webkit-outer-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-        .input-aufschlag-prozent {
-            -moz-appearance: textfield;
+        .button-row i {
+            font-size: 1.1em;
         }
         .button-row-oben {
             display: flex;
             flex-direction: column;
             gap: 8px;
             align-items: flex-start;
-            width: 240px;
-            margin-left: 18px;
-            margin-top: 18px;
+            width: 220px;
+            margin-left: 0;
+            margin-top: 0;
         }
         .button-row-oben a,
         .button-row-oben button {
             display: block;
             width: 100%;
-            min-width: 180px;
+            min-width: 160px;
             max-width: 100%;
             box-sizing: border-box;
             margin: 0;
             text-align: left;
-            font-size: 15px;
+            font-size: 0.98rem;
             font-weight: 600;
-            padding: 10px 18px;
+            padding: 10px 16px;
             border-radius: 7px;
-            background: linear-gradient(90deg, #1a3b6e 60%, #2c5282 100%);
+            background: linear-gradient(90deg, #1a3b6e 60%, #009999 100%);
             color: #fff;
             border: none;
             box-shadow: 0 1px 4px 0 rgba(0,0,0,0.07);
@@ -256,7 +191,7 @@
         }
         .button-row-oben a:hover,
         .button-row-oben button:hover {
-            background: linear-gradient(90deg, #2c5282 60%, #1a3b6e 100%);
+            background: linear-gradient(90deg, #009999 60%, #1a3b6e 100%);
         }
         .button-row-oben .reset-button {
             background: #dc2626;
@@ -270,43 +205,113 @@
         .button-row-oben .pdf-button:hover {
             background: #2c5282;
         }
-        .header {
-            background-color: #1a3b6e;
-            padding: 10px 0;
+        .table {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+            font-size: 1.08em;
         }
-        .header-content {
-            max-width: 1200px;
-            margin: 0 auto;
+        .table thead th {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            font-size: 1.08em;
+        }
+        .table tbody tr:hover {
+            background-color: #eaf3fc;
+        }
+        .summary-box {
+            background: var(--accent-color);
+            color: #333;
+            border-radius: 10px;
+            padding: 18px;
+            font-size: 1.18rem;
+            font-weight: 600;
+            margin-bottom: 18px;
+        }
+        .version {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            font-size: 13px;
+            color: #718096;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 5px 10px;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.10);
+        }
+        @media (max-width: 900px) {
+            .container-box { padding: 1rem; }
+            .main-flex-container { flex-direction: column; }
+            .button-leiste { margin-right: 0; margin-bottom: 18px; }
+        }
+        .kalk-flex {
             display: flex;
+            gap: 22px;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+        }
+        .kalk-card {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+            border: 1px solid #e3e8ee;
+            padding: 18px 16px 14px 16px;
+            min-width: 220px;
+            max-width: 320px;
+            flex: 1 1 0;
+            margin-bottom: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .kalk-card:nth-child(3) { /* Versand-Card */
             position: relative;
         }
-        .logo {
-            color: #fff;
-            font-size: 1.5rem;
+        .kalk-card h3 {
+            font-size: 1.05rem;
             font-weight: 600;
-            text-decoration: none;
-            position: absolute;
-            left: 24px;
+            color: #003366;
+            margin-bottom: 10px;
+            margin-top: 0;
         }
-        .seiten-titel {
-            color: #fff;
-            font-size: 1.3em;
-            font-weight: 600;
-            text-align: center;
-            flex: 1;
+        @media (max-width: 1100px) {
+            .kalk-flex { flex-direction: column; gap: 12px; }
+            .kalk-card { max-width: 100%; min-width: 0; }
+        }
+        .kalk-card input,
+        .kalk-card select {
+            width: 100%;
+            margin-bottom: 8px;
+            min-height: 38px;
+            font-size: 1rem;
         }
     </style>
 </head>
 <body>
-    <header class="header">
-        <div class="header-content">
-            <a href="#" class="logo">Hausenstein</a>
-            <span class="seiten-titel">Kalkulation</span>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <img src="LOGO.svg" alt="Logo" />
+                <span>Kalkulation</span>
+            </a>
+            <div class="d-flex align-items-center" id="userInfo" style="gap:10px; margin-left:32px;">
+                <img id="userAvatar" src="https://randomuser.me/api/portraits/men/1.jpg" alt="User" style="width:32px; height:32px; border-radius:50%; object-fit:cover; border:2px solid #fff; box-shadow:0 1px 4px rgba(0,0,0,0.08);">
+                <span id="userName" style="font-weight:500; color:#fff;">Benutzer</span>
+            </div>
         </div>
-    </header>
-    <div id="root"></div>
+    </nav>
+    <div class="container mt-3 mb-2">
+        <a href="index.html" class="btn btn-outline-primary"><i class="bi bi-arrow-left"></i> Zurück zur Startseite</a>
+    </div>
+    <div class="container container-box mt-3 mb-2">
+        <div id="root"></div>
+    </div>
+    <div class="version" style="position:fixed; bottom:10px; right:10px; font-size:12px; color:#718096; background:rgba(255,255,255,0.8); padding:4px 8px; border-radius:4px; box-shadow:0 1px 3px rgba(0,0,0,0.1); z-index:999;">Version 1.0.7</div>
     <script type="text/babel">
     const API_BASE = "http://192.168.1.20:5050";
     const API_URL = 'http://192.168.1.20:5050/api/kalkulationen'; // ggf. IP anpassen!
@@ -1055,13 +1060,34 @@
             // Button-Leiste oben (jetzt innerhalb von React)
             const ButtonLeiste = () => (
                 <div className="button-row-oben">
-                    <a href="index.html" style={{ textDecoration: 'none', color: '#fff', background: '#1a3b6e', borderRadius: 7, padding: '10px 18px', fontWeight: 600, display: 'block', marginBottom: 8 }}>
-                        ← Zurück zur Startseite
-                    </a>
-                    <button type="button" className="pdf-button" onClick={exportierePDF}>Als PDF exportieren</button>
-                    <button type="button" className="reset-button" onClick={resetForm}>Formular zurücksetzen</button>
+                    {/* Keine PDF- oder Reset-Buttons mehr hier, nur noch unten in der Button-Row */}
                 </div>
             );
+
+            // Avatar-Map wie auf index.html
+            const avatarMap = {
+                'admin': 'https://randomuser.me/api/portraits/men/1.jpg',
+                'petra': 'https://randomuser.me/api/portraits/women/2.jpg',
+                'jürgen': 'https://randomuser.me/api/portraits/men/3.jpg',
+                'nizia': 'https://randomuser.me/api/portraits/women/4.jpg',
+                'fatih': 'https://randomuser.me/api/portraits/men/5.jpg',
+                'silas': 'https://randomuser.me/api/portraits/men/6.jpg',
+                'julian': 'https://randomuser.me/api/portraits/men/7.jpg'
+            };
+
+            React.useEffect(() => {
+                // Benutzername aus localStorage holen
+                const loggedInUser = localStorage.getItem('loggedInUser');
+                if (loggedInUser) {
+                    // Ersten Buchstaben groß
+                    const usernameDisplay = loggedInUser.charAt(0).toUpperCase() + loggedInUser.slice(1);
+                    const userNameSpan = document.getElementById('userName');
+                    if (userNameSpan) userNameSpan.textContent = usernameDisplay;
+                    // Avatar setzen
+                    const userAvatar = document.getElementById('userAvatar');
+                    if (userAvatar) userAvatar.src = avatarMap[loggedInUser.toLowerCase()] || 'https://randomuser.me/api/portraits/lego/1.jpg';
+                }
+            }, []);
 
             return (
                 <div className="main-flex-container">
@@ -1069,9 +1095,9 @@
                         <ButtonLeiste />
                     </div>
                     <form onSubmit={berechneErgebnis}>
-                        <div className="form-row">
-                            <fieldset className="form-section">
-                                <legend>Kundendaten</legend>
+                        <div className="kalk-flex">
+                            <div className="kalk-card">
+                                <h3>Kundendaten</h3>
                                 <label>Interne Angebotsnummer:
                                     <input type="text" value={interneNummer} onChange={e => setInterneNummer(e.target.value)} placeholder="z.B. AN-001" style={{ borderColor: !interneNummer.trim() ? '#dc2626' : undefined }} tabIndex={1} />
                                     {!interneNummer.trim() && <span style={{color:'#dc2626',fontSize:'12px'}}>Bitte ausfüllen</span>}
@@ -1124,9 +1150,9 @@
                                         Artikel zur Sendung hinzufügen
                                     </button>
                                 </div>
-                            </fieldset>
-                            <fieldset className="form-section">
-                                <legend>Kalkulation</legend>
+                            </div>
+                            <div className="kalk-card">
+                                <h3>Kalkulation</h3>
                                 <label>EK je Preiseinheit:
                                     <input type="number" value={ek} onChange={e => setEk(e.target.value)} step="0.01" tabIndex={3} />
                                 </label>
@@ -1149,11 +1175,9 @@
                                 <label>VK Wunschpreis:
                                     <input type="number" value={vkWunsch} onChange={e => setVkWunsch(e.target.value)} step="0.01" tabIndex={-1} />
                                 </label>
-                            </fieldset>
-                            <fieldset className="form-section"
-                                style={versandAktiv ? {} : { position: 'relative', opacity: 0.6 }}
-                            >
-                                <legend>Versand</legend>
+                            </div>
+                            <div className="kalk-card">
+                                <h3>Versand</h3>
                                 <label>Versandart:
                                     <select value={versandart} onChange={e => setVersandart(e.target.value)} disabled={!versandAktiv}>
                                         <option value="lkw">LKW (max. 15 Paletten)</option>
@@ -1291,9 +1315,9 @@
                                         borderRadius: '8px'
                                     }} />
                                 )}
-                            </fieldset>
-                            <fieldset className="form-section" style={{ minWidth: '140px', flex: '0.6 1 0' }}>
-                                <legend>Lagerung</legend>
+                            </div>
+                            <div className="kalk-card" style={{ minWidth: '140px', flex: '0.6 1 0' }}>
+                                <h3>Lagerung</h3>
                                 <label>Anzahl Paletten:
                                     <input type="number" value={aktuellesErgebnis.anzahlPaletten || 0} readOnly />
                                 </label>
@@ -1307,9 +1331,8 @@
                                     Gesamte Lagerkosten: <strong>€{formatDE(lagerkosten.gesamt)}</strong><br />
                                     Lagerkosten je Preiseinheit: <strong>€{formatDE(lagerkosten.proEinheit)}</strong>
                                 </div>
-                            </fieldset>
+                            </div>
                         </div>
-
                         {/* Artikelliste und Frachtverteilung */}
                         {artikelListe.length > 0 && (
                             <div style={{ marginTop: "30px" }} id="artikel-tabelle">
@@ -1420,7 +1443,9 @@
                             </div>
                         )}
                         <div className="button-row">
-                            <button type="button" onClick={saveKalkulation}>Kalkulation speichern</button>
+                            <button type="button" onClick={saveKalkulation}><i className="bi bi-save2"></i> Kalkulation speichern</button>
+                            <button type="button" onClick={exportierePDF} className="pdf-button"><i className="bi bi-file-earmark-pdf"></i> Als PDF exportieren</button>
+                            <button type="button" onClick={resetForm} className="reset-button"><i className="bi bi-arrow-counterclockwise"></i> Formular zurücksetzen</button>
                             <button type="button" onClick={async () => {
                                 if (!showDatabase) {
                                     await loadKalkulationen();
@@ -1430,7 +1455,7 @@
                                     setShowDatabase(false);
                                 }
                             }} style={{marginLeft:10}}>
-                                {showDatabase ? 'Datenbank ausblenden' : 'Datenbank anzeigen'}
+                                <i className="bi bi-database"></i> {showDatabase ? 'Datenbank ausblenden' : 'Datenbank anzeigen'}
                             </button>
                         </div>
                         {showDatabase && <DatabaseTable />}
@@ -1442,6 +1467,5 @@
         const root = ReactDOM.createRoot(document.getElementById("root"));
         root.render(<App />);
     </script>
-    <div class="version">Version 1.0.7</div>
 </body>
 </html> 

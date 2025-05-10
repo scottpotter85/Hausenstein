@@ -2,534 +2,394 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aufgabenplaner</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
     <style>
+        :root {
+            --primary-color: #003366;
+            --secondary-color: #009999;
+            --accent-color: #FFB900;
+            --background-color: #f8f9fa;
+            --text-color: #333;
+        }
         body {
-            font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-            margin: 0;
-            background: #f7fafc;
-            color: #2d3748;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            /* outline: 5px solid red !important;  Debug-Umrandung entfernt */
         }
-        .header {
-            background-color: #1a3b6e;
-            padding: 10px 0;
+        .navbar {
+            background-color: var(--primary-color) !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-        .header-content {
-            max-width: 1100px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
+        .navbar-brand img {
+            height: 40px;
+            margin-right: 12px;
         }
-        .logo {
-            color: #fff;
-            font-size: 1.5rem;
-            font-weight: 600;
-            text-decoration: none;
-            position: absolute;
-            left: 24px;
-        }
-        .seiten-titel {
-            color: #fff;
-            font-size: 1.3em;
-            font-weight: 600;
-            text-align: center;
-            flex: 1;
-        }
-        h1, h2 {
-            margin-top: 18px;
-            margin-bottom: 12px;
-            text-align: center;
-            font-weight: 600;
-            color: #1a3b6e;
-            letter-spacing: 0.5px;
-            font-size: 1.35rem;
-        }
-        .form-section {
+        .container-box {
             background: #fff;
             border-radius: 12px;
-            box-shadow: 0 2px 10px 0 rgba(30,60,90,0.06);
-            padding: 10px 8px 6px 8px;
-            margin: 0 auto 18px auto;
-            max-width: 420px;
-            border: 1px solid #bfc9d1;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+            padding: 2rem 2rem 1.5rem 2rem;
+            margin-top: 2rem;
+            margin-bottom: 2rem;
         }
-        .form-section .form-group {
-            margin-bottom: 7px;
-            display: flex;
-            flex-direction: column;
-        }
-        @media (min-width: 600px) {
-          .form-section {
-            max-width: 420px;
-          }
-          .form-section .form-fields-row {
-            display: flex;
-            gap: 10px;
-          }
-          .form-section .form-fields-row .form-group {
-            flex: 1 1 0;
-            min-width: 0;
-          }
-        }
-        label {
-            display: block;
-            margin-top: 2px;
-            font-size: 12px;
-            font-weight: 500;
-            color: #2e3d32;
-        }
-        input, textarea, select {
-            margin-top: 2px;
-            margin-bottom: 2px;
-            padding: 3px 6px;
-            border-radius: 4px;
-            border: 1px solid #bfc9d1;
-            font-size: 12px;
-            background: #fff;
-            width: 100%;
-            box-sizing: border-box;
-            transition: border 0.2s;
-        }
-        input:focus, textarea:focus, select:focus {
-            border: 1.2px solid #388e3c;
-            outline: none;
-        }
-        button {
-            padding: 7px 14px;
-            font-size: 13px;
-            font-weight: 600;
-            color: #fff;
-            background: linear-gradient(90deg, #1a3b6e 60%, #2c5282 100%);
-            border: none;
-            border-radius: 7px;
-            box-shadow: 0 1px 4px 0 rgba(0,0,0,0.07);
-            cursor: pointer;
-            margin: 12px auto 0 auto;
-            display: block;
-            letter-spacing: 0.3px;
-            transition: background 0.2s;
-        }
-        button:hover {
-            background: linear-gradient(90deg, #2c5282 60%, #1a3b6e 100%);
-        }
-        ul { list-style: none; padding: 0; }
-        .task-entry {
-            background: #fff;
-            padding: 10px 15px;
-            margin-bottom: 10px;
-            border-left: 5px solid #1976d2;
-            border-radius: 6px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.07);
-        }
-        .completed { text-decoration: line-through; color: #999; background: #e3fcec; border-left-color: #388e3c; }
-        .high { border-left-color: #dc2626; }
-        .medium { border-left-color: #ffc107; }
-        .low { border-left-color: #388e3c; }
-        .section { margin-top: 30px; }
-        .section h2 {
-            border-bottom: 1px solid #bfc9d1;
-            padding-bottom: 5px;
-            margin-bottom: 15px;
-            color: #1a3b6e;
-        }
-        .badge {
-            display: inline-block;
-            padding: 2px 8px;
-            font-size: 0.8rem;
-            border-radius: 12px;
-            margin: 2px 4px 2px 0;
+        .nav-tabs .nav-link.active {
+            background-color: var(--primary-color);
             color: #fff;
         }
-        .badge-status-Offen { background-color: #1a3b6e; }
-        .badge-status-In\ Bearbeitung { background-color: #ffc107; color: #000; }
-        .badge-status-Erledigt { background-color: #388e3c; }
-        .badge-priority-Hoch { background-color: #dc2626; }
-        .badge-priority-Mittel { background-color: #fd7e14; }
-        .badge-priority-Niedrig { background-color: #20c997; }
-        .icon {
-            font-weight: bold;
-            margin-right: 6px;
-            display: inline-block;
+        .nav-tabs .nav-link {
+            color: var(--primary-color);
         }
-        @media (max-width: 900px) {
-            .form-section, .filter-section { max-width: 100% !important; }
-        }
-        .filter-section {
-            background: #f5f7fa;
+        .tab-content {
+            background: white;
             border-radius: 8px;
-            padding: 8px 10px 4px 10px;
-            margin-bottom: 0;
-            box-shadow: 0 1px 2px 0 rgba(30,60,90,0.03);
-            border: 1px solid #bfc9d1;
-            max-width: 600px;
-            margin: 0 auto 18px auto;
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            gap: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            padding: 24px;
+            margin-top: 16px;
         }
-        .filter-section label {
-            font-size: 13px;
-            margin-bottom: 0;
-            margin-right: 4px;
-            color: #2d3748;
-            font-weight: 500;
-        }
-        .filter-section input,
-        .filter-section select {
-            font-size: 13px;
-            padding: 5px 10px;
+        .action-button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 15px;
             border-radius: 5px;
-            border: 1px solid #bfc9d1;
-            margin-bottom: 0;
-            min-width: 120px;
-            background: #fff;
-            box-sizing: border-box;
+            transition: background-color 0.2s;
         }
-        .filter-section input[type="text"] {
-            min-width: 160px;
-            max-width: 200px;
+        .action-button:hover {
+            background-color: var(--secondary-color);
+            color: white;
         }
-        @media (max-width: 700px) {
-          .filter-section {
-            flex-direction: column;
-            align-items: stretch;
-            gap: 6px;
-            max-width: 98vw;
-          }
-          .filter-section input,
-          .filter-section select {
-            min-width: 0;
-            width: 100%;
-            max-width: 100%;
-          }
-        }
-        #searchInput {
-            width: 120px;
-            font-size: 12px;
-            padding: 3px 6px;
-            border-radius: 4px;
-            border: 1px solid #bfc9d1;
-            margin-bottom: 0;
-        }
-        #taskTable {
-            width: 100%;
-            border-collapse: collapse;
-            background: #fff;
-            table-layout: auto;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-        #taskTable th, #taskTable td {
-            padding: 4px 6px;
-            text-align: center;
-            font-size: 12px;
+        .table {
+            background: white;
+            border-radius: 8px;
             overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
-        #taskTable th.status-col, #taskTable td.status-col {
-            width: 110px;
+        .table thead th {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
         }
-        #taskTable th.due-col, #taskTable td.due-col {
-            width: 120px;
+        .table tbody tr:hover {
+            background-color: rgba(0,0,0,0.02);
         }
-        #taskTable th.zeit-col, #taskTable td.zeit-col {
-            width: 120px;
+        .summary-box {
+            background: var(--accent-color);
+            color: #333;
+            border-radius: 8px;
+            padding: 16px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 16px;
         }
-        .version {
-            position: fixed;
-            bottom: 10px;
-            right: 10px;
-            font-size: 12px;
-            color: #718096;
-            background: rgba(255, 255, 255, 0.8);
-            padding: 4px 8px;
-            border-radius: 4px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        @media (max-width: 600px) {
+            .container-box { padding: 1rem; }
         }
     </style>
 </head>
 <body>
-
-<div class="header">
-  <div class="header-content">
-    <a href="#" class="logo">Hausenstein</a>
-    <span class="seiten-titel">Aufgabenplaner</span>
-  </div>
-</div>
-
-<!-- Zurück-Button -->
-<div style="max-width:1100px; margin: 18px auto 0 auto;">
-  <a href="index.html" style="display:inline-block; padding:8px 18px; background:#1a3b6e; color:#fff; border-radius:7px; font-weight:600; text-decoration:none; margin-bottom:18px;">← Zurück zur Startseite</a>
-</div>
-
-<div class="form-section">
-  <div class="form-fields-row">
-    <div class="form-group">
-      <label for="geraetekennung">Titel:</label>
-      <input id="geraetekennung" type="text" placeholder="Titel der Aufgabe">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <img src="LOGO.svg" alt="Logo" />
+                <span>Aufgaben</span>
+            </a>
+            <div class="d-flex align-items-center" id="userInfo" style="gap:10px; margin-left:32px;">
+                <img id="userAvatar" src="https://randomuser.me/api/portraits/men/1.jpg" alt="User" style="width:32px; height:32px; border-radius:50%; object-fit:cover; border:2px solid #fff; box-shadow:0 1px 4px rgba(0,0,0,0.08);">
+                <span id="userName" style="font-weight:500; color:#fff;">Benutzer</span>
+            </div>
+        </div>
+    </nav>
+    <div class="container mt-3 mb-2">
+        <a href="index.html" class="btn btn-outline-primary"><i class="bi bi-arrow-left"></i> Zurück zur Startseite</a>
     </div>
-    <div class="form-group">
-      <label for="massnahme">Beschreibung:</label>
-      <input id="massnahme" type="text" placeholder="Beschreibung...">
+    <div class="container container-box mt-3 mb-2">
+        <form class="row g-2 align-items-end mb-3" id="taskForm" autocomplete="off" onsubmit="addTask(); return false;">
+            <div class="col-md-2">
+                <label for="geraetekennung" class="form-label">Titel</label>
+                <input id="geraetekennung" type="text" class="form-control" placeholder="Titel der Aufgabe">
+            </div>
+            <div class="col-md-2">
+                <label for="massnahme" class="form-label">Beschreibung</label>
+                <input id="massnahme" type="text" class="form-control" placeholder="Beschreibung...">
+            </div>
+            <div class="col-md-2">
+                <label for="snr" class="form-label">Ansprechpartner</label>
+                <input id="snr" type="text" class="form-control" placeholder="Ansprechpartner">
+            </div>
+            <div class="col-md-2">
+                <label for="ansprechpartner" class="form-label">Status</label>
+                <select id="ansprechpartner" class="form-select">
+                    <option>offen</option>
+                    <option>in Bearbeitung</option>
+                    <option>erledigt</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="delegiert" class="form-label">Priorität</label>
+                <select id="delegiert" class="form-select">
+                    <option>Niedrig</option>
+                    <option>Mittel</option>
+                    <option>Hoch</option>
+                </select>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <div class="w-100">
+                    <label for="due" class="form-label">Zu erledigen bis</label>
+                    <input id="due" type="date" class="form-control mb-1">
+                    <button type="submit" class="btn btn-primary w-100"><i class="bi bi-plus-circle"></i> Aufgabe hinzufügen</button>
+                </div>
+            </div>
+        </form>
+        <div class="row g-2 mb-3">
+            <div class="col-md-3">
+                <label for="searchInput" class="form-label">Suche</label>
+                <input id="searchInput" type="text" class="form-control" placeholder="Suche..." oninput="renderTasks()">
+            </div>
+            <div class="col-md-2">
+                <label for="statusFilter" class="form-label">Status</label>
+                <select id="statusFilter" class="form-select" onchange="renderTasks()">
+                    <option value="">Alle</option>
+                    <option value="offen">offen</option>
+                    <option value="in Bearbeitung">in Bearbeitung</option>
+                    <option value="erledigt">erledigt</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="prioFilter" class="form-label">Priorität</label>
+                <select id="prioFilter" class="form-select" onchange="renderTasks()">
+                    <option value="">Alle</option>
+                    <option value="Niedrig">Niedrig</option>
+                    <option value="Mittel">Mittel</option>
+                    <option value="Hoch">Hoch</option>
+                </select>
+            </div>
+        </div>
+        <div class="section">
+            <h2 class="mb-3">Aufgabenübersicht</h2>
+            <div style="overflow-x:auto;">
+                <table id="taskTable" class="table table-striped" style="width:100%; max-width:1400px; margin:0 auto;">
+                    <thead>
+                        <tr style="background:#4b6584; color:#fff;">
+                            <th onclick="sortTasks('geraetekennung')" style="cursor:pointer;">Titel</th>
+                            <th onclick="sortTasks('massnahme')" style="cursor:pointer;">Beschreibung</th>
+                            <th onclick="sortTasks('snr')" style="cursor:pointer;">Ansprechpartner</th>
+                            <th class="status-col" onclick="sortTasks('status')" style="cursor:pointer;">Status</th>
+                            <th onclick="sortTasks('delegiert')" style="cursor:pointer;">Priorität</th>
+                            <th class="due-col" onclick="sortTasks('due')" style="cursor:pointer;">Zu erledigen bis</th>
+                            <th class="zeit-col" onclick="sortTasks('zeitSort')" style="cursor:pointer;">Verbleibende Zeit</th>
+                            <th onclick="sortTasks('created')" style="cursor:pointer;">Erstellt am</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="taskTableBody"></tbody>
+                </table>
+            </div>
+        </div>
     </div>
-  </div>
-  <div class="form-fields-row">
-    <div class="form-group">
-      <label for="snr">Ansprechpartner:</label>
-      <input id="snr" type="text" placeholder="Ansprechpartner">
-    </div>
-  </div>
-  <div class="form-fields-row">
-    <div class="form-group">
-      <label for="ansprechpartner">Status:</label>
-      <select id="ansprechpartner">
-        <option>offen</option>
-        <option>in Bearbeitung</option>
-        <option>erledigt</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label for="delegiert">Priorität:</label>
-      <select id="delegiert">
-        <option>Niedrig</option>
-        <option>Mittel</option>
-        <option>Hoch</option>
-      </select>
-    </div>
-  </div>
-  <div class="form-fields-row">
-    <div class="form-group">
-      <label for="due">Zu erledigen bis:</label>
-      <input id="due" type="date">
-    </div>
-  </div>
-  <button onclick="addTask()">Aufgabe hinzufügen</button>
-</div>
+    <div class="version" style="position:fixed; bottom:10px; right:10px; font-size:12px; color:#718096; background:rgba(255,255,255,0.8); padding:4px 8px; border-radius:4px; box-shadow:0 1px 3px rgba(0,0,0,0.1); z-index:999;">Version 1.0.0</div>
 
-<div class="filter-section">
-  <label for="searchInput">Suche:</label>
-  <input id="searchInput" type="text" placeholder="Suche..." oninput="renderTasks()">
-  <label for="statusFilter">Status:</label>
-  <select id="statusFilter" onchange="renderTasks()">
-    <option value="">Alle</option>
-    <option value="offen">offen</option>
-    <option value="in Bearbeitung">in Bearbeitung</option>
-    <option value="erledigt">erledigt</option>
-  </select>
-  <label for="prioFilter">Priorität:</label>
-  <select id="prioFilter" onchange="renderTasks()">
-    <option value="">Alle</option>
-    <option value="Niedrig">Niedrig</option>
-    <option value="Mittel">Mittel</option>
-    <option value="Hoch">Hoch</option>
-  </select>
-</div>
+    <script>
+    const API_URL = 'http://192.168.1.20:5050/api/aufgaben'; // ggf. IP anpassen!
+    let tasks = [];
+    let sortField = null;
+    let sortDir = 1;
 
-<div class="section">
-  <h2>Aufgabenübersicht</h2>
-  <div style="overflow-x:auto;">
-    <table id="taskTable" style="width:100%; border-collapse:collapse; background:#fff; table-layout:auto; max-width:1400px; margin:0 auto;">
-      <thead>
-        <tr style="background:#4b6584; color:#fff;">
-          <th onclick="sortTasks('geraetekennung')" style="cursor:pointer;">Titel</th>
-          <th onclick="sortTasks('massnahme')" style="cursor:pointer;">Beschreibung</th>
-          <th onclick="sortTasks('snr')" style="cursor:pointer;">Ansprechpartner</th>
-          <th class="status-col" onclick="sortTasks('status')" style="cursor:pointer;">Status</th>
-          <th onclick="sortTasks('delegiert')" style="cursor:pointer;">Priorität</th>
-          <th class="due-col" onclick="sortTasks('due')" style="cursor:pointer;">Zu erledigen bis</th>
-          <th class="zeit-col" onclick="sortTasks('zeitSort')" style="cursor:pointer;">Verbleibende Zeit</th>
-          <th onclick="sortTasks('created')" style="cursor:pointer;">Erstellt am</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody id="taskTableBody"></tbody>
-    </table>
-  </div>
-</div>
+    // Avatar-Map wie auf index.html
+    const avatarMap = {
+        'admin': 'https://randomuser.me/api/portraits/men/1.jpg',
+        'petra': 'https://randomuser.me/api/portraits/women/2.jpg',
+        'jürgen': 'https://randomuser.me/api/portraits/men/3.jpg',
+        'nizia': 'https://randomuser.me/api/portraits/women/4.jpg',
+        'fatih': 'https://randomuser.me/api/portraits/men/5.jpg',
+        'silas': 'https://randomuser.me/api/portraits/men/6.jpg',
+        'julian': 'https://randomuser.me/api/portraits/men/7.jpg'
+    };
 
-<div class="version">Version 1.0.0</div>
-
-<script>
-const API_URL = 'http://192.168.1.20:5050/api/aufgaben'; // ggf. IP anpassen!
-let tasks = [];
-let sortField = null;
-let sortDir = 1;
-
-async function fetchTasksFromServer() {
-  const res = await fetch(API_URL);
-  tasks = await res.json();
-}
-
-async function addTaskToServer(task) {
-  const res = await fetch(API_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(task)
-  });
-  return await res.json();
-}
-
-async function updateTaskOnServer(id, task) {
-  await fetch(`${API_URL}/${id}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(task)
-  });
-}
-
-async function deleteTaskOnServer(id) {
-  await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
-}
-
-async function renderTasks() {
-  await fetchTasksFromServer();
-  const tableBody = document.getElementById("taskTableBody");
-  tableBody.innerHTML = "";
-  const searchValue = document.getElementById("searchInput").value.toLowerCase();
-  const statusFilter = document.getElementById("statusFilter")?.value || "";
-  const prioFilter = document.getElementById("prioFilter")?.value || "";
-  let filtered = tasks.filter(t =>
-    ((t.titel || "").toLowerCase().includes(searchValue) ||
-    (t.beschreibung || "").toLowerCase().includes(searchValue) ||
-    (t.ansprechpartner || "").toLowerCase().includes(searchValue)) &&
-    (statusFilter === "" || t.status === statusFilter) &&
-    (prioFilter === "" || t.prioritaet === prioFilter)
-  );
-  if (sortField) {
-    filtered = filtered.slice().sort((a, b) => {
-      let va = a[sortField] || '';
-      let vb = b[sortField] || '';
-      if (sortField === 'due') {
-        va = va || '9999-12-31';
-        vb = vb || '9999-12-31';
-      }
-      if (sortField === 'zeitSort') {
-        const daysA = calcVerbleibendeTage(a.due);
-        const daysB = calcVerbleibendeTage(b.due);
-        return (daysA - daysB) * sortDir;
-      }
-      if (va < vb) return -1 * sortDir;
-      if (va > vb) return 1 * sortDir;
-      return 0;
+    document.addEventListener('DOMContentLoaded', function() {
+        const loggedInUser = localStorage.getItem('loggedInUser');
+        if (loggedInUser) {
+            const usernameDisplay = loggedInUser.charAt(0).toUpperCase() + loggedInUser.slice(1);
+            const userNameSpan = document.getElementById('userName');
+            if (userNameSpan) userNameSpan.textContent = usernameDisplay;
+            const userAvatar = document.getElementById('userAvatar');
+            if (userAvatar) userAvatar.src = avatarMap[loggedInUser.toLowerCase()] || 'https://randomuser.me/api/portraits/lego/1.jpg';
+        }
     });
-  }
-  filtered.forEach((task, index) => {
-    const verbleibendeZeit = calcVerbleibendeZeit(task.due);
-    let rowBg = '';
-    if (task.prioritaet === 'Hoch') rowBg = 'background:#ffeaea;';
-    else if (task.prioritaet === 'Mittel') rowBg = 'background:#fffbe6;';
-    else if (task.prioritaet === 'Niedrig') rowBg = 'background:#eafaf1;';
-    let rowStyle = rowBg;
-    if (task.status === 'erledigt') {
-      rowStyle += 'background:#f0f0f0 !important; color:#999;';
+
+    async function fetchTasksFromServer() {
+      const res = await fetch(API_URL);
+      tasks = await res.json();
     }
-    const tr = document.createElement("tr");
-    tr.setAttribute('style', rowStyle);
-    tr.innerHTML = `
-      <td><input type="text" value="${task.titel || ''}" onchange="updateTaskField(${task.id}, 'titel', this.value)"></td>
-      <td><input type="text" value="${task.beschreibung || ''}" onchange="updateTaskField(${task.id}, 'beschreibung', this.value)"></td>
-      <td><input type="text" value="${task.ansprechpartner || ''}" onchange="updateTaskField(${task.id}, 'ansprechpartner', this.value)"></td>
-      <td class="status-col">
-        <select onchange="updateTaskField(${task.id}, 'status', this.value)">
-          <option value="offen" ${task.status === 'offen' ? 'selected' : ''}>offen</option>
-          <option value="in Bearbeitung" ${task.status === 'in Bearbeitung' ? 'selected' : ''}>in Bearbeitung</option>
-          <option value="erledigt" ${task.status === 'erledigt' ? 'selected' : ''}>erledigt</option>
-        </select>
-      </td>
-      <td>
-        <select onchange="updateTaskField(${task.id}, 'prioritaet', this.value)">
-          <option value="Niedrig" ${task.prioritaet === 'Niedrig' ? 'selected' : ''}>Niedrig</option>
-          <option value="Mittel" ${task.prioritaet === 'Mittel' ? 'selected' : ''}>Mittel</option>
-          <option value="Hoch" ${task.prioritaet === 'Hoch' ? 'selected' : ''}>Hoch</option>
-        </select>
-      </td>
-      <td class="due-col"><input type="date" value="${task.due || ''}" onchange="updateTaskField(${task.id}, 'due', this.value)"></td>
-      <td class="zeit-col">${verbleibendeZeit}</td>
-      <td>${task.created || ''}</td>
-      <td><button onclick="deleteTask(${task.id})" style="padding:2px 10px; font-size:12px; margin:0;">Löschen</button></td>
-    `;
-    tableBody.appendChild(tr);
-  });
-}
 
-async function addTask() {
-  const titel = document.getElementById("geraetekennung").value.trim();
-  const beschreibung = document.getElementById("massnahme").value.trim();
-  const ansprechpartner = document.getElementById("snr").value.trim();
-  const status = document.getElementById("ansprechpartner").value;
-  const prioritaet = document.getElementById("delegiert").value;
-  const due = document.getElementById("due").value;
-  const created = new Date().toLocaleDateString('de-DE');
-  if (titel && beschreibung) {
-    await addTaskToServer({ titel, beschreibung, ansprechpartner, status, prioritaet, due, created });
-    document.getElementById("geraetekennung").value = "";
-    document.getElementById("massnahme").value = "";
-    document.getElementById("snr").value = "";
-    document.getElementById("ansprechpartner").selectedIndex = 0;
-    document.getElementById("delegiert").selectedIndex = 0;
-    document.getElementById("due").value = "";
-    renderTasks();
-  }
-}
+    async function addTaskToServer(task) {
+      const res = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(task)
+      });
+      return await res.json();
+    }
 
-async function updateTaskField(id, field, value) {
-  const task = tasks.find(t => t.id === id);
-  if (!task) return;
-  task[field] = value;
-  await updateTaskOnServer(id, task);
-  renderTasks();
-}
+    async function updateTaskOnServer(id, task) {
+      await fetch(`${API_URL}/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(task)
+      });
+    }
 
-async function deleteTask(id) {
-  if (confirm("Möchtest du diese Aufgabe wirklich löschen?")) {
-    await deleteTaskOnServer(id);
-    renderTasks();
-  }
-}
+    async function deleteTaskOnServer(id) {
+      await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+    }
 
-function sortTasks(field) {
-  if (sortField === field) {
-    sortDir = -sortDir;
-  } else {
-    sortField = field;
-    sortDir = 1;
-  }
-  renderTasks();
-}
+    async function renderTasks() {
+      await fetchTasksFromServer();
+      const tableBody = document.getElementById("taskTableBody");
+      tableBody.innerHTML = "";
+      const searchValue = document.getElementById("searchInput").value.toLowerCase();
+      const statusFilter = document.getElementById("statusFilter")?.value || "";
+      const prioFilter = document.getElementById("prioFilter")?.value || "";
+      let filtered = tasks.filter(t =>
+        ((t.titel || "").toLowerCase().includes(searchValue) ||
+        (t.beschreibung || "").toLowerCase().includes(searchValue) ||
+        (t.ansprechpartner || "").toLowerCase().includes(searchValue)) &&
+        (statusFilter === "" || t.status === statusFilter) &&
+        (prioFilter === "" || t.prioritaet === prioFilter)
+      );
+      if (sortField) {
+        filtered = filtered.slice().sort((a, b) => {
+          let va = a[sortField] || '';
+          let vb = b[sortField] || '';
+          if (sortField === 'due') {
+            va = va || '9999-12-31';
+            vb = vb || '9999-12-31';
+          }
+          if (sortField === 'zeitSort') {
+            const daysA = calcVerbleibendeTage(a.due);
+            const daysB = calcVerbleibendeTage(b.due);
+            return (daysA - daysB) * sortDir;
+          }
+          if (va < vb) return -1 * sortDir;
+          if (va > vb) return 1 * sortDir;
+          return 0;
+        });
+      }
+      filtered.forEach((task, index) => {
+        const verbleibendeZeit = calcVerbleibendeZeit(task.due);
+        let rowBg = '';
+        if (task.prioritaet === 'Hoch') rowBg = 'background:#ffeaea;';
+        else if (task.prioritaet === 'Mittel') rowBg = 'background:#fffbe6;';
+        else if (task.prioritaet === 'Niedrig') rowBg = 'background:#eafaf1;';
+        let rowStyle = rowBg;
+        if (task.status === 'erledigt') {
+          rowStyle += 'background:#f0f0f0 !important; color:#999;';
+        }
+        const tr = document.createElement("tr");
+        tr.setAttribute('style', rowStyle);
+        tr.innerHTML = `
+          <td><input type="text" value="${task.titel || ''}" onchange="updateTaskField(${task.id}, 'titel', this.value)"></td>
+          <td><input type="text" value="${task.beschreibung || ''}" onchange="updateTaskField(${task.id}, 'beschreibung', this.value)"></td>
+          <td><input type="text" value="${task.ansprechpartner || ''}" onchange="updateTaskField(${task.id}, 'ansprechpartner', this.value)"></td>
+          <td class="status-col">
+            <select onchange="updateTaskField(${task.id}, 'status', this.value)">
+              <option value="offen" ${task.status === 'offen' ? 'selected' : ''}>offen</option>
+              <option value="in Bearbeitung" ${task.status === 'in Bearbeitung' ? 'selected' : ''}>in Bearbeitung</option>
+              <option value="erledigt" ${task.status === 'erledigt' ? 'selected' : ''}>erledigt</option>
+            </select>
+          </td>
+          <td>
+            <select onchange="updateTaskField(${task.id}, 'prioritaet', this.value)">
+              <option value="Niedrig" ${task.prioritaet === 'Niedrig' ? 'selected' : ''}>Niedrig</option>
+              <option value="Mittel" ${task.prioritaet === 'Mittel' ? 'selected' : ''}>Mittel</option>
+              <option value="Hoch" ${task.prioritaet === 'Hoch' ? 'selected' : ''}>Hoch</option>
+            </select>
+          </td>
+          <td class="due-col"><input type="date" value="${task.due || ''}" onchange="updateTaskField(${task.id}, 'due', this.value)"></td>
+          <td class="zeit-col">${verbleibendeZeit}</td>
+          <td>${task.created || ''}</td>
+          <td><button onclick="deleteTask(${task.id})" style="padding:2px 10px; font-size:12px; margin:0;">Löschen</button></td>
+        `;
+        tableBody.appendChild(tr);
+      });
+    }
 
-function calcVerbleibendeTage(due) {
-  if (!due) return 9999;
-  const today = new Date();
-  const dueDate = new Date(due);
-  today.setHours(0,0,0,0);
-  dueDate.setHours(0,0,0,0);
-  return Math.round((dueDate - today) / (1000*60*60*24));
-}
+    async function addTask() {
+      const titel = document.getElementById("geraetekennung").value.trim();
+      const beschreibung = document.getElementById("massnahme").value.trim();
+      const ansprechpartner = document.getElementById("snr").value.trim();
+      const status = document.getElementById("ansprechpartner").value;
+      const prioritaet = document.getElementById("delegiert").value;
+      const due = document.getElementById("due").value;
+      const created = new Date().toLocaleDateString('de-DE');
+      if (titel && beschreibung) {
+        await addTaskToServer({ titel, beschreibung, ansprechpartner, status, prioritaet, due, created });
+        document.getElementById("geraetekennung").value = "";
+        document.getElementById("massnahme").value = "";
+        document.getElementById("snr").value = "";
+        document.getElementById("ansprechpartner").selectedIndex = 0;
+        document.getElementById("delegiert").selectedIndex = 0;
+        document.getElementById("due").value = "";
+        renderTasks();
+      }
+    }
 
-function calcVerbleibendeZeit(due) {
-  if (!due) return '';
-  const today = new Date();
-  const dueDate = new Date(due);
-  today.setHours(0,0,0,0);
-  dueDate.setHours(0,0,0,0);
-  const diffDays = Math.round((dueDate - today) / (1000*60*60*24));
-  if (diffDays < 0) {
-    return `<span class='badge' style='background:#b71c1c;'>vor ${Math.abs(diffDays)} Tag${Math.abs(diffDays)>1?'en':''}</span>`;
-  } else if (diffDays <= 3) {
-    return `<span class='badge' style='background:#b71c1c;'>noch ${diffDays} Tag${diffDays!==1?'e':''}</span>`;
-  } else if (diffDays <= 7) {
-    return `<span class='badge' style='background:#ffc107; color:#222;'>noch ${diffDays} Tag${diffDays!==1?'e':''}</span>`;
-  } else {
-    return `<span class='badge' style='background:#388e3c;'>noch ${diffDays} Tag${diffDays!==1?'e':''}</span>`;
-  }
-}
+    async function updateTaskField(id, field, value) {
+      const task = tasks.find(t => t.id === id);
+      if (!task) return;
+      task[field] = value;
+      await updateTaskOnServer(id, task);
+      renderTasks();
+    }
 
-window.addEventListener('DOMContentLoaded', renderTasks);
-</script>
+    async function deleteTask(id) {
+      if (confirm("Möchtest du diese Aufgabe wirklich löschen?")) {
+        await deleteTaskOnServer(id);
+        renderTasks();
+      }
+    }
+
+    function sortTasks(field) {
+      if (sortField === field) {
+        sortDir = -sortDir;
+      } else {
+        sortField = field;
+        sortDir = 1;
+      }
+      renderTasks();
+    }
+
+    function calcVerbleibendeTage(due) {
+      if (!due) return 9999;
+      const today = new Date();
+      const dueDate = new Date(due);
+      today.setHours(0,0,0,0);
+      dueDate.setHours(0,0,0,0);
+      return Math.round((dueDate - today) / (1000*60*60*24));
+    }
+
+    function calcVerbleibendeZeit(due) {
+      if (!due) return '';
+      const today = new Date();
+      const dueDate = new Date(due);
+      today.setHours(0,0,0,0);
+      dueDate.setHours(0,0,0,0);
+      const diffDays = Math.round((dueDate - today) / (1000*60*60*24));
+      if (diffDays < 0) {
+        return `<span class='badge' style='background:#b71c1c;'>vor ${Math.abs(diffDays)} Tag${Math.abs(diffDays)>1?'en':''}</span>`;
+      } else if (diffDays <= 3) {
+        return `<span class='badge' style='background:#b71c1c;'>noch ${diffDays} Tag${diffDays!==1?'e':''}</span>`;
+      } else if (diffDays <= 7) {
+        return `<span class='badge' style='background:#ffc107; color:#222;'>noch ${diffDays} Tag${diffDays!==1?'e':''}</span>`;
+      } else {
+        return `<span class='badge' style='background:#388e3c;'>noch ${diffDays} Tag${diffDays!==1?'e':''}</span>`;
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', renderTasks);
+    </script>
 </body>
 </html>

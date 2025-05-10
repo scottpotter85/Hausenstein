@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Palettenkonto</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #003366;
+            --secondary-color: #009999;
+            --accent-color: #FFB900;
+            --background-color: #f8f9fa;
+            --text-color: #333;
+        }
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+        .navbar {
+            background-color: var(--primary-color) !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .navbar-brand img {
+            height: 40px;
+            margin-right: 12px;
+        }
+        .container-box {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+            padding: 2rem 2rem 1.5rem 2rem;
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+        }
+        .nav-tabs .nav-link.active {
+            background-color: var(--primary-color);
+            color: #fff;
+        }
+        .nav-tabs .nav-link {
+            color: var(--primary-color);
+        }
+        .tab-content {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            padding: 24px;
+            margin-top: 16px;
+        }
+        .action-button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: background-color 0.2s;
+        }
+        .action-button:hover {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        .table {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .table thead th {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+        }
+        .table tbody tr:hover {
+            background-color: rgba(0,0,0,0.02);
+        }
+        .summary-box {
+            background: var(--accent-color);
+            color: #333;
+            border-radius: 8px;
+            padding: 16px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+        @media (max-width: 600px) {
+            .container-box { padding: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <img src="LOGO.svg" alt="Logo" />
+                <span>Palettenkonto</span>
+            </a>
+            <div class="d-flex align-items-center" id="userInfo" style="gap:10px; margin-left:32px;">
+                <img id="userAvatar" src="https://randomuser.me/api/portraits/men/1.jpg" alt="User" style="width:32px; height:32px; border-radius:50%; object-fit:cover; border:2px solid #fff; box-shadow:0 1px 4px rgba(0,0,0,0.08);">
+                <span id="userName" style="font-weight:500; color:#fff;">Benutzer</span>
+            </div>
+        </div>
+    </nav>
+    <div class="container mt-3 mb-2">
+        <a href="index.html" class="btn btn-outline-primary"><i class="bi bi-arrow-left"></i> Zurück zur Startseite</a>
+    </div>
+    <div class="container container-box">
+        <!-- Tabs -->
+        <ul class="nav nav-tabs mb-4" id="palettenTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="konto-tab" data-bs-toggle="tab" data-bs-target="#konto" type="button" role="tab">
+                    <i class="bi bi-box-seam me-1"></i>Palettenkonto
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="kunden-tab" data-bs-toggle="tab" data-bs-target="#kunden" type="button" role="tab">
+                    <i class="bi bi-people me-1"></i>Kundendaten
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="archiv-tab" data-bs-toggle="tab" data-bs-target="#archiv" type="button" role="tab">
+                    <i class="bi bi-archive me-1"></i>Archiv
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="auszug-tab" data-bs-toggle="tab" data-bs-target="#auszug" type="button" role="tab">
+                    <i class="bi bi-file-earmark-pdf me-1"></i>Kontoauszug
+                </button>
+            </li>
+        </ul>
+        <div class="tab-content" id="palettenTabsContent">
+            <!-- Palettenkonto Tab -->
+            <div class="tab-pane fade show active" id="konto" role="tabpanel">
+                <div class="summary-box" id="saldoBox">
+                    Saldo: <span id="saldoText">0</span> Paletten
+                </div>
+                <form id="vorgangForm" class="row g-3 mb-4">
+                    <div class="col-md-4">
+                        <label for="kundeInput" class="form-label">Kunde</label>
+                        <input type="text" class="form-control" id="kundeInput" list="kundenListe" autocomplete="off" required>
+                        <datalist id="kundenListe"></datalist>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="lieferschein" class="form-label">Lieferscheinnummer</label>
+                        <input type="text" class="form-control" id="lieferschein" required>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="geliefert" class="form-label">Geliefert</label>
+                        <input type="number" class="form-control" id="geliefert" min="0" required>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="getauscht" class="form-label">Tausch erhalten</label>
+                        <input type="number" class="form-control" id="getauscht" min="0" required>
+                    </div>
+                    <div class="col-md-1 d-flex align-items-end">
+                        <button type="submit" class="action-button w-100"><i class="bi bi-plus-circle"></i></button>
+                    </div>
+                </form>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Kunde</th>
+                            <th>Lieferschein</th>
+                            <th>Geliefert</th>
+                            <th>Tausch erhalten</th>
+                            <th>Differenz</th>
+                            <th>Datum</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="vorgangTabelle"></tbody>
+                </table>
+            </div>
+            <!-- Kundendaten Tab -->
+            <div class="tab-pane fade" id="kunden" role="tabpanel">
+                <form id="kundenForm" class="row g-3 mb-4">
+                    <div class="col-md-4">
+                        <label for="kundenname" class="form-label">Kundenname</label>
+                        <input type="text" class="form-control" id="kundenname" required>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="kundennummer" class="form-label">Kundennummer</label>
+                        <input type="text" class="form-control" id="kundennummer" required>
+                    </div>
+                    <div class="col-md-5">
+                        <label for="adresse" class="form-label">Adresse</label>
+                        <input type="text" class="form-control" id="adresse" required>
+                    </div>
+                    <div class="col-12 d-flex justify-content-end">
+                        <button type="submit" class="action-button"><i class="bi bi-person-plus"></i> Kunde anlegen</button>
+                    </div>
+                </form>
+                <div class="mb-3 d-flex justify-content-end">
+                    <button id="importKundenBtn" class="btn btn-primary btn-sm"><i class="bi bi-upload"></i> Kunden importieren</button>
+                    <input type="file" id="excelImportInput" accept=".xlsx,.xls" style="display:none; margin-left:10px;">
+                    <button id="excelImportBtn" class="btn btn-success btn-sm ms-2"><i class="bi bi-file-earmark-excel"></i> Excel importieren</button>
+                </div>
+                <div id="importKundenArea" class="mb-3" style="display:none;">
+                    <label for="importKundenText" class="form-label">Kundennamen (eine Zeile pro Kunde):</label>
+                    <textarea id="importKundenText" class="form-control" rows="8" placeholder="Kunde 1\nKunde 2\n..."></textarea>
+                    <div class="d-flex justify-content-end mt-2">
+                        <button id="importKundenDoBtn" class="btn btn-success btn-sm"><i class="bi bi-check2"></i> Importieren</button>
+                        <button id="importKundenCancelBtn" class="btn btn-secondary btn-sm ms-2">Abbrechen</button>
+                    </div>
+                </div>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Kundenname</th>
+                            <th>Kundennummer</th>
+                            <th>Adresse</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="kundenTabelle"></tbody>
+                </table>
+            </div>
+            <!-- Archiv Tab -->
+            <div class="tab-pane fade" id="archiv" role="tabpanel">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Kunde</th>
+                            <th>Lieferschein</th>
+                            <th>Geliefert</th>
+                            <th>Tausch erhalten</th>
+                            <th>Differenz</th>
+                            <th>Datum</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="archivTabelle"></tbody>
+                </table>
+            </div>
+            <!-- Kontoauszug Tab -->
+            <div class="tab-pane fade" id="auszug" role="tabpanel">
+                <h2 class="mb-3"><i class="bi bi-file-earmark-pdf me-2"></i>Kontoauszug für Kunden</h2>
+                <form class="row g-3 mb-4" id="auszugForm" autocomplete="off" onsubmit="return false;">
+                    <div class="col-md-4">
+                        <label for="auszugKundeInput" class="form-label">Kunde</label>
+                        <input type="text" class="form-control" id="auszugKundeInput" list="kundenListe" autocomplete="off" required>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="auszugStartDate" class="form-label">Von</label>
+                        <input type="date" class="form-control" id="auszugStartDate">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="auszugEndDate" class="form-label">Bis</label>
+                        <input type="date" class="form-control" id="auszugEndDate">
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button id="auszugPdfBtn" class="btn btn-primary w-100"><i class="bi bi-file-earmark-pdf"></i> PDF anzeigen</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Local Storage Keys
+        const LS_KUNDEN = 'paletten_kunden';
+        const LS_VORGAENGE = 'paletten_vorgaenge';
+        // Dummy-Daten für Demo-Zwecke
+        let kunden = [];
+        let vorgaenge = [];
+        let archiv = [];
+        // Hilfsfunktion: UUID generieren
+        function uuidv4() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+        // Daten aus Local Storage laden
+        function loadFromLocalStorage() {
+            const kundenData = localStorage.getItem(LS_KUNDEN);
+            const vorgaengeData = localStorage.getItem(LS_VORGAENGE);
+            kunden = kundenData ? JSON.parse(kundenData) : [
+                { id: uuidv4(), name: "Muster GmbH", nummer: "1001", adresse: "Musterstraße 1, 12345 Musterstadt" }
+            ];
+            vorgaenge = vorgaengeData ? JSON.parse(vorgaengeData) : [];
+        }
+        // Daten in Local Storage speichern
+        function saveToLocalStorage() {
+            localStorage.setItem(LS_KUNDEN, JSON.stringify(kunden));
+            localStorage.setItem(LS_VORGAENGE, JSON.stringify(vorgaenge));
+        }
+        // Kunden Dropdown/Suchfeld befüllen
+        function updateKundenSelect() {
+            const datalist = document.getElementById('kundenListe');
+            datalist.innerHTML = '';
+            kunden.forEach((k) => {
+                const opt = document.createElement('option');
+                opt.value = `${k.name} (${k.nummer})`;
+                datalist.appendChild(opt);
+            });
+        }
+        // Hilfsfunktion: Index des Kunden anhand des Suchfelds finden
+        function getSelectedKundeId() {
+            const val = document.getElementById('kundeInput').value;
+            const kunde = kunden.find(k => `${k.name} (${k.nummer})` === val);
+            return kunde ? kunde.id : null;
+        }
+        // Kunden Tabelle befüllen
+        function updateKundenTabelle() {
+            const tbody = document.getElementById('kundenTabelle');
+            tbody.innerHTML = '';
+            kunden.forEach(k => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td>${k.name}</td><td>${k.nummer}</td><td>${k.adresse}</td>` +
+                    `<td><button class='btn btn-danger btn-sm kunden-delete-btn' data-id='${k.id}'><i class="bi bi-trash"></i></button></td>`;
+                tbody.appendChild(tr);
+            });
+            updateKundenSelect();
+            // Event Listener für alle Lösch-Buttons setzen
+            document.querySelectorAll('.kunden-delete-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    deleteKunde(id);
+                });
+            });
+        }
+        // Kunde löschen (inkl. aller zugehörigen Vorgänge)
+        function deleteKunde(id) {
+            if (!confirm('Kunde wirklich löschen? Alle zugehörigen Vorgänge werden ebenfalls entfernt!')) return;
+            kunden = kunden.filter(k => k.id !== id);
+            vorgaenge = vorgaenge.filter(v => v.kundeId !== id);
+            saveToLocalStorage();
+            updateKundenTabelle();
+            updateVorgangTabelle();
+            updateSaldo();
+        }
+        window.deleteKunde = deleteKunde;
+        // Vorgang Tabelle befüllen
+        function updateVorgangTabelle() {
+            const tbody = document.getElementById('vorgangTabelle');
+            tbody.innerHTML = '';
+            const selectedKundeId = getSelectedKundeId();
+            if (!selectedKundeId) return;
+            vorgaenge.filter(v => v.kundeId === selectedKundeId).forEach(v => {
+                const kunde = kunden.find(k => k.id === v.kundeId);
+                const kundeName = kunde ? kunde.name : 'Unbekannt';
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td>${kundeName}</td><td>${v.lieferschein}</td><td>${v.geliefert}</td><td>${v.getauscht}</td><td>${v.differenz}</td><td>${v.datum}</td>` +
+                    `<td><button class='btn btn-warning btn-sm me-1 archiv-btn' data-id='${v.id}' title='Ins Archiv'><i class="bi bi-archive"></i></button>` +
+                    `<button class='btn btn-danger btn-sm' onclick='deleteVorgang("${v.id}")'><i class="bi bi-trash"></i></button></td>`;
+                tbody.appendChild(tr);
+            });
+            // Archiv-Button Event Listener setzen
+            document.querySelectorAll('.archiv-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    moveVorgangToArchiv(id);
+                });
+            });
+            updateSaldo();
+        }
+        // Vorgang löschen
+        function deleteVorgang(id) {
+            if (!confirm('Vorgang wirklich löschen?')) return;
+            vorgaenge = vorgaenge.filter(v => v.id !== id);
+            saveToLocalStorage();
+            updateVorgangTabelle();
+            updateSaldo();
+        }
+        window.deleteVorgang = deleteVorgang;
+        // Vorgang ins Archiv verschieben
+        function moveVorgangToArchiv(id) {
+            const idx = vorgaenge.findIndex(v => v.id === id);
+            if (idx === -1) return;
+            archiv.push(vorgaenge[idx]);
+            vorgaenge.splice(idx, 1);
+            saveToLocalStorage();
+            updateVorgangTabelle();
+            updateArchivTabelle();
+            updateSaldo();
+        }
+        // Archiv Tabelle befüllen: Übersicht pro Kunde
+        function updateArchivTabelle() {
+            const tbody = document.getElementById('archivTabelle');
+            tbody.innerHTML = '';
+            // Gruppiere archivierte Vorgänge nach Kunde
+            const kundenMap = {};
+            archiv.forEach(v => {
+                if (!kundenMap[v.kundeId]) kundenMap[v.kundeId] = [];
+                kundenMap[v.kundeId].push(v);
+            });
+            Object.keys(kundenMap).forEach(kundeId => {
+                const kunde = kunden.find(k => k.id === kundeId);
+                const kundeName = kunde ? kunde.name : 'Unbekannt';
+                const vorgaengeArr = kundenMap[kundeId];
+                // Statistik
+                const summe = vorgaengeArr.reduce((a, v) => a + v.differenz, 0);
+                const anzahl = vorgaengeArr.length;
+                const letzter = vorgaengeArr[vorgaengeArr.length-1]?.datum || '';
+                // Kopfzeile Kunde + Statistik
+                const trStat = document.createElement('tr');
+                trStat.style.background = '#f8f9fa';
+                trStat.innerHTML = `<td colspan='7'><b>${kundeName}</b> &nbsp; | &nbsp; Vorgänge: ${anzahl} &nbsp; | &nbsp; Summe Differenz: ${summe} &nbsp; | &nbsp; Letzter Vorgang: ${letzter}</td>`;
+                tbody.appendChild(trStat);
+                // Vorgänge dieses Kunden
+                vorgaengeArr.forEach(v => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `<td></td><td>${v.lieferschein}</td><td>${v.geliefert}</td><td>${v.getauscht}</td><td>${v.differenz}</td><td>${v.datum}</td><td></td>`;
+                    tbody.appendChild(tr);
+                });
+            });
+        }
+        // Saldo berechnen
+        function updateSaldo() {
+            let saldo = 0;
+            const selectedKundeId = getSelectedKundeId();
+            if (!selectedKundeId) {
+                document.getElementById('saldoText').textContent = 'Bitte Kunden auswählen';
+                return;
+            }
+            vorgaenge.filter(v => v.kundeId === selectedKundeId).forEach(v => {
+                saldo += v.differenz;
+            });
+            document.getElementById('saldoText').textContent = 
+                saldo > 0 
+                    ? `Kunde schuldet uns ${saldo} Paletten` 
+                    : saldo < 0 
+                        ? `Wir schulden dem Kunden ${-saldo} Paletten` 
+                        : 'Ausgeglichen';
+        }
+        // Event Listener für Kunden anlegen
+        document.getElementById('kundenForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('kundenname').value;
+            const nummer = document.getElementById('kundennummer').value;
+            const adresse = document.getElementById('adresse').value;
+            const id = uuidv4();
+            kunden.push({ id, name, nummer, adresse });
+            saveToLocalStorage();
+            updateKundenTabelle();
+            this.reset();
+        });
+        // Event Listener für Vorgang anlegen
+        document.getElementById('vorgangForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const kundeId = getSelectedKundeId();
+            if (!kundeId) {
+                alert('Bitte gültigen Kunden auswählen!');
+                return;
+            }
+            const lieferschein = document.getElementById('lieferschein').value;
+            const geliefert = parseInt(document.getElementById('geliefert').value);
+            const getauscht = parseInt(document.getElementById('getauscht').value);
+            const differenz = geliefert - getauscht;
+            const datum = new Date().toLocaleDateString();
+            const id = uuidv4();
+            vorgaenge.push({ id, kundeId, lieferschein, geliefert, getauscht, differenz, datum });
+            saveToLocalStorage();
+            updateVorgangTabelle();
+            this.reset();
+        });
+        // Tabelle aktualisieren, wenn Kunde gewechselt wird
+        document.getElementById('kundeInput').addEventListener('input', function() {
+            updateVorgangTabelle();
+            updateSaldo();
+        });
+        // Kunden importieren UI
+        document.getElementById('importKundenBtn').addEventListener('click', function() {
+            document.getElementById('importKundenArea').style.display = '';
+        });
+        document.getElementById('importKundenCancelBtn').addEventListener('click', function() {
+            document.getElementById('importKundenArea').style.display = 'none';
+            document.getElementById('importKundenText').value = '';
+        });
+        document.getElementById('importKundenDoBtn').addEventListener('click', function() {
+            const text = document.getElementById('importKundenText').value;
+            const namen = text.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
+            let added = 0;
+            namen.forEach(name => {
+                if (!kunden.some(k => k.name === name)) {
+                    kunden.push({ id: uuidv4(), name, nummer: '', adresse: '' });
+                    added++;
+                }
+            });
+            if (added > 0) {
+                saveToLocalStorage();
+                updateKundenTabelle();
+            }
+            document.getElementById('importKundenArea').style.display = 'none';
+            document.getElementById('importKundenText').value = '';
+        });
+        // Excel-Import UI
+        document.getElementById('excelImportBtn').addEventListener('click', function() {
+            document.getElementById('excelImportInput').click();
+        });
+        document.getElementById('excelImportInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                const data = new Uint8Array(evt.target.result);
+                const workbook = XLSX.read(data, {type: 'array'});
+                const sheet = workbook.Sheets[workbook.SheetNames[0]];
+                const rows = XLSX.utils.sheet_to_json(sheet, {header:1});
+                // Suche die Spalte mit "Kunde" oder nimm die erste Spalte
+                let colIdx = 0;
+                if (rows[0]) {
+                    for (let i=0; i<rows[0].length; ++i) {
+                        if (typeof rows[0][i] === 'string' && rows[0][i].toLowerCase().includes('kunde')) {
+                            colIdx = i; break;
+                        }
+                    }
+                }
+                let added = 0;
+                for (let i=1; i<rows.length; ++i) {
+                    const name = (rows[i][colIdx]||'').trim();
+                    if (name && !kunden.some(k => k.name === name)) {
+                        kunden.push({ id: uuidv4(), name, nummer: '', adresse: '' });
+                        added++;
+                    }
+                }
+                if (added > 0) {
+                    saveToLocalStorage();
+                    updateKundenTabelle();
+                }
+                e.target.value = '';
+            };
+            reader.readAsArrayBuffer(file);
+        });
+        // Kontoauszug PDF Export im neuen Tab
+        document.getElementById('auszugPdfBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            const kundeName = document.getElementById('auszugKundeInput').value;
+            const kunde = kunden.find(k => `${k.name} (${k.nummer})` === kundeName || k.name === kundeName);
+            if (!kunde) {
+                alert('Bitte gültigen Kunden auswählen!');
+                return;
+            }
+            const startDate = document.getElementById('auszugStartDate').value;
+            const endDate = document.getElementById('auszugEndDate').value;
+            if (!startDate || !endDate) {
+                alert('Bitte Zeitraum wählen!');
+                return;
+            }
+            // Vorgänge und Archiv für diesen Kunden im Zeitraum
+            const alleVorgaenge = [...vorgaenge, ...archiv];
+            const vorgaengeFiltered = alleVorgaenge.filter(v => v.kundeId === kunde.id && v.datum && compareDateInRange(v.datum, startDate, endDate));
+            if (vorgaengeFiltered.length === 0) {
+                alert('Keine Vorgänge im gewählten Zeitraum!');
+                return;
+            }
+            generateKontoauszugPDF(kunde, vorgaengeFiltered, startDate, endDate);
+        });
+        // Hilfsfunktion: Datum vergleichen (dd.mm.yyyy im Bereich yyyy-mm-dd)
+        function compareDateInRange(datum, start, end) {
+            // datum: dd.mm.yyyy, start/end: yyyy-mm-dd
+            const [d, m, y] = datum.split('.');
+            const dateObj = new Date(`${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`);
+            return dateObj >= new Date(start) && dateObj <= new Date(end);
+        }
+        // PDF-Generierung
+        function generateKontoauszugPDF(kunde, vorgaenge, startDate, endDate) {
+            if (!window.jspdf || !window.jspdf.jsPDF || typeof window.jspdf.jsPDF === 'undefined') {
+                alert('PDF-Export nicht möglich: jsPDF oder AutoTable nicht geladen!');
+                return;
+            }
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            let logoLoaded = false;
+            let logoTimeout = setTimeout(() => { if (!logoLoaded) addRest(); }, 1000);
+            try {
+                const logoImg = new Image();
+                logoImg.src = 'LOGO.svg';
+                logoImg.onload = function() {
+                    logoLoaded = true;
+                    clearTimeout(logoTimeout);
+                    try { doc.addImage(logoImg, 'SVG', 10, 10, 40, 18); } catch(e) {}
+                    addRest();
+                };
+                logoImg.onerror = function() {
+                    logoLoaded = true;
+                    clearTimeout(logoTimeout);
+                    addRest();
+                };
+            } catch (e) {
+                addRest();
+            }
+            function addRest() {
+                try {
+                    doc.setFontSize(16);
+                    doc.text('Alfred Hausenstein GmbH & Co. KG', 55, 18);
+                    doc.setFontSize(10);
+                    doc.text('Robert Bosch Straße 1', 55, 24);
+                    doc.text('68542 Heddesheim', 55, 30);
+                    doc.setFontSize(14);
+                    doc.text('Palettenkonto-Auszug', 10, 45);
+                    doc.setFontSize(10);
+                    doc.text(`Kunde: ${kunde.name}`, 10, 53);
+                    if (kunde.adresse) doc.text(`Adresse: ${kunde.adresse}`, 10, 59);
+                    doc.text(`Zeitraum: ${formatDate(startDate)} bis ${formatDate(endDate)}`, 10, 65);
+                    const tableData = vorgaenge.map(v => [v.lieferschein, v.geliefert, v.getauscht, v.differenz, v.datum]);
+                    doc.autoTable({
+                        head: [['Lieferschein', 'Geliefert', 'Tausch erhalten', 'Differenz', 'Datum']],
+                        body: tableData,
+                        startY: 70,
+                        theme: 'grid',
+                        headStyles: {fillColor: [0,51,102]},
+                        styles: {fontSize: 10}
+                    });
+                    const saldo = vorgaenge.reduce((a,v) => a+v.differenz, 0);
+                    doc.setFontSize(12);
+                    doc.text(`Gesamtsaldo im Zeitraum: ${saldo} Paletten`, 10, doc.lastAutoTable.finalY + 12);
+                    doc.setFontSize(9);
+                    doc.text('Telefon: 06203 4011-0   |   info@hausenstein.de   |   www.hausenstein.de', 10, 285);
+                    const pdfBlob = doc.output('blob');
+                    const url = URL.createObjectURL(pdfBlob);
+                    window.open(url, '_blank');
+                } catch (err) {
+                    alert('Fehler beim PDF-Export: ' + err);
+                }
+            }
+            function formatDate(d) {
+                const [y,m,day] = d.split('-');
+                return `${day}.${m}.${y}`;
+            }
+        }
+        // Initiales Rendering
+        loadFromLocalStorage();
+        updateKundenTabelle();
+        updateVorgangTabelle();
+        updateArchivTabelle();
+
+        // Avatar-Map wie auf index.html
+        const avatarMap = {
+            'admin': 'https://randomuser.me/api/portraits/men/1.jpg',
+            'petra': 'https://randomuser.me/api/portraits/women/2.jpg',
+            'jürgen': 'https://randomuser.me/api/portraits/men/3.jpg',
+            'nizia': 'https://randomuser.me/api/portraits/women/4.jpg',
+            'fatih': 'https://randomuser.me/api/portraits/men/5.jpg',
+            'silas': 'https://randomuser.me/api/portraits/men/6.jpg',
+            'julian': 'https://randomuser.me/api/portraits/men/7.jpg'
+        };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const loggedInUser = localStorage.getItem('loggedInUser');
+            if (loggedInUser) {
+                const usernameDisplay = loggedInUser.charAt(0).toUpperCase() + loggedInUser.slice(1);
+                const userNameSpan = document.getElementById('userName');
+                if (userNameSpan) userNameSpan.textContent = usernameDisplay;
+                const userAvatar = document.getElementById('userAvatar');
+                if (userAvatar) userAvatar.src = avatarMap[loggedInUser.toLowerCase()] || 'https://randomuser.me/api/portraits/lego/1.jpg';
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.0/dist/jspdf.plugin.autotable.min.js"></script>
+</body>
+</html> 
